@@ -2,12 +2,6 @@ import UploadSlot from "./UploadSlot.jsx";
 import DataPreview from "./DataPreview.jsx";
 import { ChevronRight } from "lucide-react";
 
-/**
- * UI Langkah 1: Upload 2 file (data gabungan + data pembanding).
- * Setelah file diupload, tampilkan preview data mentah agar user bisa
- * memilih baris header yang benar (terutama untuk file dengan format
- * tidak standar — judul di baris pertama, baris kosong, dsb).
- */
 export default function UploadStep({
   gabungan,
   pembanding,
@@ -26,40 +20,44 @@ export default function UploadStep({
 }) {
   return (
     <div className="animate-fade-in">
-      <div className="grid gap-3 mb-6">
+      <div className="grid gap-4 mb-6">
         {/* Data gabungan */}
-        <UploadSlot
-          title="Data gabungan"
-          subtitle="NIK, No KK, Nama, Alamat"
-          file={gabungan}
-          onFile={onGabunganFile}
-          loading={loadingGabungan}
-        />
-        {gabunganRaw && !loadingGabungan && (
-          <DataPreview
-            rawRows={gabunganRaw.rawRows}
-            barisHeader={barisHeaderGabungan}
-            onBarisHeader={onBarisHeaderGabungan}
-            label="data gabungan"
+        <div>
+          <UploadSlot
+            title="Data Gabungan OPD"
+            subtitle="Data warga (Wajib memiliki kolom NIK)"
+            file={gabungan}
+            onFile={onGabunganFile}
+            loading={loadingGabungan}
           />
-        )}
+          {gabunganRaw && !loadingGabungan && (
+            <DataPreview
+              rawRows={gabunganRaw.rawRows}
+              barisHeader={barisHeaderGabungan}
+              onBarisHeader={onBarisHeaderGabungan}
+              label="data gabungan"
+            />
+          )}
+        </div>
 
         {/* Data pembanding */}
-        <UploadSlot
-          title="Data pembanding"
-          subtitle="Misal: data pencari kerja"
-          file={pembanding}
-          onFile={onPembandingFile}
-          loading={loadingPembanding}
-        />
-        {pembandingRaw && !loadingPembanding && (
-          <DataPreview
-            rawRows={pembandingRaw.rawRows}
-            barisHeader={barisHeaderPembanding}
-            onBarisHeader={onBarisHeaderPembanding}
-            label="data pembanding"
+        <div>
+          <UploadSlot
+            title="Data Pembanding"
+            subtitle="Berkas dinas luar (misal: data pencari kerja)"
+            file={pembanding}
+            onFile={onFile => onPembandingFile(onFile)}
+            loading={loadingPembanding}
           />
-        )}
+          {pembandingRaw && !loadingPembanding && (
+            <DataPreview
+              rawRows={pembandingRaw.rawRows}
+              barisHeader={barisHeaderPembanding}
+              onBarisHeader={onBarisHeaderPembanding}
+              label="data pembanding"
+            />
+          )}
+        </div>
       </div>
 
       <button
@@ -72,7 +70,7 @@ export default function UploadStep({
             : "bg-slate-100 text-slate-400 cursor-not-allowed")
         }
       >
-        Lanjut ke konfigurasi <ChevronRight size={16} />
+        Lanjut ke Konfigurasi <ChevronRight size={16} />
       </button>
     </div>
   );
