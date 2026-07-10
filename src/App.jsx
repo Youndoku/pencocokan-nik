@@ -64,7 +64,7 @@ export default function PencocokanNIK() {
             Pencocokan Data NIK
           </h1>
           <p className="text-sm text-slate-500 m-0 max-w-sm mx-auto leading-relaxed">
-            Periksa kecocokan data warga dinas dengan data pembanding secara cepat, aman, and 100% lokal.
+            Periksa kecocokan data warga dinas dengan data pembanding secara cepat, aman, dan 100% lokal.
           </p>
         </div>
 
