@@ -4,17 +4,18 @@
  */
 export default function MetricCard({ label, value, tone = "neutral" }) {
   const toneClasses = {
-    neutral: "bg-slate-50 text-slate-900 border-slate-200",
-    success: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    danger: "bg-red-50 text-red-700 border-red-200",
-    warning: "bg-amber-50 text-amber-700 border-amber-200",
+    neutral: "bg-slate-50 text-slate-800 border-slate-200/80 shadow-slate-100/50",
+    success: "bg-emerald-50/50 text-emerald-800 border-emerald-200/80 shadow-emerald-100/30",
+    danger: "bg-red-50/50 text-red-800 border-red-200/80 shadow-red-100/30",
+    warning: "bg-amber-50/50 text-amber-800 border-amber-200/80 shadow-amber-100/30",
   };
   return (
     <div
-      className={`rounded-xl border p-4 transition-all duration-300 hover:shadow-md ${toneClasses[tone]}`}
+      className={`rounded-xl border p-4 transition-all duration-300 hover:shadow-md shadow-sm ${toneClasses[tone]}`}
     >
-      <p className="text-xs opacity-80 m-0">{label}</p>
-      <p className="text-2xl font-semibold mt-1 font-mono">{value}</p>
+      <p className="text-[11px] font-semibold opacity-75 m-0 uppercase tracking-wider">{label}</p>
+      <p className="text-2xl font-bold mt-2 font-mono m-0 tracking-tight">{value}</p>
     </div>
   );
 }
+
