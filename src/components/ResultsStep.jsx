@@ -14,7 +14,12 @@ export default function ResultsStep({ hasil, onReset, onDownload }) {
       <div className="grid grid-cols-2 gap-3.5 mb-6">
         <MetricCard label="Total Baris" value={hasil.total.toLocaleString("id-ID")} tone="neutral" />
         <MetricCard label="Data Cocok" value={hasil.cocok.toLocaleString("id-ID")} tone="success" />
-        <MetricCard label="Tidak Cocok" value={hasil.tidak.toLocaleString("id-ID")} tone="danger" />
+        <MetricCard
+          label="Tidak Cocok"
+          value={hasil.tidak.toLocaleString("id-ID")}
+          tone="danger"
+          className={hasil.useStatus ? "" : "col-span-2"}
+        />
         {hasil.useStatus && (
           <MetricCard
             label="Dikecualikan"
