@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Metadata Tooling / Sistem Agen
+.impeccable/
+.superpowers/

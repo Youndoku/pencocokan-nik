@@ -28,78 +28,107 @@ export default function ConfigureStep({
   return (
     <div className="animate-fade-in">
       <div className="mb-6">
-        <p className="text-sm font-semibold m-0 mb-4 flex items-center gap-2 text-slate-900 border-b border-slate-100 pb-3">
+        <p className="text-sm font-semibold m-0 mb-5 flex items-center gap-2 text-slate-900 border-b border-slate-100 pb-3">
           <Settings2 size={16} className="text-indigo-500" /> Pemetaan Kolom Excel
         </p>
 
-        {/* Kolom NIK & Nama */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <ColumnSelect
-            label={`NIK — ${gabungan.fileName}`}
-            value={kolomNikGabungan}
-            onChange={onKolomNikGabungan}
-            columns={gabungan.columns}
-          />
-          <ColumnSelect
-            label={`NIK — ${pembanding.fileName}`}
-            value={kolomNikPembanding}
-            onChange={onKolomNikPembanding}
-            columns={pembanding.columns}
-          />
-          <ColumnSelect
-            label={`Nama — ${gabungan.fileName}`}
-            value={kolomNamaGabungan}
-            onChange={onKolomNamaGabungan}
-            columns={gabungan.columns}
-            optional
-          />
-          <ColumnSelect
-            label={`Nama — ${pembanding.fileName}`}
-            value={kolomNamaPembanding}
-            onChange={onKolomNamaPembanding}
-            columns={pembanding.columns}
-            optional
-          />
-        </div>
-
-        {/* Kolom Status */}
-        <div className="border-t border-slate-100 pt-4 mb-4">
-          <ColumnSelect
-            label="Kolom Status/Keterangan Pembanding"
-            value={kolomStatusPembanding}
-            onChange={onKolomStatus}
-            columns={pembanding.columns}
-            optional
-          />
-        </div>
-
-        {/* Checklist Nilai Status */}
-        {kolomStatusPembanding && (
-          <div className="mb-4 bg-slate-50 border border-slate-200/60 rounded-xl p-4 animate-fade-in">
-            <p className="text-xs text-slate-500 m-0 mb-3 font-semibold">
-              Centang status yang dianggap VALID / DIHITUNG COCOK:
-            </p>
-            <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2">
-              {daftarStatusUnik.map((val) => (
-                <label
-                  key={val}
-                  className="flex items-center gap-2.5 text-xs text-slate-700 cursor-pointer hover:text-slate-900 transition-colors bg-white px-3 py-2 rounded-lg border border-slate-100 shadow-sm"
-                >
-                  <input
-                    type="checkbox"
-                    checked={statusTerpilih.has(val)}
-                    onChange={() => onToggleStatus(val)}
-                    className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-200"
-                  />
-                  <span className="font-medium">{val}</span>
-                </label>
-              ))}
-            </div>
+        {/* DATA GABUNGAN OPD */}
+        <div className="mb-5 bg-slate-50/50 rounded-xl p-4 border border-slate-100/80">
+          <div className="flex items-center justify-between gap-4 mb-4 pb-2 border-b border-slate-200/60">
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              Data Gabungan OPD
+            </span>
+            <span 
+              className="text-xs text-slate-400 font-mono truncate max-w-[180px] sm:max-w-[280px]" 
+              title={gabungan.fileName}
+            >
+              {gabungan.fileName}
+            </span>
           </div>
-        )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ColumnSelect
+              label="Kolom NIK"
+              value={kolomNikGabungan}
+              onChange={onKolomNikGabungan}
+              columns={gabungan.columns}
+            />
+            <ColumnSelect
+              label="Kolom Nama"
+              value={kolomNamaGabungan}
+              onChange={onKolomNamaGabungan}
+              columns={gabungan.columns}
+              optional
+            />
+          </div>
+        </div>
+
+        {/* DATA PEMBANDING */}
+        <div className="mb-5 bg-slate-50/50 rounded-xl p-4 border border-slate-100/80">
+          <div className="flex items-center justify-between gap-4 mb-4 pb-2 border-b border-slate-200/60">
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              Data Pembanding
+            </span>
+            <span 
+              className="text-xs text-slate-400 font-mono truncate max-w-[180px] sm:max-w-[280px]" 
+              title={pembanding.fileName}
+            >
+              {pembanding.fileName}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <ColumnSelect
+              label="Kolom NIK"
+              value={kolomNikPembanding}
+              onChange={onKolomNikPembanding}
+              columns={pembanding.columns}
+            />
+            <ColumnSelect
+              label="Kolom Nama"
+              value={kolomNamaPembanding}
+              onChange={onKolomNamaPembanding}
+              columns={pembanding.columns}
+              optional
+            />
+          </div>
+
+          <div className="border-t border-slate-200/60 pt-4">
+            <ColumnSelect
+              label="Kolom Status / Keterangan"
+              value={kolomStatusPembanding}
+              onChange={onKolomStatus}
+              columns={pembanding.columns}
+              optional
+            />
+          </div>
+
+          {/* Checklist Nilai Status */}
+          {kolomStatusPembanding && (
+            <div className="mt-4 bg-white border border-slate-200/60 rounded-xl p-4 animate-fade-in">
+              <p className="text-xs text-slate-500 m-0 mb-3 font-semibold">
+                Centang status yang dianggap VALID / DIHITUNG COCOK:
+              </p>
+              <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2">
+                {daftarStatusUnik.map((val) => (
+                  <label
+                    key={val}
+                    className="flex items-center gap-2.5 text-xs text-slate-700 cursor-pointer hover:text-slate-900 transition-colors bg-slate-50/40 px-3 py-2 rounded-lg border border-slate-100 shadow-sm"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={statusTerpilih.has(val)}
+                      onChange={() => onToggleStatus(val)}
+                      className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-200"
+                    />
+                    <span className="font-medium">{val}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Nama Kolom Baru */}
-        <div className="border-t border-slate-100 pt-4">
+        <div className="border-t border-slate-100 pt-4 mb-6">
           <label className="text-xs font-semibold text-slate-700 block mb-1.5">
             Nama Kolom Baru di Hasil Excel
           </label>

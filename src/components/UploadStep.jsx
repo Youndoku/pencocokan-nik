@@ -28,7 +28,7 @@ export default function UploadStep({
     <div className="animate-fade-in">
       <div className="grid gap-4 mb-6">
         {/* Data gabungan */}
-        <div>
+        <div className="min-w-0">
           <UploadSlot
             title="Data Gabungan OPD"
             subtitle="Data warga (Wajib memiliki kolom NIK)"
@@ -47,7 +47,7 @@ export default function UploadStep({
         </div>
 
         {/* Data pembanding */}
-        <div>
+        <div className="min-w-0">
           <UploadSlot
             title="Data Pembanding"
             subtitle="Berkas dinas luar (misal: data pencari kerja)"

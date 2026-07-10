@@ -54,7 +54,7 @@ export default function PencocokanNIK() {
       {/* Top Ambient Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-gradient-to-b from-indigo-100/40 to-transparent blur-3xl pointer-events-none z-0" />
       
-      <div className="w-full max-w-xl relative z-10">
+      <div className="w-full max-w-xl relative z-10 min-w-0">
         {/* Header */}
         <div className="mb-8 text-center animate-fade-in">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 mb-4 shadow-sm">
@@ -84,7 +84,7 @@ export default function PencocokanNIK() {
         )}
 
         {/* Konten langkah wrapper */}
-        <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+        <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm w-full min-w-0">
           {step === 1 && (
             <UploadStep
               gabungan={gabungan}
