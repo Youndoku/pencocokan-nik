@@ -61,3 +61,13 @@ Semua teks UI, komentar kode, dan nama variabel dalam Bahasa Indonesia
 (mengikuti konvensi yang sudah ada: `namaKolomBaru`, `kolomNikGabungan`,
 dst). Jangan campur ke Bahasa Inggris kecuali untuk nama library atau term
 teknis yang tidak ada padanannya.
+
+## Konteks Desain (Impeccable)
+
+- **Register**: `product` (Web tool internal Diskominfo Kota Batu).
+- **Prinsip Desain**:
+  1. **Kejelasan Alur Kerja**: Menyusun proses upload, konfigurasi, dan hasil dalam langkah-langkah linier (step-by-step) yang mudah dipahami.
+  2. **Fokus Keterbacaan Data**: Menjamin kontras tinggi pada NIK dan preview data.
+  3. **Keamanan Transparan**: Penegasan visual bahwa data diproses lokal 100% di browser.
+- **Visual**: Mengacu pada [DESIGN.md](file:///D:/.Kuliah/Magang/pencocokan-nik/DESIGN.md) (Warna Indigo `#4f46e5`, Font Inter, Flat-by-Default).
+
