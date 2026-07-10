@@ -1,5 +1,11 @@
 import { TableProperties } from "lucide-react";
 
+/**
+ * Preview data mentah dari file Excel.
+ * Menampilkan ~10 baris pertama sebagai tabel.
+ * User bisa klik baris untuk memilihnya sebagai baris header.
+ * Baris header yang terpilih di-highlight.
+ */
 export default function DataPreview({
   rawRows,
   barisHeader,

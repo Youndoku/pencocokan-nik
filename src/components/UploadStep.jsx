@@ -2,6 +2,12 @@ import UploadSlot from "./UploadSlot.jsx";
 import DataPreview from "./DataPreview.jsx";
 import { ChevronRight } from "lucide-react";
 
+/**
+ * UI Langkah 1: Upload 2 file (data gabungan + data pembanding).
+ * Setelah file diupload, tampilkan preview data mentah agar user bisa
+ * memilih baris header yang benar (terutama untuk file dengan format
+ * tidak standar — judul di baris pertama, baris kosong, dsb).
+ */
 export default function UploadStep({
   gabungan,
   pembanding,
@@ -46,7 +52,7 @@ export default function UploadStep({
             title="Data Pembanding"
             subtitle="Berkas dinas luar (misal: data pencari kerja)"
             file={pembanding}
-            onFile={onFile => onPembandingFile(onFile)}
+            onFile={onPembandingFile}
             loading={loadingPembanding}
           />
           {pembandingRaw && !loadingPembanding && (

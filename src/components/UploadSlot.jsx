@@ -1,5 +1,9 @@
 import { UploadCloud, FileSpreadsheet, ChevronRight, Loader2 } from "lucide-react";
 
+/**
+ * Slot upload satu file .xlsx.
+ * Menampilkan status kosong (pilih file), loading, atau sudah terupload (nama file + jumlah baris).
+ */
 export default function UploadSlot({ title, subtitle, file, onFile, loading }) {
   const inputId = `upload-${title.replace(/\s+/g, "-")}`;
   return (
