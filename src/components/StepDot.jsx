@@ -10,7 +10,7 @@ export default function StepDot({ active, done, index, label }) {
       className={
         "flex items-center gap-3 px-4 py-3 rounded-xl border flex-1 transition-all duration-300 " +
         (done
-          ? "bg-emerald-50/40 text-emerald-850 border-emerald-100/80"
+          ? "bg-emerald-50/40 text-emerald-800 border-emerald-100/80"
           : active
           ? "bg-indigo-50/50 text-indigo-900 border-indigo-200 shadow-sm shadow-indigo-50 ring-4 ring-indigo-50/20"
           : "bg-slate-50/50 text-slate-400 border-slate-100")
