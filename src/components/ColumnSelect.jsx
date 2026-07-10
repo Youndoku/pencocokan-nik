@@ -2,19 +2,19 @@
  * Dropdown pemilihan kolom (NIK, Nama, Status).
  * Jika `optional`, tampilkan opsi "Tidak digunakan".
  */
-export default function ColumnSelect({ label, value, onChange, columns, optional }) {
+export default function ColumnSelect({ columns, label, onChange, value, optional = false }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-xs text-slate-500">
-        {label}{" "}
-        {optional && <span className="text-slate-400">(opsional)</span>}
+    <div className="flex flex-col gap-1.5">
+      <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
+        <span>{label}</span>
+        {optional && <span className="text-[10px] text-slate-400 font-normal bg-slate-100 px-1.5 py-0.5 rounded">Opsional</span>}
       </label>
       <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="h-9 rounded-lg border border-slate-200 px-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-200"
+        value={value || ""}
+        onChange={(e) => onChange(e.target.value || null)}
+        className="w-full h-10 rounded-lg border border-slate-200 px-3 text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all duration-200 shadow-sm"
       >
-        {optional && <option value="">Tidak digunakan</option>}
+        <option value="">-- Pilih Kolom --</option>
         {columns.map((c) => (
           <option key={c} value={c}>
             {c}
@@ -24,3 +24,4 @@ export default function ColumnSelect({ label, value, onChange, columns, optional
     </div>
   );
 }
+

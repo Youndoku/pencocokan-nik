@@ -27,34 +27,34 @@ export default function ConfigureStep({
 }) {
   return (
     <div className="animate-fade-in">
-      <div className="bg-white border border-slate-200 rounded-xl p-5 mb-3 shadow-sm">
-        <p className="text-sm font-semibold m-0 mb-4 flex items-center gap-1.5 text-slate-900">
-          <Settings2 size={15} className="text-indigo-500" /> Pemetaan kolom
+      <div className="mb-6">
+        <p className="text-sm font-semibold m-0 mb-4 flex items-center gap-2 text-slate-900 border-b border-slate-100 pb-3">
+          <Settings2 size={16} className="text-indigo-500" /> Pemetaan Kolom Excel
         </p>
 
-        {/* Kolom NIK & Nama untuk kedua file */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
+        {/* Kolom NIK & Nama */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <ColumnSelect
-            label={`Kolom NIK — ${gabungan.fileName}`}
+            label={`NIK — ${gabungan.fileName}`}
             value={kolomNikGabungan}
             onChange={onKolomNikGabungan}
             columns={gabungan.columns}
           />
           <ColumnSelect
-            label={`Kolom NIK — ${pembanding.fileName}`}
+            label={`NIK — ${pembanding.fileName}`}
             value={kolomNikPembanding}
             onChange={onKolomNikPembanding}
             columns={pembanding.columns}
           />
           <ColumnSelect
-            label={`Kolom nama — ${gabungan.fileName}`}
+            label={`Nama — ${gabungan.fileName}`}
             value={kolomNamaGabungan}
             onChange={onKolomNamaGabungan}
             columns={gabungan.columns}
             optional
           />
           <ColumnSelect
-            label={`Kolom nama — ${pembanding.fileName}`}
+            label={`Nama — ${pembanding.fileName}`}
             value={kolomNamaPembanding}
             onChange={onKolomNamaPembanding}
             columns={pembanding.columns}
@@ -62,10 +62,10 @@ export default function ConfigureStep({
           />
         </div>
 
-        {/* Kolom status (opsional) */}
-        <div className="border-t border-slate-200 pt-3 mb-3">
+        {/* Kolom Status */}
+        <div className="border-t border-slate-100 pt-4 mb-4">
           <ColumnSelect
-            label="Kolom status/keterangan (mis. aktif, mundur)"
+            label="Kolom Status/Keterangan Pembanding"
             value={kolomStatusPembanding}
             onChange={onKolomStatus}
             columns={pembanding.columns}
@@ -73,17 +73,17 @@ export default function ConfigureStep({
           />
         </div>
 
-        {/* Checklist nilai status */}
+        {/* Checklist Nilai Status */}
         {kolomStatusPembanding && (
-          <div className="mb-3 bg-slate-50 rounded-lg p-3">
-            <p className="text-xs text-slate-500 m-0 mb-2 font-medium">
-              Centang status yang dihitung sebagai valid/cocok:
+          <div className="mb-4 bg-slate-50 border border-slate-200/60 rounded-xl p-4 animate-fade-in">
+            <p className="text-xs text-slate-500 m-0 mb-3 font-semibold">
+              Centang status yang dianggap VALID / DIHITUNG COCOK:
             </p>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2">
               {daftarStatusUnik.map((val) => (
                 <label
                   key={val}
-                  className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer hover:text-slate-900 transition-colors"
+                  className="flex items-center gap-2.5 text-xs text-slate-700 cursor-pointer hover:text-slate-900 transition-colors bg-white px-3 py-2 rounded-lg border border-slate-100 shadow-sm"
                 >
                   <input
                     type="checkbox"
@@ -91,40 +91,40 @@ export default function ConfigureStep({
                     onChange={() => onToggleStatus(val)}
                     className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-200"
                   />
-                  {val}
+                  <span className="font-medium">{val}</span>
                 </label>
               ))}
             </div>
           </div>
         )}
 
-        {/* Nama kolom baru */}
-        <div>
-          <label className="text-xs text-slate-500 block mb-1">
-            Nama kolom baru di hasil
+        {/* Nama Kolom Baru */}
+        <div className="border-t border-slate-100 pt-4">
+          <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+            Nama Kolom Baru di Hasil Excel
           </label>
           <input
             type="text"
             value={namaKolomBaru}
             onChange={(e) => onNamaKolomBaru(e.target.value)}
-            className="w-full h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition-all duration-200"
+            className="w-full h-10 rounded-lg border border-slate-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 bg-white text-slate-800 transition-all duration-200 shadow-sm font-medium"
           />
         </div>
       </div>
 
       {/* Tombol aksi */}
-      <div className="flex gap-2">
+      <div className="flex gap-3">
         <button
           onClick={onBack}
-          className="h-11 px-5 rounded-xl border border-slate-200 text-sm text-slate-700 hover:bg-slate-50 transition-all duration-200 cursor-pointer"
+          className="h-11 px-5 rounded-xl border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-all duration-200 cursor-pointer font-semibold shadow-sm"
         >
           Kembali
         </button>
         <button
           onClick={onProses}
-          className="flex-1 h-11 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 transition-all duration-300 active:scale-[0.98] cursor-pointer"
+          className="flex-1 h-11 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 transition-all duration-300 active:scale-[0.98] cursor-pointer"
         >
-          Proses pencocokan
+          Mulai Pencocokan Data
         </button>
       </div>
     </div>
