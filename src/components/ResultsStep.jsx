@@ -1,6 +1,9 @@
 import MetricCard from "./MetricCard.jsx";
 import { AlertTriangle, RotateCcw, Download, CheckCircle2 } from "lucide-react";
 
+/**
+ * UI Langkah 3: Ringkasan hasil, tabel mismatch nama, dan tombol download.
+ */
 export default function ResultsStep({ hasil, onReset, onDownload }) {
   return (
     <div className="animate-fade-in">

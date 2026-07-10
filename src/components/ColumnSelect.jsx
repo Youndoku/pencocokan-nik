@@ -1,6 +1,6 @@
 /**
  * Dropdown pemilihan kolom (NIK, Nama, Status).
- * Jika `optional`, tampilkan opsi "Tidak digunakan".
+ * Jika `optional` bernilai true, tampilkan badge "Opsional".
  */
 export default function ColumnSelect({ columns, label, onChange, value, optional = false }) {
   return (
