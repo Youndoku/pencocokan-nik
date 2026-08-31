@@ -1,11 +1,11 @@
-/* Google Fonts — Inter (harus sebelum @import tailwindcss) */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
-
 @import "tailwindcss";
 
 /* ── Theme ── */
+/* Font sistem bawaan (bukan Google Fonts) — aplikasi ini 100% offline,
+   tanpa request jaringan apa pun, termasuk untuk font. */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
 }
 
 /* ── Animasi global ── */
