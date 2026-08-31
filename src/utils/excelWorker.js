@@ -225,6 +225,85 @@ self.onmessage = async function (e) {
         break;
       }
 
+      case "VALIDATE_DATA": {
+        const { target, kolomNik } = payload || e.data || {};
+        const parsed = target === "gabungan" ? state.parsedGabungan : state.parsedPembanding;
+        const rows = parsed?.rows || (Array.isArray(parsed) ? parsed : null);
+
+        if (!rows || !kolomNik) {
+          self.postMessage({
+            type: "VALIDATION_RESULT",
+            target,
+            result: null,
+            payload: { target, result: null },
+          });
+          break;
+        }
+
+        const nikCount = new Map();
+        let barisKosong = 0;
+        let nikKosong = 0;
+        let nikNonStandar = 0;
+        let totalValid = 0;
+
+        for (const row of rows) {
+          const values = Object.values(row);
+          const allEmpty = values.every(
+            (v) => v === undefined || v === null || String(v).trim() === ""
+          );
+          if (allEmpty) {
+            barisKosong++;
+            continue;
+          }
+
+          const rawNik = row[kolomNik];
+          if (rawNik === undefined || rawNik === null || String(rawNik).trim() === "") {
+            nikKosong++;
+            continue;
+          }
+
+          const nik = normalisasiNIK(rawNik);
+          if (nik.length !== 16 || /[^0-9]/.test(nik)) {
+            nikNonStandar++;
+          } else {
+            totalValid++;
+          }
+          nikCount.set(nik, (nikCount.get(nik) || 0) + 1);
+        }
+
+        const duplikatNik = [];
+        for (const [nik, count] of nikCount) {
+          if (count > 1 && nik.length > 0) {
+            duplikatNik.push({ nik, jumlah: count });
+          }
+        }
+        duplikatNik.sort((a, b) => b.jumlah - a.jumlah);
+
+        const result = {
+          totalBaris: rows.length,
+          barisKosong,
+          nikKosong,
+          nikNonStandar,
+          totalValid,
+          duplikatNik: duplikatNik.slice(0, 100),
+          persenNonStandar:
+            rows.length > 0
+              ? ((nikNonStandar / (rows.length - barisKosong)) * 100).toFixed(1)
+              : "0",
+        };
+
+        self.postMessage({
+          type: "VALIDATION_RESULT",
+          target,
+          result,
+          payload: {
+            target,
+            result,
+          },
+        });
+        break;
+      }
+
       case "GET_UNIQUE_VALUES": {
         const { columnName } = payload;
         if (!state.parsedPembanding || !state.parsedPembanding.rows) {
