@@ -152,7 +152,7 @@ export async function generatePdf(sesi, options = {}) {
     const body = penerimaGanda.slice(0, 50).map((r) => [
       r.nik,
       r.nama,
-      ...programColumns.map((p) => (r.programs[p] === 1 ? "✓" : "—")),
+      ...programColumns.map((p) => (r.programs[p] === 1 ? "Ya" : "—")),
       r.count,
     ]);
 

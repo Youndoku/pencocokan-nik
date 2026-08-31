@@ -4,10 +4,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUpDown,
-  Filter,
   Download,
 } from "lucide-react";
-import * as XLSX from "xlsx";
 
 const PER_PAGE = 25;
 
@@ -79,8 +77,9 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
     setPage(1);
   };
 
-  const handleExportFiltered = () => {
+  const handleExportFiltered = async () => {
     if (filtered.length === 0) return;
+    const XLSX = await import("xlsx");
     const ws = XLSX.utils.json_to_sheet(filtered);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Data Filter");
