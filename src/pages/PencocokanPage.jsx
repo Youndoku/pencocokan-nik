@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { usePencocokanNIK } from "../hooks/usePencocokanNIK.js";
 import { useRiwayat } from "../hooks/useRiwayat.js";
 import { generateId } from "../utils/db.js";
+import { generatePdf } from "../utils/pdfExport.js";
 import StepDot from "../components/pencocokan/StepDot.jsx";
 import UploadStep from "../components/pencocokan/UploadStep.jsx";
 import ConfigureStep from "../components/pencocokan/ConfigureStep.jsx";
@@ -12,7 +13,7 @@ import { AlertTriangle, ShieldCheck } from "lucide-react";
 
 export default function PencocokanPage() {
   const navigate = useNavigate();
-  const { simpanSesi } = useRiwayat();
+  const { simpanSesi, ambilSesi } = useRiwayat();
   const [sesiId, setSesiId] = useState(null);
   const savedRef = useRef(false);
 
@@ -228,7 +229,11 @@ export default function PencocokanPage() {
             onReset={handleReset}
             onDownload={handleDownload}
             onSavePdf={() => {
-              /* Will be implemented in Task 11 */
+              if (sesiId) {
+                ambilSesi(sesiId).then((s) => {
+                  if (s) generatePdf(s);
+                });
+              }
             }}
             hasSaved={savedRef.current}
           />

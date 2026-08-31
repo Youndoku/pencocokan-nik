@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useRiwayat } from "../hooks/useRiwayat.js";
 import { useDashboard } from "../hooks/useDashboard.js";
+import { generatePdf } from "../utils/pdfExport.js";
 import SummaryPanel from "../components/dashboard/SummaryPanel.jsx";
 import DistributionChart from "../components/dashboard/DistributionChart.jsx";
 import ExportPanel from "../components/dashboard/ExportPanel.jsx";
@@ -161,9 +162,12 @@ export default function DashboardPage() {
         <div className="space-y-5">
           <ExportPanel
             onDownloadExcel={handleDownloadExcel}
-            onDownloadPdf={() => {
-              /* Will be implemented in Task 11 */
-            }}
+            onDownloadPdf={() =>
+              generatePdf(sesi, {
+                penerimaGanda,
+                programColumns: [...(kolomProgram || []), sesi.namaKolomBaru].filter(Boolean),
+              })
+            }
             namaKolomBaru={sesi.namaKolomBaru}
           />
         </div>
