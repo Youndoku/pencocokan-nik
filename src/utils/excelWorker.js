@@ -563,6 +563,26 @@ self.onmessage = async function (e) {
           };
         });
 
+        // Collect keterangan distribution & dataHasil
+        const keteranganDistribusi = {};
+        const dataHasil = [];
+        for (const row of finalRows) {
+          dataHasil.push({ ...row });
+          const ket = row["Keterangan"] || "Lainnya";
+          keteranganDistribusi[ket] = (keteranganDistribusi[ket] || 0) + 1;
+        }
+
+        // Collect mismatch log
+        const mismatchLog = [];
+        if (mismatch && mismatch.length > 0) {
+          for (const m of mismatch) {
+            mismatchLog.push({ ...m });
+          }
+        }
+
+        const kolomTersedia =
+          finalRows.length > 0 ? Object.keys(finalRows[0]) : [];
+
         // 3. Generate XLSX
         self.postMessage({ type: "PROGRESS", payload: { step: "writing_excel", percent: 70 } });
 
@@ -607,7 +627,23 @@ self.onmessage = async function (e) {
                 totalMismatch: mismatch.length,
               },
               excelBuffer,
+              dataHasil,
+              keteranganDistribusi,
+              mismatchLog,
+              kolomTersedia,
             },
+            total: finalRows.length,
+            cocok,
+            tidak,
+            dikecualikanStatus,
+            useStatus,
+            mismatch: mismatch.slice(0, 8),
+            totalMismatch: mismatch.length,
+            excelBuffer,
+            dataHasil,
+            keteranganDistribusi,
+            mismatchLog,
+            kolomTersedia,
           },
           [excelBuffer] // Transferable ArrayBuffer
         );

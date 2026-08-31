@@ -42,6 +42,10 @@ export function usePencocokanNIK() {
   // -- Hasil & Excel buffer untuk download --
   const [hasil, setHasil] = useState(null); // Summary metrics + preview mismatch
   const [excelBuffer, setExcelBuffer] = useState(null); // ArrayBuffer untuk di-download
+  const [dataHasil, setDataHasil] = useState(null);
+  const [keteranganDistribusi, setKeteranganDistribusi] = useState(null);
+  const [mismatchLog, setMismatchLog] = useState([]);
+  const [kolomTersedia, setKolomTersedia] = useState([]);
 
   const workerRef = useRef(null);
 
@@ -143,10 +147,44 @@ export function usePencocokanNIK() {
         }
 
         case "MATCHING_SUCCESS": {
-          const { summary, excelBuffer: buffer } = payload;
+          const {
+            summary,
+            excelBuffer: buffer,
+            dataHasil: dHasil,
+            keteranganDistribusi: kDistribusi,
+            mismatchLog: mLog,
+            kolomTersedia: kTersedia,
+          } = payload || e.data;
           setLoadingMatching(false);
-          setHasil(summary);
-          setExcelBuffer(buffer);
+          setHasil(
+            summary || {
+              total: payload?.total ?? e.data?.total,
+              cocok: payload?.cocok ?? e.data?.cocok,
+              tidak: payload?.tidak ?? e.data?.tidak,
+              dikecualikanStatus:
+                payload?.dikecualikanStatus ?? e.data?.dikecualikanStatus,
+              useStatus: payload?.useStatus ?? e.data?.useStatus,
+              mismatch: payload?.mismatch ?? e.data?.mismatch ?? [],
+              totalMismatch:
+                payload?.totalMismatch ?? e.data?.totalMismatch ?? 0,
+            }
+          );
+          setExcelBuffer(buffer || payload?.excelBuffer || e.data?.excelBuffer);
+          setDataHasil(
+            dHasil || payload?.dataHasil || e.data?.dataHasil || null
+          );
+          setKeteranganDistribusi(
+            kDistribusi ||
+              payload?.keteranganDistribusi ||
+              e.data?.keteranganDistribusi ||
+              null
+          );
+          setMismatchLog(
+            mLog || payload?.mismatchLog || e.data?.mismatchLog || []
+          );
+          setKolomTersedia(
+            kTersedia || payload?.kolomTersedia || e.data?.kolomTersedia || []
+          );
           setStep(4);
           break;
         }
@@ -335,6 +373,10 @@ export function usePencocokanNIK() {
     setInvalidNikResolutions({});
     setHasil(null);
     setExcelBuffer(null);
+    setDataHasil(null);
+    setKeteranganDistribusi(null);
+    setMismatchLog([]);
+    setKolomTersedia([]);
   }, []);
 
   // Helper untuk teks progress dalam Bahasa Indonesia
@@ -390,6 +432,11 @@ export function usePencocokanNIK() {
     setNameMismatchResolutions,
     setInvalidNikResolutions,
     hasil,
+    dataHasil,
+    keteranganDistribusi,
+    mismatchLog,
+    kolomTersedia,
+    excelBuffer,
     reset,
     handleGabunganFile,
     handlePembandingFile,
