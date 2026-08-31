@@ -1,6 +1,3 @@
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-
 /**
  * Generate a PDF summary report for a matching session.
  *
@@ -9,7 +6,10 @@ import autoTable from "jspdf-autotable";
  * @param {Array} options.penerimaGanda - Duplicate recipients (optional)
  * @param {string[]} options.programColumns - Detected program columns (optional)
  */
-export function generatePdf(sesi, options = {}) {
+export async function generatePdf(sesi, options = {}) {
+  const { default: jsPDF } = await import("jspdf");
+  const { default: autoTable } = await import("jspdf-autotable");
+
   const doc = new jsPDF("p", "mm", "a4");
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 15;
