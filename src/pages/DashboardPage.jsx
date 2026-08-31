@@ -7,6 +7,8 @@ import DistributionChart from "../components/dashboard/DistributionChart.jsx";
 import ExportPanel from "../components/dashboard/ExportPanel.jsx";
 import CrossProgramMatrix from "../components/dashboard/CrossProgramMatrix.jsx";
 import DuplicateRecipients from "../components/dashboard/DuplicateRecipients.jsx";
+import DynamicAnalysis from "../components/dashboard/DynamicAnalysis.jsx";
+import DataTable from "../components/dashboard/DataTable.jsx";
 import {
   Loader2,
   ArrowLeft,
@@ -140,6 +142,19 @@ export default function DashboardPage() {
               />
             </>
           )}
+
+          <DynamicAnalysis
+            dataHasil={sesi.dataHasil}
+            kolomTersedia={sesi.kolomTersedia}
+            kolomProgram={kolomProgram}
+            namaKolomBaru={sesi.namaKolomBaru}
+          />
+
+          <DataTable
+            dataHasil={sesi.dataHasil}
+            namaKolomBaru={sesi.namaKolomBaru}
+            kolomTersedia={sesi.kolomTersedia}
+          />
         </div>
 
         {/* Right column - Export & info */}
