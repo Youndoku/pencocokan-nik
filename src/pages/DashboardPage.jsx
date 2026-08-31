@@ -5,6 +5,8 @@ import { useDashboard } from "../hooks/useDashboard.js";
 import SummaryPanel from "../components/dashboard/SummaryPanel.jsx";
 import DistributionChart from "../components/dashboard/DistributionChart.jsx";
 import ExportPanel from "../components/dashboard/ExportPanel.jsx";
+import CrossProgramMatrix from "../components/dashboard/CrossProgramMatrix.jsx";
+import DuplicateRecipients from "../components/dashboard/DuplicateRecipients.jsx";
 import {
   Loader2,
   ArrowLeft,
@@ -126,7 +128,18 @@ export default function DashboardPage() {
           />
           <DistributionChart chartKeterangan={chartKeterangan} />
 
-          {/* Cross-program and other panels will be added in Task 9-10 */}
+          {hasCrossProgram && (
+            <>
+              <CrossProgramMatrix
+                crossMatrix={crossMatrix}
+                ringkasanProgram={ringkasanProgram}
+              />
+              <DuplicateRecipients
+                penerimaGanda={penerimaGanda}
+                programColumns={[...(kolomProgram || []), sesi.namaKolomBaru].filter(Boolean)}
+              />
+            </>
+          )}
         </div>
 
         {/* Right column - Export & info */}
