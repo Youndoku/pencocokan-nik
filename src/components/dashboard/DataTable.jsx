@@ -177,10 +177,15 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
                 {displayColumns.map((col) => {
                   const val = row[col];
                   const isResult = col === namaKolomBaru;
+                  const isKeterangan = col === "Keterangan";
                   return (
                     <td
                       key={col}
-                      className={`py-1.5 px-2 max-w-[180px] truncate ${
+                      className={`py-1.5 px-2 ${
+                        isKeterangan
+                          ? "min-w-[220px] whitespace-normal"
+                          : "max-w-[180px] truncate"
+                      } ${
                         isResult
                           ? Number(val) === 1
                             ? "text-emerald-600 font-bold"
