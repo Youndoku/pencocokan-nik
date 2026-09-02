@@ -25,10 +25,10 @@ export default function NikSearchBox({ sesiTerbaru }) {
   const hasil = useMemo(() => {
     const q = query.trim();
     if (q.length < MIN_QUERY_LENGTH || !dataHasil || !kolomNik) return null;
-    return dataHasil
-      .filter((row) => String(row[kolomNik] ?? "").includes(q))
-      .slice(0, 5);
+    return dataHasil.filter((row) => String(row[kolomNik] ?? "").includes(q));
   }, [query, dataHasil, kolomNik]);
+
+  const hasilDitampilkan = hasil ? hasil.slice(0, 5) : null;
 
   if (!sesiTerbaru) return null;
 
@@ -55,6 +55,7 @@ export default function NikSearchBox({ sesiTerbaru }) {
         />
         <input
           type="text"
+          aria-label="Cari NIK di data terbaru"
           placeholder="Ketik NIK..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -70,7 +71,7 @@ export default function NikSearchBox({ sesiTerbaru }) {
 
       {hasil && hasil.length > 0 && (
         <div className="space-y-2">
-          {hasil.map((row, i) => (
+          {hasilDitampilkan.map((row, i) => (
             <div
               key={i}
               className="border border-slate-100 rounded-xl p-3 bg-slate-50/60"
@@ -101,6 +102,12 @@ export default function NikSearchBox({ sesiTerbaru }) {
             </div>
           ))}
         </div>
+      )}
+
+      {hasil && hasil.length > 5 && (
+        <p className="text-[11px] text-slate-400 px-1 mt-2">
+          Menampilkan 5 dari {hasil.length} hasil. Ketik NIK lebih lengkap untuk mempersempit.
+        </p>
       )}
     </div>
   );

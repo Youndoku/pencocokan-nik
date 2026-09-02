@@ -83,7 +83,7 @@ export default function RiwayatPage() {
         </div>
         <div>
           <h1 className="text-lg font-bold text-slate-900 tracking-tight">
-            Riwayat Pencocokan
+            Riwayat & Pencarian
           </h1>
           <p className="text-xs text-slate-500">
             {jumlahSesi} sesi tersimpan di perangkat ini
@@ -105,7 +105,7 @@ export default function RiwayatPage() {
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-semibold hover:bg-indigo-700 transition-colors cursor-pointer"
           >
             <PlusCircle size={14} />
-            Mulai Pencocokan
+            Mulai Proses Data
           </button>
         </div>
       ) : (

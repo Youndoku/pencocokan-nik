@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/layout/Navbar.jsx";
 import DashboardHome from "./pages/DashboardHome.jsx";
 import PencocokanPage from "./pages/PencocokanPage.jsx";
@@ -19,6 +19,7 @@ export default function App() {
         <Route path="/pencocokan" element={<PencocokanPage />} />
         <Route path="/riwayat" element={<RiwayatPage />} />
         <Route path="/dashboard/:id" element={<DashboardPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );
