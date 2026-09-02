@@ -550,6 +550,14 @@ self.onmessage = async function (e) {
             statusValid = statusSet.has(rawStatus);
           }
 
+          // Bandingkan nama lebih dulu (dipakai di keterangan & log mismatch)
+          let namaBerbeda = false;
+          if (match && kolomNamaGabungan && kolomNamaPembanding) {
+            const namaA = normalisasiNama(row[kolomNamaGabungan]);
+            const namaB = normalisasiNama(match[kolomNamaPembanding]);
+            namaBerbeda = Boolean(namaA && namaB && namaA !== namaB);
+          }
+
           // Cek apakah ada resolusi perbedaan nama untuk baris ini
           const nameMismatchId = `nm-${idx}`;
           const hasNameMismatchRes = resNameMismatch.hasOwnProperty(nameMismatchId);
@@ -565,13 +573,16 @@ self.onmessage = async function (e) {
             dikecualikanStatus += 1;
           } else {
             // NIK cocok dan status valid, sekarang check perbedaan nama
+            const namaPembandingInfo = namaBerbeda
+              ? ` — pembanding: "${match[kolomNamaPembanding]}"`
+              : "";
             if (hasNameMismatchRes) {
               if (nameMismatchResolution === "valid") {
                 isCocok = true;
-                keterangan = "NIK ditemukan (Nama disetujui)";
+                keterangan = `NIK ditemukan (Nama disetujui${namaPembandingInfo})`;
               } else {
                 isCocok = false;
-                keterangan = "NIK ditemukan (Nama berbeda ditolak)";
+                keterangan = `NIK ditemukan (Nama berbeda ditolak${namaPembandingInfo})`;
               }
             } else {
               isCocok = true;
@@ -583,23 +594,19 @@ self.onmessage = async function (e) {
           else tidak += 1;
 
           // Tambahkan ke log mismatch nama di sheet excel jika nama berbeda
-          if (match && kolomNamaGabungan && kolomNamaPembanding) {
-            const namaA = normalisasiNama(row[kolomNamaGabungan]);
-            const namaB = normalisasiNama(match[kolomNamaPembanding]);
-            if (namaA && namaB && namaA !== namaB) {
-              // Status persetujuan
-              let statusPersetujuan = "Perlu Konfirmasi";
-              if (hasNameMismatchRes) {
-                statusPersetujuan = nameMismatchResolution === "valid" ? "Divalidkan (Disetujui)" : "Abaikan (Ditolak)";
-              }
-
-              mismatch.push({
-                NIK: row[kolomNikGabungan],
-                [`Nama (${state.gabunganFileName})`]: row[kolomNamaGabungan],
-                [`Nama (${state.pembandingFileName})`]: match[kolomNamaPembanding],
-                "Keputusan User": statusPersetujuan,
-              });
+          if (namaBerbeda) {
+            // Status persetujuan
+            let statusPersetujuan = "Perlu Konfirmasi";
+            if (hasNameMismatchRes) {
+              statusPersetujuan = nameMismatchResolution === "valid" ? "Divalidkan (Disetujui)" : "Abaikan (Ditolak)";
             }
+
+            mismatch.push({
+              NIK: row[kolomNikGabungan],
+              [`Nama (${state.gabunganFileName})`]: row[kolomNamaGabungan],
+              [`Nama (${state.pembandingFileName})`]: match[kolomNamaPembanding],
+              "Keputusan User": statusPersetujuan,
+            });
           }
 
           return {
