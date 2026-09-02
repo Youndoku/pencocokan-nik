@@ -11,6 +11,12 @@ const LABEL_NIK_RESOLUSI = {
   abaikan: "Diabaikan",
 };
 
+const KETERANGAN_TAB = {
+  name: "NIK yang sama ditemukan di kedua file, tapi nama di file gabungan dan file pembanding berbeda. Kolom Keputusan menunjukkan apakah baris ini dianggap cocok (divalidkan) atau tidak (diabaikan) saat proses berjalan.",
+  nik: "NIK di file gabungan tidak sesuai format standar (16 digit angka), lihat kolom Masalah untuk alasannya. Kolom Keputusan menunjukkan apakah baris ini tetap dicoba dicocokkan atau diabaikan.",
+  duplicate: "NIK ini muncul lebih dari sekali di file yang sama. Pencocokan hanya memakai kemunculan pertama per NIK — baris lain dengan NIK yang sama bisa jadi tercocokkan ke nama yang salah tanpa disadari.",
+};
+
 /**
  * Kartu review anomali di Dashboard per-sesi — read-only, murni untuk
  * cross-check manual setelah proses selesai. Menampilkan apa yang
@@ -132,6 +138,11 @@ export default function AnomalyReview({
           </button>
         )}
       </div>
+
+      {/* Keterangan */}
+      <p className="text-[11px] text-slate-500 leading-relaxed mb-3">
+        {KETERANGAN_TAB[activeTab]}
+      </p>
 
       {/* Search */}
       <div className="relative mb-3">
