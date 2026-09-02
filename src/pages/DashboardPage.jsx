@@ -6,6 +6,7 @@ import SummaryPanel from "../components/dashboard/SummaryPanel.jsx";
 import DistributionChart from "../components/dashboard/DistributionChart.jsx";
 import ExportPanel from "../components/dashboard/ExportPanel.jsx";
 import CrossProgramMatrix from "../components/dashboard/CrossProgramMatrix.jsx";
+import ProgramComparisonChart from "../components/dashboard/ProgramComparisonChart.jsx";
 import DuplicateRecipients from "../components/dashboard/DuplicateRecipients.jsx";
 import DataTable from "../components/dashboard/DataTable.jsx";
 import {
@@ -136,6 +137,18 @@ export default function DashboardPage() {
           />
         </div>
 
+        {hasCrossProgram && (
+          <div className="sm:col-span-2 lg:col-span-4">
+            <CrossProgramMatrix crossMatrix={crossMatrix} />
+          </div>
+        )}
+
+        {hasCrossProgram && (
+          <div className="sm:col-span-1 lg:col-span-2">
+            <ProgramComparisonChart ringkasanProgram={ringkasanProgram} />
+          </div>
+        )}
+
         <div
           className={
             hasCrossProgram
@@ -145,15 +158,6 @@ export default function DashboardPage() {
         >
           <DistributionChart chartKeterangan={chartKeterangan} />
         </div>
-
-        {hasCrossProgram && (
-          <div className="sm:col-span-1 lg:col-span-2">
-            <CrossProgramMatrix
-              crossMatrix={crossMatrix}
-              ringkasanProgram={ringkasanProgram}
-            />
-          </div>
-        )}
 
         {hasCrossProgram && (
           <div className="sm:col-span-2 lg:col-span-4">
