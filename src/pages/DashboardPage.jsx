@@ -8,6 +8,7 @@ import ExportPanel from "../components/dashboard/ExportPanel.jsx";
 import CrossProgramMatrix from "../components/dashboard/CrossProgramMatrix.jsx";
 import ProgramComparisonChart from "../components/dashboard/ProgramComparisonChart.jsx";
 import DuplicateRecipients from "../components/dashboard/DuplicateRecipients.jsx";
+import AnomalyReview from "../components/dashboard/AnomalyReview.jsx";
 import DataTable from "../components/dashboard/DataTable.jsx";
 import {
   Loader2,
@@ -167,6 +168,15 @@ export default function DashboardPage() {
             />
           </div>
         )}
+
+        <div className="sm:col-span-2 lg:col-span-4">
+          <AnomalyReview
+            mismatchLog={sesi.mismatchLog}
+            invalidNiks={sesi.invalidNiks}
+            invalidNikResolutions={sesi.invalidNikResolutions}
+            duplicateNiks={sesi.duplicateNiks}
+          />
+        </div>
 
         <div className="sm:col-span-2 lg:col-span-4">
           <DataTable
