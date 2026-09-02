@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useRiwayat } from "../hooks/useRiwayat.js";
 import SessionCard from "../components/riwayat/SessionCard.jsx";
 import StorageInfo from "../components/riwayat/StorageInfo.jsx";
+import NikSearchBox from "../components/riwayat/NikSearchBox.jsx";
 import {
   History,
   Search,
@@ -109,6 +110,8 @@ export default function RiwayatPage() {
         </div>
       ) : (
         <>
+          <NikSearchBox sesiTerbaru={sesiList[0] ?? null} />
+
           {/* Toolbar */}
           <div className="flex items-center gap-2 mb-4">
             <div className="relative flex-1">
