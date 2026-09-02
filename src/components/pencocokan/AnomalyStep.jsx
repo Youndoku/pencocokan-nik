@@ -1,11 +1,18 @@
 import { useState } from "react";
-import { AlertCircle, CheckCircle, HelpCircle, ShieldAlert, ChevronLeft, ChevronRight, Search, Check, Ban } from "lucide-react";
+import { AlertCircle, CheckCircle, HelpCircle, ShieldAlert, ChevronLeft, ChevronRight, Search, Check, Ban, Copy } from "lucide-react";
+
+const LABEL_FILE = {
+  gabungan: "Data Gabungan",
+  pembanding: "Data Pembanding",
+};
 
 /**
  * UI Langkah 3: Konfirmasi Anomali.
- * Memungkinkan user meninjau data anomali (Perbedaan Nama dan Format NIK Tidak Standar),
- * memvalidkan atau mengabaikan satu per satu atau secara massal,
- * sebelum menyelesaikan pencocokan.
+ * Memungkinkan user meninjau data anomali (Perbedaan Nama, Format NIK Tidak
+ * Standar, dan NIK Duplikat), memvalidkan atau mengabaikan satu per satu
+ * atau secara massal, sebelum menyelesaikan pencocokan. NIK Duplikat murni
+ * informasional (matching tetap memakai kemunculan pertama per NIK) — di
+ * sini cuma supaya user sadar ada NIK yang muncul lebih dari sekali.
  */
 export default function AnomalyStep({
   anomalies,
@@ -19,14 +26,18 @@ export default function AnomalyStep({
   onNext,
   loadingMatching,
 }) {
-  const { nameMismatches = [], invalidNiks = [] } = anomalies;
-  const [activeTab, setActiveTab] = useState(nameMismatches.length > 0 ? "name" : "nik");
+  const { nameMismatches = [], invalidNiks = [], duplicateNiks = [] } = anomalies;
+  const [activeTab, setActiveTab] = useState(
+    nameMismatches.length > 0 ? "name" : invalidNiks.length > 0 ? "nik" : "duplicate"
+  );
 
   // Search & Pagination States
   const [nameSearch, setNameSearch] = useState("");
   const [nikSearch, setNikSearch] = useState("");
+  const [duplicateSearch, setDuplicateSearch] = useState("");
   const [namePage, setNamePage] = useState(1);
   const [nikPage, setNikPage] = useState(1);
+  const [duplicatePage, setDuplicatePage] = useState(1);
   const itemsPerPage = 10;
 
   // Filtered lists
@@ -48,9 +59,19 @@ export default function AnomalyStep({
     );
   });
 
+  const filteredDuplicateNiks = duplicateNiks.filter((item) => {
+    const q = duplicateSearch.toLowerCase();
+    if (!q) return true;
+    return (
+      item.nik.toLowerCase().includes(q) ||
+      item.baris.some((b) => b.name.toLowerCase().includes(q))
+    );
+  });
+
   // Pages counts
   const namePagesCount = Math.max(1, Math.ceil(filteredNameMismatches.length / itemsPerPage));
   const nikPagesCount = Math.max(1, Math.ceil(filteredInvalidNiks.length / itemsPerPage));
+  const duplicatePagesCount = Math.max(1, Math.ceil(filteredDuplicateNiks.length / itemsPerPage));
 
   // Current page items
   const currentNameItems = filteredNameMismatches.slice(
@@ -60,6 +81,10 @@ export default function AnomalyStep({
   const currentNikItems = filteredInvalidNiks.slice(
     (nikPage - 1) * itemsPerPage,
     nikPage * itemsPerPage
+  );
+  const currentDuplicateItems = filteredDuplicateNiks.slice(
+    (duplicatePage - 1) * itemsPerPage,
+    duplicatePage * itemsPerPage
   );
 
   return (
@@ -117,6 +142,26 @@ export default function AnomalyStep({
               }`}
             >
               {invalidNiks.length}
+            </span>
+          </button>
+        )}
+
+        {duplicateNiks.length > 0 && (
+          <button
+            onClick={() => setActiveTab("duplicate")}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
+              activeTab === "duplicate"
+                ? "border-indigo-600 text-indigo-600 font-bold"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            NIK Duplikat
+            <span
+              className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                activeTab === "duplicate" ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-600"
+              }`}
+            >
+              {duplicateNiks.length}
             </span>
           </button>
         )}
@@ -360,6 +405,102 @@ export default function AnomalyStep({
                 <button
                   onClick={() => setNikPage(prev => Math.min(nikPagesCount, prev + 1))}
                   disabled={nikPage === nikPagesCount}
+                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <ChevronRight size={14} />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Tab 3: NIK Duplikat */}
+      {activeTab === "duplicate" && duplicateNiks.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-b-xl p-4 shadow-sm mb-5">
+          {/* Info */}
+          <div className="flex items-start gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 mb-4">
+            <Copy className="text-slate-400 shrink-0 mt-0.5" size={14} />
+            <p className="text-xs text-slate-600 leading-relaxed m-0">
+              NIK di bawah ini muncul lebih dari sekali di file yang sama.
+              Pencocokan hanya memakai <strong>kemunculan pertama</strong> per
+              NIK — baris lain dengan NIK yang sama bisa jadi tercocokkan ke
+              nama yang salah. Ini murni informasi, tidak perlu diputuskan;
+              cek datanya kalau perlu.
+            </p>
+          </div>
+
+          {/* Saring */}
+          <div className="relative mb-4">
+            <Search className="absolute left-2.5 top-2.5 text-slate-400" size={14} />
+            <input
+              type="text"
+              placeholder="Cari NIK atau Nama..."
+              value={duplicateSearch}
+              onChange={(e) => {
+                setDuplicateSearch(e.target.value);
+                setDuplicatePage(1);
+              }}
+              className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400"
+            />
+          </div>
+
+          {/* Table */}
+          <div className="overflow-x-auto border border-slate-100 rounded-lg mb-4">
+            <table className="w-full text-xs border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="text-left px-3 py-2 text-slate-500 font-semibold">NIK</th>
+                  <th className="text-left px-3 py-2 text-slate-500 font-semibold">File</th>
+                  <th className="text-center px-3 py-2 text-slate-500 font-semibold w-20">Jumlah</th>
+                  <th className="text-left px-3 py-2 text-slate-500 font-semibold">Baris & Nama</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentDuplicateItems.length > 0 ? (
+                  currentDuplicateItems.map((item) => (
+                    <tr key={item.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
+                      <td className="px-3 py-2.5 font-mono text-slate-600">{item.nik}</td>
+                      <td className="px-3 py-2.5 text-slate-600">{LABEL_FILE[item.file] || item.file}</td>
+                      <td className="px-3 py-2.5 text-center font-bold text-amber-700">{item.jumlah}</td>
+                      <td className="px-3 py-2.5 text-slate-700">
+                        {item.baris
+                          .map((b) => `Baris ${b.rowIdx + 2}${b.name ? ` (${b.name})` : ""}`)
+                          .join(", ")}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="text-center py-6 text-slate-400 italic">
+                      Tidak ada NIK duplikat yang cocok dengan kata kunci
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {duplicatePagesCount > 1 && (
+            <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+              <span className="text-xs text-slate-500">
+                Menampilkan {((duplicatePage - 1) * itemsPerPage) + 1} - {Math.min(duplicatePage * itemsPerPage, filteredDuplicateNiks.length)} dari {filteredDuplicateNiks.length} NIK
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setDuplicatePage(prev => Math.max(1, prev - 1))}
+                  disabled={duplicatePage === 1}
+                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <ChevronLeft size={14} />
+                </button>
+                <span className="text-xs font-semibold px-2">
+                  {duplicatePage} / {duplicatePagesCount}
+                </span>
+                <button
+                  onClick={() => setDuplicatePage(prev => Math.min(duplicatePagesCount, prev + 1))}
+                  disabled={duplicatePage === duplicatePagesCount}
                   className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <ChevronRight size={14} />

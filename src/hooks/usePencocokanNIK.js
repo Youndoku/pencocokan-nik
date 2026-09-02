@@ -35,7 +35,11 @@ export function usePencocokanNIK() {
   const [error, setError] = useState("");
 
   // -- Temuan Anomali & Resolusi dari User --
-  const [anomalies, setAnomalies] = useState({ nameMismatches: [], invalidNiks: [] });
+  const [anomalies, setAnomalies] = useState({
+    nameMismatches: [],
+    invalidNiks: [],
+    duplicateNiks: [],
+  });
   const [nameMismatchResolutions, setNameMismatchResolutions] = useState({}); // { [anomalyId]: 'valid' | 'abaikan' }
   const [invalidNikResolutions, setInvalidNikResolutions] = useState({}); // { [anomalyId]: 'valid' | 'abaikan' }
 
@@ -118,9 +122,9 @@ export function usePencocokanNIK() {
         }
 
         case "ANOMALIES_FOUND": {
-          const { nameMismatches, invalidNiks, hasAnomalies } = payload;
+          const { nameMismatches, invalidNiks, duplicateNiks, hasAnomalies } = payload;
           setLoadingMatching(false);
-          setAnomalies({ nameMismatches, invalidNiks });
+          setAnomalies({ nameMismatches, invalidNiks, duplicateNiks });
 
           // Inisialisasi resolusi default
           // Default: namaMismatch divalidkan/diajukan konfirmasi (user bisa ubah)
@@ -368,7 +372,7 @@ export function usePencocokanNIK() {
     setStatusTerpilih(new Set());
     setNamaKolomBaru("");
     setDaftarStatusUnik([]);
-    setAnomalies({ nameMismatches: [], invalidNiks: [] });
+    setAnomalies({ nameMismatches: [], invalidNiks: [], duplicateNiks: [] });
     setNameMismatchResolutions({});
     setInvalidNikResolutions({});
     setHasil(null);

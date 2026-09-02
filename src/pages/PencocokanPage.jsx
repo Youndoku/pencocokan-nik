@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { usePencocokanNIK } from "../hooks/usePencocokanNIK.js";
 import { useRiwayat } from "../hooks/useRiwayat.js";
 import { generateId } from "../utils/db.js";
-import { generatePdf } from "../utils/pdfExport.js";
 import StepDot from "../components/pencocokan/StepDot.jsx";
 import UploadStep from "../components/pencocokan/UploadStep.jsx";
 import ConfigureStep from "../components/pencocokan/ConfigureStep.jsx";
@@ -13,7 +12,7 @@ import { AlertTriangle, ShieldCheck } from "lucide-react";
 
 export default function PencocokanPage() {
   const navigate = useNavigate();
-  const { simpanSesi, ambilSesi } = useRiwayat();
+  const { simpanSesi } = useRiwayat();
   const [sesiId, setSesiId] = useState(null);
   const savedRef = useRef(false);
 
@@ -43,7 +42,9 @@ export default function PencocokanPage() {
   } = usePencocokanNIK();
 
   const hasAnomalies =
-    anomalies.nameMismatches.length > 0 || anomalies.invalidNiks.length > 0;
+    anomalies.nameMismatches.length > 0 ||
+    anomalies.invalidNiks.length > 0 ||
+    (anomalies.duplicateNiks?.length || 0) > 0;
 
   // Auto-save to IndexedDB when results are ready
   useEffect(() => {
@@ -228,13 +229,6 @@ export default function PencocokanPage() {
             sesiId={sesiId}
             onReset={handleReset}
             onDownload={handleDownload}
-            onSavePdf={() => {
-              if (sesiId) {
-                ambilSesi(sesiId).then((s) => {
-                  if (s) generatePdf(s);
-                });
-              }
-            }}
             hasSaved={savedRef.current}
           />
         )}

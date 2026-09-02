@@ -95,6 +95,34 @@ function deteksiNikTidakStandar(v) {
 }
 
 /**
+ * Deteksi NIK yang muncul lebih dari sekali dalam satu file.
+ * Berguna untuk transparansi: matching hanya memakai kemunculan pertama
+ * per NIK (lihat pembandingByNik di SCAN_ANOMALIES/FINALIZE_MATCHING),
+ * jadi baris duplikat lain bisa "tersasar" cocok dengan nama yang salah
+ * tanpa disadari user kalau tidak ditampilkan di sini.
+ */
+function deteksiNikDuplikat(rows, kolomNik, kolomNama) {
+  const grouped = new Map(); // nik -> [{ rowIdx, name }]
+  rows.forEach((row, idx) => {
+    const nik = normalisasiNIK(row[kolomNik]);
+    if (!nik) return;
+    if (!grouped.has(nik)) grouped.set(nik, []);
+    grouped.get(nik).push({
+      rowIdx: idx,
+      name: kolomNama ? row[kolomNama] || "" : "",
+    });
+  });
+
+  const duplikat = [];
+  grouped.forEach((baris, nik) => {
+    if (baris.length > 1) {
+      duplikat.push({ nik, jumlah: baris.length, baris });
+    }
+  });
+  return duplikat;
+}
+
+/**
  * Hitung lebar kolom otomatis untuk Excel.
  */
 function hitungLebarKolom(rows) {
@@ -414,14 +442,32 @@ self.onmessage = async function (e) {
           }
         });
 
-        state.anomalies = { nameMismatches, invalidNiks };
+        // 3. Deteksi NIK duplikat (di gabungan maupun pembanding)
+        const duplicateNiks = [
+          ...deteksiNikDuplikat(
+            state.parsedGabungan.rows,
+            kolomNikGabungan,
+            kolomNamaGabungan
+          ).map((d) => ({ ...d, id: `dupg-${d.nik}`, file: "gabungan" })),
+          ...deteksiNikDuplikat(
+            state.parsedPembanding.rows,
+            kolomNikPembanding,
+            kolomNamaPembanding
+          ).map((d) => ({ ...d, id: `dupp-${d.nik}`, file: "pembanding" })),
+        ];
+
+        state.anomalies = { nameMismatches, invalidNiks, duplicateNiks };
 
         self.postMessage({
           type: "ANOMALIES_FOUND",
           payload: {
             nameMismatches,
             invalidNiks,
-            hasAnomalies: nameMismatches.length > 0 || invalidNiks.length > 0,
+            duplicateNiks,
+            hasAnomalies:
+              nameMismatches.length > 0 ||
+              invalidNiks.length > 0 ||
+              duplicateNiks.length > 0,
           },
         });
         break;
