@@ -116,7 +116,7 @@ export default function Sidebar({ jumlahSesi = 0 }) {
       >
         <div
           className={`flex items-center h-14 px-4 ${
-            collapsed ? "justify-center" : "justify-between"
+            collapsed ? "flex-col justify-center gap-1.5 h-auto py-3" : "justify-between"
           }`}
         >
           <Link
@@ -131,6 +131,15 @@ export default function Sidebar({ jumlahSesi = 0 }) {
               <span className="font-bold text-sm tracking-tight">Pencocokan NIK</span>
             )}
           </Link>
+          <button
+            type="button"
+            onClick={() => setCollapsed((c) => !c)}
+            title={collapsed ? "Perluas sidebar" : "Ciutkan sidebar"}
+            aria-label={collapsed ? "Perluas sidebar" : "Ciutkan sidebar"}
+            className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-colors cursor-pointer"
+          >
+            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
         </div>
 
         <div className="flex-1 px-2 py-2 space-y-1">
@@ -165,21 +174,6 @@ export default function Sidebar({ jumlahSesi = 0 }) {
               )}
             </Link>
           ))}
-        </div>
-
-        <div className="p-2 border-t border-slate-100">
-          <button
-            type="button"
-            onClick={() => setCollapsed(!collapsed)}
-            title={collapsed ? "Perluas sidebar" : "Ciutkan sidebar"}
-            aria-label={collapsed ? "Perluas sidebar" : "Ciutkan sidebar"}
-            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-colors cursor-pointer ${
-              collapsed ? "justify-center" : ""
-            }`}
-          >
-            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-            {!collapsed && "Ciutkan"}
-          </button>
         </div>
       </aside>
     </>
