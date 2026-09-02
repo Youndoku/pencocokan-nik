@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Download,
-  FileText,
   BarChart3,
   RotateCcw,
   CheckCircle2,
@@ -34,7 +33,6 @@ export default function ResultsDashboard({
   sesiId,
   onReset,
   onDownload,
-  onSavePdf,
   hasSaved,
 }) {
   const navigate = useNavigate();
@@ -162,22 +160,13 @@ export default function ResultsDashboard({
 
       {/* Action Buttons */}
       <div className="space-y-2">
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={onDownload}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-semibold hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer"
-          >
-            <Download size={14} />
-            Unduh Excel
-          </button>
-          <button
-            onClick={onSavePdf}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-50 transition-colors cursor-pointer"
-          >
-            <FileText size={14} />
-            Unduh PDF
-          </button>
-        </div>
+        <button
+          onClick={onDownload}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-semibold hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer"
+        >
+          <Download size={14} />
+          Unduh Excel
+        </button>
 
         {sesiId && (
           <button
