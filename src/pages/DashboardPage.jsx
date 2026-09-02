@@ -2,13 +2,11 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useRiwayat } from "../hooks/useRiwayat.js";
 import { useDashboard } from "../hooks/useDashboard.js";
-import { generatePdf } from "../utils/pdfExport.js";
 import SummaryPanel from "../components/dashboard/SummaryPanel.jsx";
 import DistributionChart from "../components/dashboard/DistributionChart.jsx";
 import ExportPanel from "../components/dashboard/ExportPanel.jsx";
 import CrossProgramMatrix from "../components/dashboard/CrossProgramMatrix.jsx";
 import DuplicateRecipients from "../components/dashboard/DuplicateRecipients.jsx";
-import DynamicAnalysis from "../components/dashboard/DynamicAnalysis.jsx";
 import DataTable from "../components/dashboard/DataTable.jsx";
 import {
   Loader2,
@@ -93,6 +91,8 @@ export default function DashboardPage() {
     minute: "2-digit",
   });
 
+  const programColumns = [...(kolomProgram || []), sesi.namaKolomBaru].filter(Boolean);
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-6 animate-fade-in">
       {/* Back button */}
@@ -121,54 +121,54 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Dashboard Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Left column - Summary (spans 2) */}
-        <div className="lg:col-span-2 space-y-5">
+      {/* Bento Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="sm:col-span-2 lg:col-span-3">
           <SummaryPanel
             ringkasan={sesi.ringkasan}
             namaKolomBaru={sesi.namaKolomBaru}
           />
-          <DistributionChart chartKeterangan={chartKeterangan} />
-
-          {hasCrossProgram && (
-            <>
-              <CrossProgramMatrix
-                crossMatrix={crossMatrix}
-                ringkasanProgram={ringkasanProgram}
-              />
-              <DuplicateRecipients
-                penerimaGanda={penerimaGanda}
-                programColumns={[...(kolomProgram || []), sesi.namaKolomBaru].filter(Boolean)}
-              />
-            </>
-          )}
-
-          <DynamicAnalysis
-            dataHasil={sesi.dataHasil}
-            kolomTersedia={sesi.kolomTersedia}
-            kolomProgram={kolomProgram}
+        </div>
+        <div className="lg:col-span-1">
+          <ExportPanel
+            onDownloadExcel={handleDownloadExcel}
             namaKolomBaru={sesi.namaKolomBaru}
           />
+        </div>
 
+        <div
+          className={
+            hasCrossProgram
+              ? "sm:col-span-1 lg:col-span-2"
+              : "sm:col-span-2 lg:col-span-4"
+          }
+        >
+          <DistributionChart chartKeterangan={chartKeterangan} />
+        </div>
+
+        {hasCrossProgram && (
+          <div className="sm:col-span-1 lg:col-span-2">
+            <CrossProgramMatrix
+              crossMatrix={crossMatrix}
+              ringkasanProgram={ringkasanProgram}
+            />
+          </div>
+        )}
+
+        {hasCrossProgram && (
+          <div className="sm:col-span-2 lg:col-span-4">
+            <DuplicateRecipients
+              penerimaGanda={penerimaGanda}
+              programColumns={programColumns}
+            />
+          </div>
+        )}
+
+        <div className="sm:col-span-2 lg:col-span-4">
           <DataTable
             dataHasil={sesi.dataHasil}
             namaKolomBaru={sesi.namaKolomBaru}
             kolomTersedia={sesi.kolomTersedia}
-          />
-        </div>
-
-        {/* Right column - Export & info */}
-        <div className="space-y-5">
-          <ExportPanel
-            onDownloadExcel={handleDownloadExcel}
-            onDownloadPdf={() =>
-              generatePdf(sesi, {
-                penerimaGanda,
-                programColumns: [...(kolomProgram || []), sesi.namaKolomBaru].filter(Boolean),
-              })
-            }
-            namaKolomBaru={sesi.namaKolomBaru}
           />
         </div>
       </div>
