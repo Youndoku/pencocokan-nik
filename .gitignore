@@ -15,6 +15,9 @@ dist-ssr
 # Git worktrees (isolated dev workspaces)
 .worktrees/
 
+# Local test/sample output files (may contain real citizen data — never commit)
+contohfile/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
