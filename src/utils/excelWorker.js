@@ -510,6 +510,12 @@ self.onmessage = async function (e) {
         let cocok = 0;
         let tidak = 0;
         let dikecualikanStatus = 0;
+        // Kategori kasar untuk grafik distribusi — dipisah dari `keterangan`
+        // (yang dipakai di kolom tabel) karena `keterangan` bisa mengandung
+        // nama pembanding yang unik per orang; kalau dipakai buat
+        // pengelompokan, grafik jadi satu batang per orang alih-alih per
+        // kategori hasil.
+        const keteranganDistribusi = {};
 
         const totalRows = state.parsedGabungan.rows.length;
         const checkInterval = Math.max(1, Math.floor(totalRows / 10));
@@ -565,11 +571,14 @@ self.onmessage = async function (e) {
 
           let isCocok = false;
           let keterangan = "";
+          let kategoriDistribusi = "";
 
           if (!match) {
             keterangan = "NIK tidak ditemukan";
+            kategoriDistribusi = keterangan;
           } else if (useStatus && !statusValid) {
             keterangan = `NIK ditemukan, status "${statusLabel}" tidak dihitung`;
+            kategoriDistribusi = keterangan;
             dikecualikanStatus += 1;
           } else {
             // NIK cocok dan status valid, sekarang check perbedaan nama
@@ -580,18 +589,24 @@ self.onmessage = async function (e) {
               if (nameMismatchResolution === "valid") {
                 isCocok = true;
                 keterangan = `NIK ditemukan (Nama disetujui${namaPembandingInfo})`;
+                kategoriDistribusi = "NIK ditemukan (Nama disetujui)";
               } else {
                 isCocok = false;
                 keterangan = `NIK ditemukan (Nama berbeda ditolak${namaPembandingInfo})`;
+                kategoriDistribusi = "NIK ditemukan (Nama berbeda ditolak)";
               }
             } else {
               isCocok = true;
               keterangan = "NIK ditemukan";
+              kategoriDistribusi = keterangan;
             }
           }
 
           if (isCocok) cocok += 1;
           else tidak += 1;
+
+          keteranganDistribusi[kategoriDistribusi] =
+            (keteranganDistribusi[kategoriDistribusi] || 0) + 1;
 
           // Tambahkan ke log mismatch nama di sheet excel jika nama berbeda
           if (namaBerbeda) {
@@ -616,14 +631,8 @@ self.onmessage = async function (e) {
           };
         });
 
-        // Collect keterangan distribution & dataHasil
-        const keteranganDistribusi = {};
-        const dataHasil = [];
-        for (const row of finalRows) {
-          dataHasil.push({ ...row });
-          const ket = row["Keterangan"] || "Lainnya";
-          keteranganDistribusi[ket] = (keteranganDistribusi[ket] || 0) + 1;
-        }
+        // dataHasil — keteranganDistribusi sudah dihitung di loop atas
+        const dataHasil = finalRows.map((row) => ({ ...row }));
 
         // Collect mismatch log
         const mismatchLog = [];
