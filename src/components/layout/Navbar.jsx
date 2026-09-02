@@ -1,16 +1,22 @@
 import { Link, useLocation } from "react-router-dom";
-import { ShieldCheck, PlusCircle, History, Menu, X } from "lucide-react";
+import { ShieldCheck, BarChart3, Upload, History, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 export default function Navbar({ jumlahSesi = 0 }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (item) => {
+    if (item.matchPrefix && location.pathname.startsWith(item.matchPrefix)) {
+      return true;
+    }
+    return location.pathname === item.to;
+  };
 
   const navItems = [
-    { to: "/pencocokan", label: "Pencocokan Baru", icon: PlusCircle },
-    { to: "/riwayat", label: "Riwayat", icon: History, badge: jumlahSesi },
+    { to: "/", label: "Dashboard", icon: BarChart3, matchPrefix: "/dashboard" },
+    { to: "/pencocokan", label: "Proses Data", icon: Upload },
+    { to: "/riwayat", label: "Riwayat & Pencarian", icon: History, badge: jumlahSesi },
   ];
 
   return (
@@ -37,7 +43,7 @@ export default function Navbar({ jumlahSesi = 0 }) {
                 key={item.to}
                 to={item.to}
                 className={`relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                  isActive(item.to)
+                  isActive(item)
                     ? "bg-indigo-50 text-indigo-700"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
@@ -71,7 +77,7 @@ export default function Navbar({ jumlahSesi = 0 }) {
                 to={item.to}
                 onClick={() => setMenuOpen(false)}
                 className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  isActive(item.to)
+                  isActive(item)
                     ? "bg-indigo-50 text-indigo-700"
                     : "text-slate-600 hover:bg-slate-50"
                 }`}
