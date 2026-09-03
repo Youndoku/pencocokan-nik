@@ -89,7 +89,7 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
   return (
     <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold text-slate-800">Tabel Data</h3>
+        <h2 className="text-base font-semibold text-slate-800">Tabel Data</h2>
         <span className="text-xs text-slate-400">
           {filtered.length.toLocaleString("id-ID")} baris
         </span>

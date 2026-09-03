@@ -27,9 +27,9 @@ export default function DistributionChart({ chartKeterangan }) {
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
-      <h3 className="text-sm font-bold text-slate-800 mb-4">
+      <h2 className="text-base font-semibold text-slate-800 mb-4">
         Distribusi Keterangan
-      </h3>
+      </h2>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart

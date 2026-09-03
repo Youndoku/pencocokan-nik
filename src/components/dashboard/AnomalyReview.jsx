@@ -87,7 +87,7 @@ export default function AnomalyReview({
     <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
       <div className="flex items-center gap-2 mb-4">
         <ShieldAlert size={16} className="text-neutral-900" />
-        <h3 className="text-sm font-bold text-slate-800">Review Anomali</h3>
+        <h2 className="text-base font-semibold text-slate-800">Review Anomali</h2>
       </div>
 
       {/* Tabs */}
@@ -140,7 +140,7 @@ export default function AnomalyReview({
       </div>
 
       {/* Keterangan */}
-      <p className="text-xs text-slate-500 leading-relaxed mb-3">
+      <p className="text-sm text-slate-500 leading-relaxed mb-3">
         {KETERANGAN_TAB[activeTab]}
       </p>
 

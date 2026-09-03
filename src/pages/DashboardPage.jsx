@@ -108,10 +108,10 @@ export default function DashboardPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-slate-900 tracking-tight mb-1">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-1">
           Dashboard Pencocokan
         </h1>
-        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500">
+        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
           <span className="inline-flex items-center gap-1">
             <Calendar size={12} />
             {tanggalFormatted}
@@ -135,6 +135,9 @@ export default function DashboardPage() {
           <ExportPanel
             onDownloadExcel={handleDownloadExcel}
             namaKolomBaru={sesi.namaKolomBaru}
+            ringkasan={sesi.ringkasan}
+            excelBuffer={sesi.excelBuffer}
+            dataHasil={sesi.dataHasil}
           />
         </div>
 

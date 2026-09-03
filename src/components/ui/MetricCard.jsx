@@ -13,8 +13,8 @@ export default function MetricCard({ label, value, tone = "neutral" }) {
     <div
       className={`rounded-xl border p-4 transition-all duration-300 hover:shadow-md ${toneClasses[tone]}`}
     >
-      <p className="text-sm opacity-80 m-0">{label}</p>
-      <p className="text-2xl font-semibold mt-1 font-mono">{value}</p>
+      <p className="text-sm font-semibold opacity-80 m-0">{label}</p>
+      <p className="text-[32px] font-bold mt-1 leading-none">{value}</p>
     </div>
   );
 }

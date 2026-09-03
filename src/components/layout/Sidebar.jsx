@@ -116,13 +116,19 @@ export default function Sidebar({ jumlahSesi = 0 }) {
       >
         <div
           className={`flex items-center h-14 px-4 ${
-            collapsed ? "flex-col justify-center gap-1.5 h-auto py-3" : "justify-between"
+            collapsed ? "justify-center" : "justify-between"
           }`}
         >
           <Link
             to="/"
+            onClick={(e) => {
+              if (collapsed) {
+                e.preventDefault();
+                setCollapsed(false);
+              }
+            }}
             className="flex items-center gap-2.5 text-slate-800 hover:text-primary-dark transition-colors"
-            title="Pencocokan NIK"
+            title={collapsed ? "Perluas sidebar" : "Pencocokan NIK"}
           >
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary flex items-center justify-center shadow-sm shrink-0">
               <ShieldCheck size={16} className="text-white" />
@@ -131,15 +137,17 @@ export default function Sidebar({ jumlahSesi = 0 }) {
               <span className="font-bold text-sm tracking-tight">Pencocokan NIK</span>
             )}
           </Link>
-          <button
-            type="button"
-            onClick={() => setCollapsed((c) => !c)}
-            title={collapsed ? "Perluas sidebar" : "Ciutkan sidebar"}
-            aria-label={collapsed ? "Perluas sidebar" : "Ciutkan sidebar"}
-            className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-colors cursor-pointer"
-          >
-            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-          </button>
+          {!collapsed && (
+            <button
+              type="button"
+              onClick={() => setCollapsed(true)}
+              title="Ciutkan sidebar"
+              aria-label="Ciutkan sidebar"
+              className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-colors cursor-pointer shrink-0"
+            >
+              <ChevronLeft size={16} />
+            </button>
+          )}
         </div>
 
         <div className="flex-1 px-2 py-2 space-y-1">

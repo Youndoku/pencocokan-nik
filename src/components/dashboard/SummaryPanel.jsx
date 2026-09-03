@@ -23,8 +23,8 @@ export default function SummaryPanel({ ringkasan, namaKolomBaru }) {
   ];
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+    <div className="space-y-4 h-full flex flex-col">
+      <h2 className="text-base font-semibold text-slate-800 flex items-center gap-2 min-h-[24px]">
         Ringkasan Pencocokan
         {namaKolomBaru && (
           <span className="px-2 py-0.5 bg-primary/10 text-primary-dark rounded-lg text-xs font-semibold">
@@ -33,8 +33,8 @@ export default function SummaryPanel({ ringkasan, namaKolomBaru }) {
         )}
       </h2>
 
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
-        <div className="flex items-center gap-6">
+      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5 flex-1">
+        <div className="flex items-center gap-6 h-full">
           {/* Donut */}
           <div className="relative w-36 h-36 shrink-0">
             <ResponsiveContainer width="100%" height="100%">
@@ -63,11 +63,11 @@ export default function SummaryPanel({ ringkasan, namaKolomBaru }) {
                 />
               </PieChart>
             </ResponsiveContainer>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-bold text-slate-900">
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-2">
+              <span className="text-[26px] leading-none font-bold text-slate-900 tracking-tight">
                 {persentase}%
               </span>
-              <span className="text-xs text-slate-400">Cocok</span>
+              <span className="text-[11px] font-semibold mt-1 text-slate-400">Cocok</span>
             </div>
           </div>
 
