@@ -90,13 +90,13 @@ export default function AnomalyStep({
   return (
     <div className="animate-fade-in">
       {/* Intro Alert */}
-      <div className="flex items-start gap-3 bg-amber-50/70 border border-amber-200 rounded-xl p-4 mb-4 shadow-xs">
-        <ShieldAlert className="text-amber-600 shrink-0 mt-0.5" size={18} />
+      <div className="flex items-start gap-3 bg-accent-gold/15 border border-accent-gold/40 rounded-xl p-4 mb-4 shadow-xs">
+        <ShieldAlert className="text-accent-gold shrink-0 mt-0.5" size={18} />
         <div>
-          <h4 className="text-sm font-semibold text-amber-900 m-0 mb-1">
+          <h4 className="text-sm font-semibold text-neutral-900 m-0 mb-1">
             Konfirmasi Temuan Anomali Data
           </h4>
-          <p className="text-xs text-amber-800 m-0 leading-relaxed">
+          <p className="text-xs text-neutral-900 m-0 leading-relaxed">
             Ditemukan data yang tidak sinkron. Mohon pilih apakah ingin
             <strong> memvalidkan </strong> data tersebut (dianggap cocok) atau
             <strong> mengabaikan </strong> (dianggap tidak cocok) sebelum menyimpan hasil.
@@ -111,14 +111,14 @@ export default function AnomalyStep({
             onClick={() => setActiveTab("name")}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "name"
-                ? "border-indigo-600 text-indigo-600 font-bold"
+                ? "border-primary text-primary font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
             Perbedaan Nama
             <span
               className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                activeTab === "name" ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-600"
+                activeTab === "name" ? "bg-primary-light text-primary-dark" : "bg-slate-100 text-slate-600"
               }`}
             >
               {nameMismatches.length}
@@ -131,14 +131,14 @@ export default function AnomalyStep({
             onClick={() => setActiveTab("nik")}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "nik"
-                ? "border-indigo-600 text-indigo-600 font-bold"
+                ? "border-primary text-primary font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
             Format NIK Tidak Standar
             <span
               className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                activeTab === "nik" ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-600"
+                activeTab === "nik" ? "bg-primary-light text-primary-dark" : "bg-slate-100 text-slate-600"
               }`}
             >
               {invalidNiks.length}
@@ -151,14 +151,14 @@ export default function AnomalyStep({
             onClick={() => setActiveTab("duplicate")}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "duplicate"
-                ? "border-indigo-600 text-indigo-600 font-bold"
+                ? "border-primary text-primary font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
             NIK Duplikat
             <span
               className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                activeTab === "duplicate" ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-600"
+                activeTab === "duplicate" ? "bg-primary-light text-primary-dark" : "bg-slate-100 text-slate-600"
               }`}
             >
               {duplicateNiks.length}
@@ -182,14 +182,14 @@ export default function AnomalyStep({
                   setNameSearch(e.target.value);
                   setNamePage(1);
                 }}
-                className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400"
+                className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
               />
             </div>
 
             <div className="flex gap-2 shrink-0">
               <button
                 onClick={() => onBulkNameResolution("valid")}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-semibold hover:bg-emerald-100 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-primary-light bg-primary-light text-primary-dark text-xs font-semibold hover:bg-primary-light/70 transition-colors cursor-pointer"
               >
                 <Check size={13} /> Validkan Semua
               </button>
@@ -228,7 +228,7 @@ export default function AnomalyStep({
                               onClick={() => onSetNameResolution(item.id, "valid")}
                               className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
                                 res === "valid"
-                                  ? "bg-emerald-500 text-white shadow-xs"
+                                  ? "bg-primary text-white shadow-xs"
                                   : "text-slate-600 hover:text-slate-800"
                               }`}
                             >
@@ -305,14 +305,14 @@ export default function AnomalyStep({
                   setNikSearch(e.target.value);
                   setNikPage(1);
                 }}
-                className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400"
+                className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
               />
             </div>
 
             <div className="flex gap-2 shrink-0">
               <button
                 onClick={() => onBulkNikResolution("valid")}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-semibold hover:bg-indigo-100 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-primary-light bg-primary-light text-primary-dark text-xs font-semibold hover:bg-primary-light/70 transition-colors cursor-pointer"
               >
                 <Check size={13} /> Tetap Cocokkan
               </button>
@@ -333,7 +333,7 @@ export default function AnomalyStep({
                   <th className="text-left px-3 py-2 text-slate-500 font-semibold w-12">Baris</th>
                   <th className="text-left px-3 py-2 text-slate-500 font-semibold">NIK di File</th>
                   <th className="text-left px-3 py-2 text-slate-500 font-semibold">Nama</th>
-                  <th className="text-left px-3 py-2 text-slate-500 font-semibold text-amber-700">Masalah</th>
+                  <th className="text-left px-3 py-2 text-slate-500 font-semibold text-neutral-900">Masalah</th>
                   <th className="text-center px-3 py-2 text-slate-500 font-semibold w-40">Keputusan</th>
                 </tr>
               </thead>
@@ -346,14 +346,14 @@ export default function AnomalyStep({
                         <td className="px-3 py-2.5 font-mono text-slate-400">{item.rowIdx + 2}</td>
                         <td className="px-3 py-2.5 font-mono text-slate-600 font-semibold">{item.nikRaw || "(kosong)"}</td>
                         <td className="px-3 py-2.5 text-slate-800 font-medium">{item.name}</td>
-                        <td className="px-3 py-2.5 text-amber-700 font-medium">{item.reason}</td>
+                        <td className="px-3 py-2.5 text-neutral-900 font-medium">{item.reason}</td>
                         <td className="px-3 py-2 text-center">
                           <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50">
                             <button
                               onClick={() => onSetNikResolution(item.id, "valid")}
                               className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
                                 res === "valid"
-                                  ? "bg-indigo-600 text-white shadow-xs"
+                                  ? "bg-primary text-white shadow-xs"
                                   : "text-slate-600 hover:text-slate-800"
                               }`}
                             >
@@ -441,7 +441,7 @@ export default function AnomalyStep({
                 setDuplicateSearch(e.target.value);
                 setDuplicatePage(1);
               }}
-              className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400"
+              className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
             />
           </div>
 
@@ -462,7 +462,7 @@ export default function AnomalyStep({
                     <tr key={item.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
                       <td className="px-3 py-2.5 font-mono text-slate-600">{item.nik}</td>
                       <td className="px-3 py-2.5 text-slate-600">{LABEL_FILE[item.file] || item.file}</td>
-                      <td className="px-3 py-2.5 text-center font-bold text-amber-700">{item.jumlah}</td>
+                      <td className="px-3 py-2.5 text-center font-bold text-neutral-900">{item.jumlah}</td>
                       <td className="px-3 py-2.5 text-slate-700">
                         {item.baris
                           .map((b) => `Baris ${b.rowIdx + 2}${b.name ? ` (${b.name})` : ""}`)
@@ -521,7 +521,7 @@ export default function AnomalyStep({
         </button>
         <button
           onClick={onNext}
-          className="flex-1 h-11 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 transition-all duration-300 active:scale-[0.98] cursor-pointer"
+          className="flex-1 h-11 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-dark hover:shadow-lg hover:shadow-primary-light transition-all duration-300 active:scale-[0.98] cursor-pointer"
         >
           Terapkan & Selesaikan
         </button>

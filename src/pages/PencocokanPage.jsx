@@ -126,7 +126,7 @@ export default function PencocokanPage() {
       <div className="w-full max-w-xl">
         {/* Header */}
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 mb-4 shadow-sm">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary-light text-primary-dark mb-4 shadow-sm">
             <ShieldCheck size={24} />
           </div>
           <h1 className="text-xl font-bold m-0 mb-1.5 text-slate-900 tracking-tight">
@@ -155,7 +155,7 @@ export default function PencocokanPage() {
 
         {/* Error */}
         {error && (
-          <div className="flex items-start gap-2 bg-red-50 text-red-700 border border-red-200 rounded-xl px-4 py-3 text-sm mb-4 animate-fade-in font-medium">
+          <div className="flex items-start gap-2 bg-accent-red/10 text-accent-red border border-accent-red/30 rounded-xl px-4 py-3 text-sm mb-4 animate-fade-in font-medium">
             <AlertTriangle size={16} className="shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>

@@ -61,7 +61,7 @@ export default function ResultsDashboard({
     <div className="space-y-5 animate-fade-in">
       {/* Success Banner */}
       <div className="text-center py-3">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-light border border-primary-light text-primary-dark text-xs font-semibold">
           <CheckCircle2 size={14} />
           Pencocokan selesai — Data tersimpan otomatis
         </div>
@@ -151,7 +151,7 @@ export default function ResultsDashboard({
 
       {/* Mismatch summary */}
       {totalMismatch > 0 && (
-        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 text-xs text-amber-800 font-medium">
+        <div className="flex items-center gap-2 bg-accent-gold/15 border border-accent-gold/40 rounded-xl px-3 py-2.5 text-xs text-neutral-900 font-medium">
           <Users size={14} className="shrink-0" />
           {totalMismatch.toLocaleString("id-ID")} perbedaan nama terdeteksi
           (lihat detail di Dashboard Lengkap)
@@ -162,7 +162,7 @@ export default function ResultsDashboard({
       <div className="space-y-2">
         <button
           onClick={onDownload}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-semibold hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-xs font-semibold hover:bg-primary-dark transition-colors shadow-sm cursor-pointer"
         >
           <Download size={14} />
           Unduh Excel
@@ -171,7 +171,7 @@ export default function ResultsDashboard({
         {sesiId && (
           <button
             onClick={() => navigate(`/dashboard/${sesiId}`)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl text-xs font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all shadow-sm cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-xs font-semibold hover:from-primary-dark hover:to-secondary-dark transition-all shadow-sm cursor-pointer"
           >
             <BarChart3 size={14} />
             Lihat Dashboard Lengkap
