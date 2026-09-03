@@ -6,6 +6,25 @@
 @theme {
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     sans-serif;
+
+  /* Palet resmi Kota Batu / Diskominfo — lihat
+     docs/superpowers/specs/2026-09-03-brand-color-rebrand-design.md */
+  --color-primary: #0DA44F;
+  --color-primary-dark: #0B7A3B;
+  --color-primary-light: #C0D8CC;
+
+  --color-secondary: #4454AA;
+  --color-secondary-dark: #3A4164;
+  --color-secondary-light: #DCE1F1;
+
+  --color-accent-sky: #09ABE7;
+  --color-accent-gold: #DBEC20;
+  --color-accent-red: #D91F2B;
+
+  --color-neutral-900: #191D1C;
+  --color-neutral-100: #F4F4F4;
+  --color-neutral-white: #FFFFFF;
+  --color-neutral-400: #B0B0B0;
 }
 
 /* ── Animasi global ── */
