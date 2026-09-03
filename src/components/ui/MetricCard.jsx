@@ -5,9 +5,9 @@
 export default function MetricCard({ label, value, tone = "neutral" }) {
   const toneClasses = {
     neutral: "bg-slate-50 text-slate-900 border-slate-200",
-    success: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    danger: "bg-red-50 text-red-700 border-red-200",
-    warning: "bg-amber-50 text-amber-700 border-amber-200",
+    success: "bg-primary-light text-primary-dark border-primary-light",
+    danger: "bg-accent-red/10 text-accent-red border-accent-red/30",
+    warning: "bg-accent-gold/15 text-neutral-900 border-accent-gold/40",
   };
   return (
     <div

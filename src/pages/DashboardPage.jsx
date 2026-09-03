@@ -65,7 +65,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 size={24} className="animate-spin text-indigo-400" />
+        <Loader2 size={24} className="animate-spin text-primary" />
       </div>
     );
   }
@@ -76,7 +76,7 @@ export default function DashboardPage() {
         <p className="text-sm text-slate-500">Sesi tidak ditemukan</p>
         <button
           onClick={() => navigate("/riwayat")}
-          className="text-xs text-indigo-600 hover:text-indigo-700 font-semibold cursor-pointer"
+          className="text-xs text-primary hover:text-primary-dark font-semibold cursor-pointer"
         >
           ← Kembali ke Riwayat
         </button>

@@ -110,7 +110,7 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all"
+            className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light transition-all"
           />
         </div>
 
@@ -129,7 +129,7 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
               }}
               className={`px-3 py-1.5 text-[10px] font-semibold transition-colors cursor-pointer ${
                 statusFilter === f.val
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-primary text-white"
                   : "bg-white text-slate-500 hover:bg-slate-50"
               }`}
             >
@@ -161,7 +161,7 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
                   <span className="inline-flex items-center gap-1">
                     {col}
                     {sortCol === col && (
-                      <ArrowUpDown size={10} className="text-indigo-500" />
+                      <ArrowUpDown size={10} className="text-primary" />
                     )}
                   </span>
                 </th>
@@ -188,8 +188,8 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
                       } ${
                         isResult
                           ? Number(val) === 1
-                            ? "text-emerald-600 font-bold"
-                            : "text-red-500 font-bold"
+                            ? "text-primary font-bold"
+                            : "text-accent-red font-bold"
                           : "text-slate-700"
                       }`}
                     >

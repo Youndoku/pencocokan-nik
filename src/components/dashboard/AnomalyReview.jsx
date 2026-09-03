@@ -86,7 +86,7 @@ export default function AnomalyReview({
   return (
     <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
       <div className="flex items-center gap-2 mb-4">
-        <ShieldAlert size={16} className="text-amber-500" />
+        <ShieldAlert size={16} className="text-accent-gold" />
         <h3 className="text-sm font-bold text-slate-800">Review Anomali</h3>
       </div>
 
@@ -97,7 +97,7 @@ export default function AnomalyReview({
             onClick={() => setTabAndReset("name")}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "name"
-                ? "border-indigo-600 text-indigo-600 font-bold"
+                ? "border-primary text-primary font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
@@ -112,7 +112,7 @@ export default function AnomalyReview({
             onClick={() => setTabAndReset("nik")}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "nik"
-                ? "border-indigo-600 text-indigo-600 font-bold"
+                ? "border-primary text-primary font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
@@ -127,7 +127,7 @@ export default function AnomalyReview({
             onClick={() => setTabAndReset("duplicate")}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "duplicate"
-                ? "border-indigo-600 text-indigo-600 font-bold"
+                ? "border-primary text-primary font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
@@ -155,7 +155,7 @@ export default function AnomalyReview({
             setSearch(e.target.value);
             setPage(1);
           }}
-          className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400"
+          className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
         />
       </div>
 
@@ -206,7 +206,7 @@ export default function AnomalyReview({
                   <th className="text-left px-3 py-2 text-slate-500 font-semibold w-12">Baris</th>
                   <th className="text-left px-3 py-2 text-slate-500 font-semibold">NIK di File</th>
                   <th className="text-left px-3 py-2 text-slate-500 font-semibold">Nama</th>
-                  <th className="text-left px-3 py-2 text-slate-500 font-semibold text-amber-700">Masalah</th>
+                  <th className="text-left px-3 py-2 text-slate-500 font-semibold text-neutral-900">Masalah</th>
                   <th className="text-left px-3 py-2 text-slate-500 font-semibold">Keputusan</th>
                 </tr>
               </thead>
@@ -219,7 +219,7 @@ export default function AnomalyReview({
                         {item.nikRaw || "(kosong)"}
                       </td>
                       <td className="px-3 py-2.5 text-slate-800 font-medium">{item.name}</td>
-                      <td className="px-3 py-2.5 text-amber-700 font-medium">{item.reason}</td>
+                      <td className="px-3 py-2.5 text-neutral-900 font-medium">{item.reason}</td>
                       <td className="px-3 py-2.5 text-slate-600">
                         {LABEL_NIK_RESOLUSI[invalidNikResolutions[item.id]] || "Tetap Dicocokkan"}
                       </td>
@@ -252,7 +252,7 @@ export default function AnomalyReview({
                     <tr key={item.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
                       <td className="px-3 py-2.5 font-mono text-slate-600">{item.nik}</td>
                       <td className="px-3 py-2.5 text-slate-600">{LABEL_FILE[item.file] || item.file}</td>
-                      <td className="px-3 py-2.5 text-center font-bold text-amber-700">{item.jumlah}</td>
+                      <td className="px-3 py-2.5 text-center font-bold text-neutral-900">{item.jumlah}</td>
                       <td className="px-3 py-2.5 text-slate-700">
                         {item.baris
                           .map((b) => `Baris ${b.rowIdx + 2}${b.name ? ` (${b.name})` : ""}`)
