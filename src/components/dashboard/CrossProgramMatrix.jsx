@@ -11,7 +11,7 @@ export default function CrossProgramMatrix({ crossMatrix }) {
 
       {/* Matrix Table */}
       <div className="overflow-x-auto">
-        <table className="w-full text-xs">
+        <table className="w-full text-sm">
           <thead>
             <tr>
               <th className="text-left py-2 px-2 text-slate-500 font-medium"></th>
@@ -66,7 +66,7 @@ export default function CrossProgramMatrix({ crossMatrix }) {
           </tbody>
         </table>
       </div>
-      <p className="text-[10px] text-slate-400 italic">
+      <p className="text-xs text-slate-400 italic">
         Angka menunjukkan jumlah orang yang cocok di kedua program
       </p>
     </div>

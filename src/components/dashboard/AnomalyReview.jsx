@@ -95,14 +95,14 @@ export default function AnomalyReview({
         {mismatchLog.length > 0 && (
           <button
             onClick={() => setTabAndReset("name")}
-            className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "name"
                 ? "border-primary text-primary-dark font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
             Perbedaan Nama
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600">
+            <span className="text-xs px-1.5 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600">
               {mismatchLog.length}
             </span>
           </button>
@@ -110,14 +110,14 @@ export default function AnomalyReview({
         {invalidNiks.length > 0 && (
           <button
             onClick={() => setTabAndReset("nik")}
-            className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "nik"
                 ? "border-primary text-primary-dark font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
             NIK Tidak Valid
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600">
+            <span className="text-xs px-1.5 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600">
               {invalidNiks.length}
             </span>
           </button>
@@ -125,14 +125,14 @@ export default function AnomalyReview({
         {duplicateNiks.length > 0 && (
           <button
             onClick={() => setTabAndReset("duplicate")}
-            className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "duplicate"
                 ? "border-primary text-primary-dark font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
             NIK Duplikat
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600">
+            <span className="text-xs px-1.5 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600">
               {duplicateNiks.length}
             </span>
           </button>
@@ -140,7 +140,7 @@ export default function AnomalyReview({
       </div>
 
       {/* Keterangan */}
-      <p className="text-[11px] text-slate-500 leading-relaxed mb-3">
+      <p className="text-xs text-slate-500 leading-relaxed mb-3">
         {KETERANGAN_TAB[activeTab]}
       </p>
 
@@ -155,13 +155,13 @@ export default function AnomalyReview({
             setSearch(e.target.value);
             setPage(1);
           }}
-          className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
+          className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
         />
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto border border-slate-100 rounded-lg mb-3">
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-sm border-collapse">
           {activeTab === "name" && (
             <>
               <thead>
@@ -276,7 +276,7 @@ export default function AnomalyReview({
       {/* Pagination */}
       {pagesCount > 1 && (
         <div className="flex items-center justify-between pt-1">
-          <span className="text-[11px] text-slate-500">
+          <span className="text-xs text-slate-500">
             {((page - 1) * itemsPerPage) + 1} - {Math.min(page * itemsPerPage, activeList.length)} dari {activeList.length}
           </span>
           <div className="flex items-center gap-1">
@@ -287,7 +287,7 @@ export default function AnomalyReview({
             >
               <ChevronLeft size={14} />
             </button>
-            <span className="text-xs font-semibold px-2">
+            <span className="text-sm font-semibold px-2">
               {page} / {pagesCount}
             </span>
             <button

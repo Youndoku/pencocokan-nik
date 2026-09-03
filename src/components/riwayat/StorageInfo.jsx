@@ -10,7 +10,7 @@ function formatBytes(bytes) {
 
 export default function StorageInfo({ totalUkuran, jumlahSesi }) {
   return (
-    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl text-xs text-slate-500">
+    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl text-sm text-slate-500">
       <HardDrive size={13} className="shrink-0" />
       <span>
         {formatBytes(totalUkuran)} digunakan · {jumlahSesi} sesi tersimpan

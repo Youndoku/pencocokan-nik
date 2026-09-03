@@ -35,7 +35,7 @@ export default function NikSearchBox({ sesiTerbaru }) {
   if (!dataHasil) {
     return (
       <div className="bg-white border border-slate-200 rounded-2xl p-4 mb-4 shadow-sm">
-        <p className="text-xs text-slate-400">
+        <p className="text-sm text-slate-400">
           Data tidak tersedia untuk pencarian NIK.
         </p>
       </div>
@@ -44,7 +44,7 @@ export default function NikSearchBox({ sesiTerbaru }) {
 
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-4 mb-4 shadow-sm">
-      <p className="text-xs font-semibold text-slate-700 mb-2 flex items-center gap-1.5">
+      <p className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-1.5">
         <UserCheck size={14} className="text-primary" />
         Cari NIK di data terbaru
       </p>
@@ -59,12 +59,12 @@ export default function NikSearchBox({ sesiTerbaru }) {
           placeholder="Ketik NIK..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-all"
+          className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-all"
         />
       </div>
 
       {hasil && hasil.length === 0 && (
-        <p className="text-xs text-slate-400 px-1">
+        <p className="text-sm text-slate-400 px-1">
           NIK tidak ditemukan di data terbaru.
         </p>
       )}
@@ -76,10 +76,10 @@ export default function NikSearchBox({ sesiTerbaru }) {
               key={i}
               className="border border-slate-100 rounded-xl p-3 bg-slate-50/60"
             >
-              <p className="text-xs font-semibold text-slate-800">
+              <p className="text-sm font-semibold text-slate-800">
                 {String(row[kolomNama] ?? "-")}
               </p>
-              <p className="text-[11px] text-slate-500 mb-2">
+              <p className="text-xs text-slate-500 mb-2">
                 {String(row[kolomNik] ?? "-")}
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -88,7 +88,7 @@ export default function NikSearchBox({ sesiTerbaru }) {
                   return (
                     <span
                       key={col}
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
                         cocok
                           ? "bg-primary/10 text-primary-dark"
                           : "bg-accent-red/10 text-accent-red"
@@ -105,7 +105,7 @@ export default function NikSearchBox({ sesiTerbaru }) {
       )}
 
       {hasil && hasil.length > 5 && (
-        <p className="text-[11px] text-slate-400 px-1 mt-2">
+        <p className="text-xs text-slate-400 px-1 mt-2">
           Menampilkan 5 dari {hasil.length} hasil. Ketik NIK lebih lengkap untuk mempersempit.
         </p>
       )}

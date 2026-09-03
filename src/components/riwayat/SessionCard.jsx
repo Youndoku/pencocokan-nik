@@ -57,7 +57,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
           {/* Header */}
           <div className="flex items-center gap-2 mb-1.5">
             <Calendar size={12} className="text-slate-400" />
-            <span className="text-[10px] text-slate-400 font-medium">
+            <span className="text-xs text-slate-400 font-medium">
               {tanggalFormatted}
             </span>
           </div>
@@ -66,13 +66,13 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
           <div className="space-y-1 mb-3">
             <div className="flex items-center gap-1.5">
               <FileSpreadsheet size={12} className="text-slate-400 shrink-0" />
-              <span className="text-xs font-medium text-slate-700 truncate">
+              <span className="text-sm font-medium text-slate-700 truncate">
                 {namaGabungan}
               </span>
             </div>
             <div className="flex items-center gap-1.5">
               <ArrowRightLeft size={12} className="text-primary shrink-0" />
-              <span className="text-xs text-slate-500 truncate">
+              <span className="text-sm text-slate-500 truncate">
                 vs {namaPembanding}
               </span>
             </div>
@@ -94,13 +94,13 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
                 }}
               />
             </div>
-            <span className="text-xs font-bold text-slate-700 w-12 text-right">
+            <span className="text-sm font-bold text-slate-700 w-12 text-right">
               {persen}%
             </span>
           </div>
 
           {/* Stats row */}
-          <div className="flex gap-3 mt-2 text-[10px] text-slate-500">
+          <div className="flex gap-3 mt-2 text-xs text-slate-500">
             <span>
               <span className="font-bold text-slate-700">
                 {(ringkasan?.total || 0).toLocaleString("id-ID")}
@@ -127,7 +127,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
       <div className="flex gap-1.5 mt-3 pt-3 border-t border-slate-100">
         <button
           onClick={() => navigate(`/dashboard/${id}`)}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-primary/10 text-primary-dark rounded-xl text-[11px] font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-primary/10 text-primary-dark rounded-xl text-xs font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
         >
           <BarChart3 size={13} />
           Dashboard
@@ -135,7 +135,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
         <button
           onClick={handleDownload}
           disabled={!sesi.excelBuffer}
-          className="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-50 text-slate-600 rounded-xl text-[11px] font-medium hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-40"
+          className="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-50 text-slate-600 rounded-xl text-xs font-medium hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-40"
         >
           <Download size={13} />
         </button>
@@ -144,7 +144,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
             e.stopPropagation();
             onHapus(id);
           }}
-          className="flex items-center justify-center gap-1.5 px-3 py-2 text-accent-red hover:bg-accent-red/15 hover:text-accent-red rounded-xl text-[11px] font-medium transition-colors cursor-pointer"
+          className="flex items-center justify-center gap-1.5 px-3 py-2 text-accent-red hover:bg-accent-red/15 hover:text-accent-red rounded-xl text-xs font-medium transition-colors cursor-pointer"
         >
           <Trash2 size={13} />
         </button>

@@ -90,7 +90,7 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
     <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-slate-800">Tabel Data</h3>
-        <span className="text-[10px] text-slate-400">
+        <span className="text-xs text-slate-400">
           {filtered.length.toLocaleString("id-ID")} baris
         </span>
       </div>
@@ -110,7 +110,7 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light transition-all"
+            className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light transition-all"
           />
         </div>
 
@@ -127,7 +127,7 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
                 setStatusFilter(f.val);
                 setPage(1);
               }}
-              className={`px-3 py-1.5 text-[10px] font-semibold transition-colors cursor-pointer ${
+              className={`px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
                 statusFilter === f.val
                   ? "bg-primary-dark text-white"
                   : "bg-white text-slate-500 hover:bg-slate-50"
@@ -140,7 +140,7 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
 
         <button
           onClick={handleExportFiltered}
-          className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-[10px] text-slate-600 font-medium hover:bg-slate-100 transition-colors cursor-pointer"
+          className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 font-medium hover:bg-slate-100 transition-colors cursor-pointer"
         >
           <Download size={12} />
           Export
@@ -149,7 +149,7 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
 
       {/* Table */}
       <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
-        <table className="w-full text-xs">
+        <table className="w-full text-sm">
           <thead className="sticky top-0 bg-white">
             <tr className="border-b border-slate-200">
               {displayColumns.map((col) => (
@@ -210,7 +210,7 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
-          <span className="text-[10px] text-slate-400">
+          <span className="text-xs text-slate-400">
             Halaman {page} dari {totalPages}
           </span>
           <div className="flex gap-1">

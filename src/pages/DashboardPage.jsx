@@ -76,7 +76,7 @@ export default function DashboardPage() {
         <p className="text-sm text-slate-500">Sesi tidak ditemukan</p>
         <button
           onClick={() => navigate("/riwayat")}
-          className="text-xs text-primary-dark font-semibold cursor-pointer"
+          className="text-sm text-primary-dark font-semibold cursor-pointer"
         >
           ← Kembali ke Riwayat
         </button>
@@ -100,7 +100,7 @@ export default function DashboardPage() {
       {/* Back button */}
       <button
         onClick={() => navigate("/riwayat")}
-        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors mb-4 cursor-pointer"
+        className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors mb-4 cursor-pointer"
       >
         <ArrowLeft size={14} />
         Riwayat
@@ -111,7 +111,7 @@ export default function DashboardPage() {
         <h1 className="text-xl font-bold text-slate-900 tracking-tight mb-1">
           Dashboard Pencocokan
         </h1>
-        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500">
           <span className="inline-flex items-center gap-1">
             <Calendar size={12} />
             {tanggalFormatted}

@@ -23,21 +23,21 @@ export default function DataPreview({
     <div className="rounded-xl border border-slate-200 bg-white overflow-hidden animate-fade-in">
       {/* Header panel */}
       <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-        <p className="text-xs text-slate-600 m-0 flex items-center gap-1.5 font-medium">
+        <p className="text-sm text-slate-600 m-0 flex items-center gap-1.5 font-medium">
           <TableProperties size={13} className="text-primary" />
           <span>Preview {label}</span>
           <span className="text-slate-400 font-normal">
             — klik baris header kolom
           </span>
         </p>
-        <span className="text-xs text-primary-dark font-semibold bg-primary/10 px-2 py-0.5 rounded-full">
+        <span className="text-sm text-primary-dark font-semibold bg-primary/10 px-2 py-0.5 rounded-full">
           Header: baris {barisHeader + 1}
         </span>
       </div>
 
       {/* Tabel preview */}
       <div className="overflow-x-auto max-h-64">
-        <table className="w-full text-xs border-collapse">
+        <table className="w-full text-sm border-collapse">
           <tbody>
             {previewRows.map((row, i) => {
               const isHeader = i === barisHeader;
@@ -82,7 +82,7 @@ export default function DataPreview({
 
       {/* Footer info */}
       <div className="px-4 py-2 bg-slate-50/50 border-t border-slate-200">
-        <p className="text-xs text-slate-400 m-0">
+        <p className="text-sm text-slate-400 m-0">
           Menampilkan baris awal untuk pencocokan struktur kolom.
         </p>
       </div>

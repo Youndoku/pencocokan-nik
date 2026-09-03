@@ -30,10 +30,10 @@ function ValidationItem({ type, label, value, detail, children }) {
     >
       <div className="flex items-center gap-2">
         <SeverityIcon type={type} />
-        <span className="text-xs font-medium text-slate-700 flex-1">
+        <span className="text-sm font-medium text-slate-700 flex-1">
           {label}
         </span>
-        <span className="text-xs font-bold text-slate-800">{value}</span>
+        <span className="text-sm font-bold text-slate-800">{value}</span>
         {children && (
           <button
             onClick={() => setExpanded(!expanded)}
@@ -77,7 +77,7 @@ export default function ValidationReport({ validasi, label }) {
 
   return (
     <div className="mt-3 animate-fade-in">
-      <p className="text-xs font-semibold text-slate-600 mb-2 flex items-center gap-1.5">
+      <p className="text-sm font-semibold text-slate-600 mb-2 flex items-center gap-1.5">
         {hasIssues ? (
           <AlertTriangle size={12} className="text-neutral-900" />
         ) : (
@@ -124,7 +124,7 @@ export default function ValidationReport({ validasi, label }) {
             value={`${duplikatNik.length} NIK`}
           >
             <div className="max-h-32 overflow-y-auto">
-              <table className="w-full text-[10px]">
+              <table className="w-full text-xs">
                 <thead>
                   <tr className="text-left text-slate-500">
                     <th className="pb-1">NIK</th>
@@ -143,7 +143,7 @@ export default function ValidationReport({ validasi, label }) {
                 </tbody>
               </table>
               {duplikatNik.length > 20 && (
-                <p className="text-[10px] text-slate-400 mt-1">
+                <p className="text-xs text-slate-400 mt-1">
                   ... dan {duplikatNik.length - 20} NIK duplikat lainnya
                 </p>
               )}
@@ -153,7 +153,7 @@ export default function ValidationReport({ validasi, label }) {
       </div>
 
       {hasIssues && (
-        <p className="text-[10px] text-slate-400 mt-2 italic">
+        <p className="text-xs text-slate-400 mt-2 italic">
           ⚠️ Masalah di atas tidak memblokir proses. Anda tetap dapat
           melanjutkan pencocokan.
         </p>

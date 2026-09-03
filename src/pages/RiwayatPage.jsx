@@ -85,7 +85,7 @@ export default function RiwayatPage() {
           <h1 className="text-lg font-bold text-slate-900 tracking-tight">
             Riwayat & Pencarian
           </h1>
-          <p className="text-xs text-slate-500">
+          <p className="text-sm text-slate-500">
             {jumlahSesi} sesi tersimpan di perangkat ini
           </p>
         </div>
@@ -102,7 +102,7 @@ export default function RiwayatPage() {
           </p>
           <button
             onClick={() => navigate("/pencocokan")}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-dark text-white rounded-xl text-xs font-semibold transition-all hover:shadow-lg hover:shadow-primary-light cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-dark text-white rounded-xl text-sm font-semibold transition-all hover:shadow-lg hover:shadow-primary-light cursor-pointer"
           >
             <PlusCircle size={14} />
             Mulai Proses Data
@@ -124,7 +124,7 @@ export default function RiwayatPage() {
                 placeholder="Cari nama file..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-all"
+                className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-all"
               />
             </div>
 
@@ -132,7 +132,7 @@ export default function RiwayatPage() {
               onClick={() =>
                 setSortBy(sortBy === "tanggal" ? "persentase" : "tanggal")
               }
-              className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
             >
               <ArrowUpDown size={13} />
               {sortBy === "tanggal" ? "Tanggal" : "% Cocok"}
@@ -141,7 +141,7 @@ export default function RiwayatPage() {
             {selectedIds.size > 0 && (
               <button
                 onClick={handleBulkDelete}
-                className="flex items-center gap-1.5 px-3 py-2 bg-accent-red/10 text-accent-red border border-accent-red/30 rounded-xl text-xs font-semibold hover:bg-accent-red/15 transition-colors cursor-pointer animate-fade-in"
+                className="flex items-center gap-1.5 px-3 py-2 bg-accent-red/10 text-accent-red border border-accent-red/30 rounded-xl text-sm font-semibold hover:bg-accent-red/15 transition-colors cursor-pointer animate-fade-in"
               >
                 <Trash2 size={13} />
                 Hapus ({selectedIds.size})

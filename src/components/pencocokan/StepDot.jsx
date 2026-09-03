@@ -9,7 +9,7 @@ export default function StepDot({ active, done, index, label }) {
     <div className="flex items-center gap-2 flex-1">
       <div
         className={
-          "w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold font-mono border shrink-0 transition-all duration-300 " +
+          "w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold font-mono border shrink-0 transition-all duration-300 " +
           (done
             ? "bg-primary/10 text-primary-dark border-primary/30 shadow-sm"
             : active
@@ -21,7 +21,7 @@ export default function StepDot({ active, done, index, label }) {
       </div>
       <span
         className={
-          "text-xs sm:text-sm transition-colors duration-300 " +
+          "text-sm sm:text-sm transition-colors duration-300 " +
           (active || done ? "text-slate-900 font-semibold" : "text-slate-400 font-medium")
         }
       >

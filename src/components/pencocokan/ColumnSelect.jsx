@@ -5,7 +5,7 @@
 export default function ColumnSelect({ label, value, onChange, columns = [], optional }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-xs text-slate-500 font-medium">
+      <label className="text-sm text-slate-500 font-medium">
         {label}{" "}
         {optional && <span className="text-slate-400 font-normal">(opsional)</span>}
       </label>

@@ -38,7 +38,7 @@ export default function UploadSlot({ title, subtitle, file, onFile, loading }) {
         </div>
         <div className="min-w-0">
           <p className="text-sm font-medium m-0">{title}</p>
-          <p className="text-xs text-slate-500 m-0">{subtitle}</p>
+          <p className="text-sm text-slate-500 m-0">{subtitle}</p>
         </div>
       </div>
 
@@ -52,7 +52,7 @@ export default function UploadSlot({ title, subtitle, file, onFile, loading }) {
           <span className="text-sm font-mono text-slate-600 truncate">
             {file.fileName}
           </span>
-          <span className="text-xs text-slate-400 shrink-0">
+          <span className="text-sm text-slate-400 shrink-0">
             {file.totalRows.toLocaleString("id-ID")} baris
           </span>
         </div>

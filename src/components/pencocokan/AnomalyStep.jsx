@@ -96,7 +96,7 @@ export default function AnomalyStep({
           <h4 className="text-sm font-semibold text-neutral-900 m-0 mb-1">
             Konfirmasi Temuan Anomali Data
           </h4>
-          <p className="text-xs text-neutral-900 m-0 leading-relaxed">
+          <p className="text-sm text-neutral-900 m-0 leading-relaxed">
             Ditemukan data yang tidak sinkron. Mohon pilih apakah ingin
             <strong> memvalidkan </strong> data tersebut (dianggap cocok) atau
             <strong> mengabaikan </strong> (dianggap tidak cocok) sebelum menyimpan hasil.
@@ -109,7 +109,7 @@ export default function AnomalyStep({
         {nameMismatches.length > 0 && (
           <button
             onClick={() => setActiveTab("name")}
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "name"
                 ? "border-primary text-primary-dark font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
@@ -117,7 +117,7 @@ export default function AnomalyStep({
           >
             Perbedaan Nama
             <span
-              className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+              className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
                 activeTab === "name" ? "bg-primary/10 text-primary-dark" : "bg-slate-100 text-slate-600"
               }`}
             >
@@ -129,7 +129,7 @@ export default function AnomalyStep({
         {invalidNiks.length > 0 && (
           <button
             onClick={() => setActiveTab("nik")}
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "nik"
                 ? "border-primary text-primary-dark font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
@@ -137,7 +137,7 @@ export default function AnomalyStep({
           >
             Format NIK Tidak Standar
             <span
-              className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+              className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
                 activeTab === "nik" ? "bg-primary/10 text-primary-dark" : "bg-slate-100 text-slate-600"
               }`}
             >
@@ -149,7 +149,7 @@ export default function AnomalyStep({
         {duplicateNiks.length > 0 && (
           <button
             onClick={() => setActiveTab("duplicate")}
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "duplicate"
                 ? "border-primary text-primary-dark font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
@@ -157,7 +157,7 @@ export default function AnomalyStep({
           >
             NIK Duplikat
             <span
-              className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+              className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
                 activeTab === "duplicate" ? "bg-primary/10 text-primary-dark" : "bg-slate-100 text-slate-600"
               }`}
             >
@@ -182,20 +182,20 @@ export default function AnomalyStep({
                   setNameSearch(e.target.value);
                   setNamePage(1);
                 }}
-                className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
+                className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
               />
             </div>
 
             <div className="flex gap-2 shrink-0">
               <button
                 onClick={() => onBulkNameResolution("valid")}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-primary/30 bg-primary/10 text-primary-dark text-xs font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-primary/30 bg-primary/10 text-primary-dark text-sm font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
               >
                 <Check size={13} /> Validkan Semua
               </button>
               <button
                 onClick={() => onBulkNameResolution("abaikan")}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 text-xs font-semibold hover:bg-slate-100 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 text-sm font-semibold hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <Ban size={13} /> Abaikan Semua
               </button>
@@ -204,7 +204,7 @@ export default function AnomalyStep({
 
           {/* Table */}
           <div className="overflow-x-auto border border-slate-100 rounded-lg mb-4">
-            <table className="w-full text-xs border-collapse">
+            <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">
                   <th className="text-left px-3 py-2 text-slate-500 font-semibold">NIK</th>
@@ -226,7 +226,7 @@ export default function AnomalyStep({
                           <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50">
                             <button
                               onClick={() => onSetNameResolution(item.id, "valid")}
-                              className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
                                 res === "valid"
                                   ? "bg-primary-dark text-white shadow-xs"
                                   : "text-slate-600 hover:text-slate-800"
@@ -236,7 +236,7 @@ export default function AnomalyStep({
                             </button>
                             <button
                               onClick={() => onSetNameResolution(item.id, "abaikan")}
-                              className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
                                 res === "abaikan"
                                   ? "bg-slate-300 text-slate-700 shadow-xs"
                                   : "text-slate-600 hover:text-slate-800"
@@ -263,7 +263,7 @@ export default function AnomalyStep({
           {/* Pagination */}
           {namePagesCount > 1 && (
             <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-              <span className="text-xs text-slate-500">
+              <span className="text-sm text-slate-500">
                 Menampilkan {((namePage - 1) * itemsPerPage) + 1} - {Math.min(namePage * itemsPerPage, filteredNameMismatches.length)} dari {filteredNameMismatches.length} baris
               </span>
               <div className="flex items-center gap-1">
@@ -274,7 +274,7 @@ export default function AnomalyStep({
                 >
                   <ChevronLeft size={14} />
                 </button>
-                <span className="text-xs font-semibold px-2">
+                <span className="text-sm font-semibold px-2">
                   {namePage} / {namePagesCount}
                 </span>
                 <button
@@ -305,20 +305,20 @@ export default function AnomalyStep({
                   setNikSearch(e.target.value);
                   setNikPage(1);
                 }}
-                className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
+                className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
               />
             </div>
 
             <div className="flex gap-2 shrink-0">
               <button
                 onClick={() => onBulkNikResolution("valid")}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-primary/30 bg-primary/10 text-primary-dark text-xs font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-primary/30 bg-primary/10 text-primary-dark text-sm font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
               >
                 <Check size={13} /> Tetap Cocokkan
               </button>
               <button
                 onClick={() => onBulkNikResolution("abaikan")}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 text-xs font-semibold hover:bg-slate-100 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 text-sm font-semibold hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <Ban size={13} /> Abaikan Semua
               </button>
@@ -327,7 +327,7 @@ export default function AnomalyStep({
 
           {/* Table */}
           <div className="overflow-x-auto border border-slate-100 rounded-lg mb-4">
-            <table className="w-full text-xs border-collapse">
+            <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">
                   <th className="text-left px-3 py-2 text-slate-500 font-semibold w-12">Baris</th>
@@ -351,7 +351,7 @@ export default function AnomalyStep({
                           <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50">
                             <button
                               onClick={() => onSetNikResolution(item.id, "valid")}
-                              className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                              className={`px-2 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
                                 res === "valid"
                                   ? "bg-primary-dark text-white shadow-xs"
                                   : "text-slate-600 hover:text-slate-800"
@@ -361,7 +361,7 @@ export default function AnomalyStep({
                             </button>
                             <button
                               onClick={() => onSetNikResolution(item.id, "abaikan")}
-                              className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                              className={`px-2 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
                                 res === "abaikan"
                                   ? "bg-slate-300 text-slate-700 shadow-xs"
                                   : "text-slate-600 hover:text-slate-800"
@@ -388,7 +388,7 @@ export default function AnomalyStep({
           {/* Pagination */}
           {nikPagesCount > 1 && (
             <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-              <span className="text-xs text-slate-500">
+              <span className="text-sm text-slate-500">
                 Menampilkan {((nikPage - 1) * itemsPerPage) + 1} - {Math.min(nikPage * itemsPerPage, filteredInvalidNiks.length)} dari {filteredInvalidNiks.length} baris
               </span>
               <div className="flex items-center gap-1">
@@ -399,7 +399,7 @@ export default function AnomalyStep({
                 >
                   <ChevronLeft size={14} />
                 </button>
-                <span className="text-xs font-semibold px-2">
+                <span className="text-sm font-semibold px-2">
                   {nikPage} / {nikPagesCount}
                 </span>
                 <button
@@ -421,7 +421,7 @@ export default function AnomalyStep({
           {/* Info */}
           <div className="flex items-start gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 mb-4">
             <Copy className="text-slate-400 shrink-0 mt-0.5" size={14} />
-            <p className="text-xs text-slate-600 leading-relaxed m-0">
+            <p className="text-sm text-slate-600 leading-relaxed m-0">
               NIK di bawah ini muncul lebih dari sekali di file yang sama.
               Pencocokan hanya memakai <strong>kemunculan pertama</strong> per
               NIK — baris lain dengan NIK yang sama bisa jadi tercocokkan ke
@@ -441,13 +441,13 @@ export default function AnomalyStep({
                 setDuplicateSearch(e.target.value);
                 setDuplicatePage(1);
               }}
-              className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
+              className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
             />
           </div>
 
           {/* Table */}
           <div className="overflow-x-auto border border-slate-100 rounded-lg mb-4">
-            <table className="w-full text-xs border-collapse">
+            <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">
                   <th className="text-left px-3 py-2 text-slate-500 font-semibold">NIK</th>
@@ -484,7 +484,7 @@ export default function AnomalyStep({
           {/* Pagination */}
           {duplicatePagesCount > 1 && (
             <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-              <span className="text-xs text-slate-500">
+              <span className="text-sm text-slate-500">
                 Menampilkan {((duplicatePage - 1) * itemsPerPage) + 1} - {Math.min(duplicatePage * itemsPerPage, filteredDuplicateNiks.length)} dari {filteredDuplicateNiks.length} NIK
               </span>
               <div className="flex items-center gap-1">
@@ -495,7 +495,7 @@ export default function AnomalyStep({
                 >
                   <ChevronLeft size={14} />
                 </button>
-                <span className="text-xs font-semibold px-2">
+                <span className="text-sm font-semibold px-2">
                   {duplicatePage} / {duplicatePagesCount}
                 </span>
                 <button

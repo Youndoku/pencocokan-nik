@@ -61,7 +61,7 @@ export default function ResultsDashboard({
     <div className="space-y-5 animate-fade-in">
       {/* Success Banner */}
       <div className="text-center py-3">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary-dark text-xs font-semibold">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary-dark text-sm font-semibold">
           <CheckCircle2 size={14} />
           Pencocokan selesai — Data tersimpan otomatis
         </div>
@@ -102,7 +102,7 @@ export default function ResultsDashboard({
               <span className="text-2xl font-bold text-slate-900">
                 {persentase}%
               </span>
-              <span className="text-[10px] text-slate-400 font-medium">
+              <span className="text-xs text-slate-400 font-medium">
                 Cocok
               </span>
             </div>
@@ -112,7 +112,7 @@ export default function ResultsDashboard({
         {/* Legend */}
         <div className="flex justify-center gap-4 mt-3">
           {pieData.map((d) => (
-            <div key={d.name} className="flex items-center gap-1.5 text-xs">
+            <div key={d.name} className="flex items-center gap-1.5 text-sm">
               <div
                 className="w-2.5 h-2.5 rounded-full"
                 style={{ backgroundColor: d.color }}
@@ -151,7 +151,7 @@ export default function ResultsDashboard({
 
       {/* Mismatch summary */}
       {totalMismatch > 0 && (
-        <div className="flex items-center gap-2 bg-accent-gold/15 border border-accent-gold/40 rounded-xl px-3 py-2.5 text-xs text-neutral-900 font-medium">
+        <div className="flex items-center gap-2 bg-accent-gold/15 border border-accent-gold/40 rounded-xl px-3 py-2.5 text-sm text-neutral-900 font-medium">
           <Users size={14} className="shrink-0" />
           {totalMismatch.toLocaleString("id-ID")} perbedaan nama terdeteksi
           (lihat detail di Dashboard Lengkap)
@@ -162,7 +162,7 @@ export default function ResultsDashboard({
       <div className="space-y-2">
         <button
           onClick={onDownload}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-dark text-white rounded-xl text-xs font-semibold transition-all shadow-sm hover:shadow-lg hover:shadow-primary-light cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-dark text-white rounded-xl text-sm font-semibold transition-all shadow-sm hover:shadow-lg hover:shadow-primary-light cursor-pointer"
         >
           <Download size={14} />
           Unduh Excel
@@ -171,7 +171,7 @@ export default function ResultsDashboard({
         {sesiId && (
           <button
             onClick={() => navigate(`/dashboard/${sesiId}`)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-xs font-semibold hover:from-primary-dark hover:to-secondary-dark transition-all shadow-sm cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-semibold hover:from-primary-dark hover:to-secondary-dark transition-all shadow-sm cursor-pointer"
           >
             <BarChart3 size={14} />
             Lihat Dashboard Lengkap
@@ -180,7 +180,7 @@ export default function ResultsDashboard({
 
         <button
           onClick={onReset}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-xl text-xs font-medium transition-colors cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-xl text-sm font-medium transition-colors cursor-pointer"
         >
           <RotateCcw size={14} />
           Pencocokan Baru

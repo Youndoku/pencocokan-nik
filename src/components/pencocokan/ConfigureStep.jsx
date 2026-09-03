@@ -36,7 +36,7 @@ export default function ConfigureStep({
         <h3 className="text-base font-semibold text-slate-800 m-0 mb-2">
           Memproses Pencocokan Data
         </h3>
-        <p className="text-xs text-slate-500 max-w-xs leading-relaxed m-0 mb-6">
+        <p className="text-sm text-slate-500 max-w-xs leading-relaxed m-0 mb-6">
           {progressText}
         </p>
 
@@ -47,7 +47,7 @@ export default function ConfigureStep({
             style={{ width: `${progress.percent}%` }}
           ></div>
         </div>
-        <span className="text-xs font-mono font-semibold text-slate-600">
+        <span className="text-sm font-mono font-semibold text-slate-600">
           {progress.percent}%
         </span>
       </div>
@@ -105,7 +105,7 @@ export default function ConfigureStep({
         {/* Checklist nilai status */}
         {kolomStatusPembanding && (
           <div className="mb-4 bg-slate-50 rounded-lg p-3">
-            <p className="text-xs text-slate-500 m-0 mb-2 font-medium">
+            <p className="text-sm text-slate-500 m-0 mb-2 font-medium">
               Centang status yang dihitung sebagai valid/cocok:
             </p>
             {daftarStatusUnik.length > 0 ? (
@@ -126,14 +126,14 @@ export default function ConfigureStep({
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-400 m-0 italic">Sedang memuat daftar status...</p>
+              <p className="text-sm text-slate-400 m-0 italic">Sedang memuat daftar status...</p>
             )}
           </div>
         )}
 
         {/* Nama kolom baru */}
         <div className="border-t border-slate-100 pt-4">
-          <label className="text-xs text-slate-500 font-medium block mb-1">
+          <label className="text-sm text-slate-500 font-medium block mb-1">
             Nama kolom baru di hasil
           </label>
           <input

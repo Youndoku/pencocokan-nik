@@ -6,7 +6,7 @@ export default function ExportPanel({ onDownloadExcel, namaKolomBaru }) {
       <h3 className="text-sm font-bold text-slate-800 mb-3">Unduh Hasil</h3>
       <button
         onClick={onDownloadExcel}
-        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary/10 text-primary-dark border border-primary/30 rounded-xl text-xs font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
+        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary/10 text-primary-dark border border-primary/30 rounded-xl text-sm font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
       >
         <Download size={15} />
         Excel (.xlsx)

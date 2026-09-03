@@ -27,7 +27,7 @@ export default function DuplicateRecipients({ penerimaGanda, programColumns }) {
         <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
           <Users size={15} className="text-neutral-900" />
           Penerima Bantuan Ganda
-          <span className="px-2 py-0.5 bg-accent-gold/15 text-neutral-900 rounded-lg text-[10px] font-semibold">
+          <span className="px-2 py-0.5 bg-accent-gold/15 text-neutral-900 rounded-lg text-xs font-semibold">
             {penerimaGanda.length.toLocaleString("id-ID")} orang
           </span>
         </h3>
@@ -47,13 +47,13 @@ export default function DuplicateRecipients({ penerimaGanda, programColumns }) {
             setSearch(e.target.value);
             setPage(1);
           }}
-          className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light transition-all"
+          className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light transition-all"
         />
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full text-xs">
+        <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-200">
               <th className="text-left py-2 px-2 text-slate-500 font-medium">
@@ -90,7 +90,7 @@ export default function DuplicateRecipients({ penerimaGanda, programColumns }) {
                 {programColumns.map((col) => (
                   <td key={col} className="text-center py-2 px-1">
                     {r.programs[col] === 1 ? (
-                      <span className="inline-block w-5 h-5 rounded-full bg-primary/10 text-primary-dark text-[10px] font-bold leading-5">
+                      <span className="inline-block w-5 h-5 rounded-full bg-primary/10 text-primary-dark text-xs font-bold leading-5">
                         ✓
                       </span>
                     ) : (
@@ -99,7 +99,7 @@ export default function DuplicateRecipients({ penerimaGanda, programColumns }) {
                   </td>
                 ))}
                 <td className="text-center py-2 px-2">
-                  <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-accent-gold/25 text-neutral-900 text-[10px] font-bold">
+                  <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-accent-gold/25 text-neutral-900 text-xs font-bold">
                     {r.count}
                   </span>
                 </td>
@@ -112,7 +112,7 @@ export default function DuplicateRecipients({ penerimaGanda, programColumns }) {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
-          <span className="text-[10px] text-slate-400">
+          <span className="text-xs text-slate-400">
             Halaman {page} dari {totalPages}
           </span>
           <div className="flex gap-1">

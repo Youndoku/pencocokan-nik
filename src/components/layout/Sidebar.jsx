@@ -97,7 +97,7 @@ export default function Sidebar({ jumlahSesi = 0 }) {
                   <item.icon size={16} />
                   {item.label}
                   {item.badge > 0 && (
-                    <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-primary-dark text-white text-[10px] font-bold">
+                    <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-primary-dark text-white text-xs font-bold">
                       {item.badge}
                     </span>
                   )}
@@ -148,7 +148,7 @@ export default function Sidebar({ jumlahSesi = 0 }) {
               key={item.to}
               to={item.to}
               title={item.label}
-              className={`relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
+              className={`relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                 collapsed ? "justify-center" : ""
               } ${
                 isActive(item)
@@ -166,7 +166,7 @@ export default function Sidebar({ jumlahSesi = 0 }) {
                 <>
                   {item.label}
                   {item.badge > 0 && (
-                    <span className="ml-auto inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary-dark text-white text-[10px] font-bold">
+                    <span className="ml-auto inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary-dark text-white text-xs font-bold">
                       {item.badge}
                     </span>
                   )}

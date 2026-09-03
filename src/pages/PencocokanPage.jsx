@@ -132,7 +132,7 @@ export default function PencocokanPage() {
           <h1 className="text-xl font-bold m-0 mb-1.5 text-slate-900 tracking-tight">
             Pencocokan Data NIK
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 m-0 max-w-sm mx-auto leading-relaxed">
+          <p className="text-sm sm:text-sm text-slate-500 m-0 max-w-sm mx-auto leading-relaxed">
             Cocokkan data gabungan OPD dengan data pembanding, lalu unduh hasil
             dalam format Excel. 100% offline &amp; aman.
           </p>
@@ -237,7 +237,7 @@ export default function PencocokanPage() {
         )}
 
         {/* Privacy footer */}
-        <p className="text-center text-xs text-slate-400 mt-8">
+        <p className="text-center text-sm text-slate-400 mt-8">
           Proses dilakukan sepenuhnya di web browser komputer Anda tanpa
           mengirim data keluar.
         </p>
