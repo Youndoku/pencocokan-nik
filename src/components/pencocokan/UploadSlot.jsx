@@ -11,10 +11,10 @@ export default function UploadSlot({ title, subtitle, file, onFile, loading }) {
       className={
         "rounded-xl border p-5 bg-white transition-all duration-300 hover:shadow-md " +
         (loading
-          ? "border-indigo-300 bg-indigo-50/10"
+          ? "border-primary-light bg-primary-light/10"
           : file
-          ? "border-emerald-300 bg-emerald-50/30"
-          : "border-slate-200 hover:border-indigo-200")
+          ? "border-primary-light bg-primary-light/30"
+          : "border-slate-200 hover:border-primary-light")
       }
     >
       <div className="flex items-center gap-3 mb-3">
@@ -22,9 +22,9 @@ export default function UploadSlot({ title, subtitle, file, onFile, loading }) {
           className={
             "w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-300 " +
             (loading
-              ? "bg-indigo-100 text-indigo-600"
+              ? "bg-primary-light text-primary-dark"
               : file
-              ? "bg-emerald-100 text-emerald-600"
+              ? "bg-primary-light text-primary-dark"
               : "bg-slate-100 text-slate-400")
           }
         >
@@ -43,7 +43,7 @@ export default function UploadSlot({ title, subtitle, file, onFile, loading }) {
       </div>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-sm text-indigo-600 font-medium">
+        <div className="flex items-center gap-2 text-sm text-primary font-medium">
           <Loader2 size={14} className="animate-spin" />
           <span>Sedang membaca dan memproses Excel...</span>
         </div>
@@ -69,7 +69,7 @@ export default function UploadSlot({ title, subtitle, file, onFile, loading }) {
               e.target.value = "";
             }}
           />
-          <span className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors font-semibold">
+          <span className="inline-flex items-center gap-1 text-sm text-primary hover:text-primary-dark font-medium transition-colors font-semibold">
             Pilih file .xlsx <ChevronRight size={14} />
           </span>
         </label>

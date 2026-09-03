@@ -24,13 +24,13 @@ export default function DataPreview({
       {/* Header panel */}
       <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
         <p className="text-xs text-slate-600 m-0 flex items-center gap-1.5 font-medium">
-          <TableProperties size={13} className="text-indigo-500" />
+          <TableProperties size={13} className="text-primary" />
           <span>Preview {label}</span>
           <span className="text-slate-400 font-normal">
             — klik baris header kolom
           </span>
         </p>
-        <span className="text-xs text-indigo-600 font-semibold bg-indigo-50 px-2 py-0.5 rounded-full">
+        <span className="text-xs text-primary-dark font-semibold bg-primary-light px-2 py-0.5 rounded-full">
           Header: baris {barisHeader + 1}
         </span>
       </div>
@@ -49,7 +49,7 @@ export default function DataPreview({
                   className={
                     "cursor-pointer border-b border-slate-100 last:border-0 transition-all duration-200 " +
                     (isHeader
-                      ? "bg-indigo-100/80 text-indigo-900 font-semibold hover:bg-indigo-100"
+                      ? "bg-primary-light/80 text-primary-dark font-semibold hover:bg-primary-light"
                       : isAboveHeader
                       ? "bg-slate-50/50 text-slate-400 hover:bg-slate-100/50"
                       : "hover:bg-slate-50 text-slate-700")

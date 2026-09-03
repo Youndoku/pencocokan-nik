@@ -12,7 +12,7 @@ export default function ColumnSelect({ label, value, onChange, columns = [], opt
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-9 rounded-lg border border-slate-200 px-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 transition-all duration-200"
+        className="h-9 rounded-lg border border-slate-200 px-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-all duration-200"
       >
         {optional && <option value="">Tidak digunakan</option>}
         {columns.map((c) => (

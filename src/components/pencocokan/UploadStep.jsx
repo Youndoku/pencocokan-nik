@@ -64,7 +64,7 @@ export default function UploadStep({
         className={
           "w-full h-11 rounded-xl flex items-center justify-center gap-1.5 text-sm font-semibold transition-all duration-300 cursor-pointer " +
           (bothUploaded
-            ? "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 active:scale-[0.98]"
+            ? "bg-primary text-white hover:bg-primary-dark hover:shadow-lg hover:shadow-primary-light active:scale-[0.98]"
             : "bg-slate-100 text-slate-400 cursor-not-allowed")
         }
       >

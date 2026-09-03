@@ -32,7 +32,7 @@ export default function ConfigureStep({
   if (loadingMatching) {
     return (
       <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm flex flex-col items-center justify-center min-h-[300px] animate-fade-in text-center">
-        <Loader2 size={36} className="text-indigo-600 animate-spin mb-4" />
+        <Loader2 size={36} className="text-primary animate-spin mb-4" />
         <h3 className="text-base font-semibold text-slate-800 m-0 mb-2">
           Memproses Pencocokan Data
         </h3>
@@ -43,7 +43,7 @@ export default function ConfigureStep({
         {/* Progress Bar Container */}
         <div className="w-full max-w-xs bg-slate-100 rounded-full h-2.5 mb-2 overflow-hidden">
           <div
-            className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300 ease-out"
+            className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-out"
             style={{ width: `${progress.percent}%` }}
           ></div>
         </div>
@@ -58,7 +58,7 @@ export default function ConfigureStep({
     <div className="animate-fade-in">
       <div className="bg-white border border-slate-200 rounded-xl p-5 mb-4 shadow-sm">
         <p className="text-sm font-semibold m-0 mb-4 flex items-center gap-1.5 text-slate-900">
-          <Settings2 size={15} className="text-indigo-500" /> Pemetaan kolom
+          <Settings2 size={15} className="text-primary" /> Pemetaan kolom
         </p>
 
         {/* Kolom NIK & Nama untuk kedua file */}
@@ -119,7 +119,7 @@ export default function ConfigureStep({
                       type="checkbox"
                       checked={statusTerpilih.has(val)}
                       onChange={() => onToggleStatus(val)}
-                      className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-200"
+                      className="rounded border-slate-300 text-primary focus:ring-primary-light"
                     />
                     {val}
                   </label>
@@ -140,7 +140,7 @@ export default function ConfigureStep({
             type="text"
             value={namaKolomBaru}
             onChange={(e) => onNamaKolomBaru(e.target.value)}
-            className="w-full h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 transition-all duration-200"
+            className="w-full h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-all duration-200"
           />
         </div>
       </div>
@@ -155,7 +155,7 @@ export default function ConfigureStep({
         </button>
         <button
           onClick={onProses}
-          className="flex-1 h-11 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 transition-all duration-300 active:scale-[0.98] cursor-pointer"
+          className="flex-1 h-11 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-dark hover:shadow-lg hover:shadow-primary-light transition-all duration-300 active:scale-[0.98] cursor-pointer"
         >
           Analisis & Cari Anomali
         </button>
