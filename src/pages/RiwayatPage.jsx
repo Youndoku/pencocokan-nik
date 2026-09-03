@@ -102,7 +102,7 @@ export default function RiwayatPage() {
           </p>
           <button
             onClick={() => navigate("/pencocokan")}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-dark text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-dark text-white rounded-xl text-xs font-semibold transition-all hover:shadow-lg hover:shadow-primary-light cursor-pointer"
           >
             <PlusCircle size={14} />
             Mulai Proses Data

@@ -162,7 +162,7 @@ export default function ResultsDashboard({
       <div className="space-y-2">
         <button
           onClick={onDownload}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-dark text-white rounded-xl text-xs font-semibold transition-colors shadow-sm cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-dark text-white rounded-xl text-xs font-semibold transition-all shadow-sm hover:shadow-lg hover:shadow-primary-light cursor-pointer"
         >
           <Download size={14} />
           Unduh Excel
