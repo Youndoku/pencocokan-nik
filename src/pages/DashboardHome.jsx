@@ -9,7 +9,7 @@ export default function DashboardHome() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 size={24} className="animate-spin text-indigo-400" />
+        <Loader2 size={24} className="animate-spin text-primary" />
       </div>
     );
   }
@@ -25,7 +25,7 @@ export default function DashboardHome() {
         </p>
         <button
           onClick={() => navigate("/pencocokan")}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-semibold hover:bg-indigo-700 transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-xs font-semibold hover:bg-primary-dark transition-colors cursor-pointer"
         >
           <PlusCircle size={14} />
           Mulai Proses Data

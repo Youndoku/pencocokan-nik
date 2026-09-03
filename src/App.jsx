@@ -11,7 +11,7 @@ export default function App() {
   const { jumlahSesi } = useRiwayat();
 
   return (
-    <div className="min-h-screen flex flex-col sm:flex-row bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
+    <div className="min-h-screen flex flex-col sm:flex-row bg-gradient-to-br from-slate-50 via-white to-primary-light/30">
       <Sidebar jumlahSesi={jumlahSesi} />
 
       <main className="flex-1 min-w-0">
