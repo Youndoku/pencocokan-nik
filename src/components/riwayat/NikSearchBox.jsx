@@ -59,7 +59,7 @@ export default function NikSearchBox({ sesiTerbaru }) {
           placeholder="Ketik NIK..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light transition-all"
+          className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-all"
         />
       </div>
 
@@ -90,7 +90,7 @@ export default function NikSearchBox({ sesiTerbaru }) {
                       key={col}
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
                         cocok
-                          ? "bg-primary-light text-primary-dark"
+                          ? "bg-primary/10 text-primary-dark"
                           : "bg-accent-red/10 text-accent-red"
                       }`}
                     >

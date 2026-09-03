@@ -36,7 +36,7 @@ export default function Sidebar({ jumlahSesi = 0 }) {
         <div className="flex items-center justify-between h-14 px-4">
           <Link
             to="/"
-            className="flex items-center gap-2.5 text-slate-800 hover:text-primary transition-colors"
+            className="flex items-center gap-2.5 text-slate-800 hover:text-primary-dark transition-colors"
           >
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary flex items-center justify-center shadow-sm">
               <ShieldCheck size={16} className="text-white" />
@@ -90,14 +90,14 @@ export default function Sidebar({ jumlahSesi = 0 }) {
                   onClick={() => setMobileOpen(false)}
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     isActive(item)
-                      ? "bg-primary-light text-primary-dark"
+                      ? "bg-primary/10 text-primary-dark"
                       : "text-slate-600 hover:bg-slate-50"
                   }`}
                 >
                   <item.icon size={16} />
                   {item.label}
                   {item.badge > 0 && (
-                    <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-primary text-white text-[10px] font-bold">
+                    <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-primary-dark text-white text-[10px] font-bold">
                       {item.badge}
                     </span>
                   )}
@@ -121,7 +121,7 @@ export default function Sidebar({ jumlahSesi = 0 }) {
         >
           <Link
             to="/"
-            className="flex items-center gap-2.5 text-slate-800 hover:text-primary transition-colors"
+            className="flex items-center gap-2.5 text-slate-800 hover:text-primary-dark transition-colors"
             title="Pencocokan NIK"
           >
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary flex items-center justify-center shadow-sm shrink-0">
@@ -152,7 +152,7 @@ export default function Sidebar({ jumlahSesi = 0 }) {
                 collapsed ? "justify-center" : ""
               } ${
                 isActive(item)
-                  ? "bg-primary-light text-primary-dark"
+                  ? "bg-primary/10 text-primary-dark"
                   : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
               }`}
             >
@@ -166,7 +166,7 @@ export default function Sidebar({ jumlahSesi = 0 }) {
                 <>
                   {item.label}
                   {item.badge > 0 && (
-                    <span className="ml-auto inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[10px] font-bold">
+                    <span className="ml-auto inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary-dark text-white text-[10px] font-bold">
                       {item.badge}
                     </span>
                   )}

@@ -86,7 +86,7 @@ export default function AnomalyReview({
   return (
     <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
       <div className="flex items-center gap-2 mb-4">
-        <ShieldAlert size={16} className="text-accent-gold" />
+        <ShieldAlert size={16} className="text-neutral-900" />
         <h3 className="text-sm font-bold text-slate-800">Review Anomali</h3>
       </div>
 
@@ -97,7 +97,7 @@ export default function AnomalyReview({
             onClick={() => setTabAndReset("name")}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "name"
-                ? "border-primary text-primary font-bold"
+                ? "border-primary text-primary-dark font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
@@ -112,7 +112,7 @@ export default function AnomalyReview({
             onClick={() => setTabAndReset("nik")}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "nik"
-                ? "border-primary text-primary font-bold"
+                ? "border-primary text-primary-dark font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
@@ -127,7 +127,7 @@ export default function AnomalyReview({
             onClick={() => setTabAndReset("duplicate")}
             className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "duplicate"
-                ? "border-primary text-primary font-bold"
+                ? "border-primary text-primary-dark font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >

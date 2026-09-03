@@ -78,7 +78,7 @@ export default function RiwayatPage() {
     <div className="max-w-2xl mx-auto px-4 py-8 animate-fade-in">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-primary-light flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
           <History size={20} className="text-primary-dark" />
         </div>
         <div>
@@ -102,7 +102,7 @@ export default function RiwayatPage() {
           </p>
           <button
             onClick={() => navigate("/pencocokan")}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-xs font-semibold hover:bg-primary-dark transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-dark text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer"
           >
             <PlusCircle size={14} />
             Mulai Proses Data
@@ -124,7 +124,7 @@ export default function RiwayatPage() {
                 placeholder="Cari nama file..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light transition-all"
+                className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-all"
               />
             </div>
 

@@ -27,7 +27,7 @@ export default function SummaryPanel({ ringkasan, namaKolomBaru }) {
       <h2 className="text-sm font-bold text-slate-800 flex items-center gap-2">
         Ringkasan Pencocokan
         {namaKolomBaru && (
-          <span className="px-2 py-0.5 bg-primary-light text-primary-dark rounded-lg text-[10px] font-semibold">
+          <span className="px-2 py-0.5 bg-primary/10 text-primary-dark rounded-lg text-[10px] font-semibold">
             {namaKolomBaru}
           </span>
         )}

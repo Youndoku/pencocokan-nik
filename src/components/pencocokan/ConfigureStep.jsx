@@ -155,7 +155,7 @@ export default function ConfigureStep({
         </button>
         <button
           onClick={onProses}
-          className="flex-1 h-11 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-dark hover:shadow-lg hover:shadow-primary-light transition-all duration-300 active:scale-[0.98] cursor-pointer"
+          className="flex-1 h-11 rounded-xl bg-primary-dark text-white text-sm font-semibold hover:shadow-lg hover:shadow-primary-light transition-all duration-300 active:scale-[0.98] cursor-pointer"
         >
           Analisis & Cari Anomali
         </button>

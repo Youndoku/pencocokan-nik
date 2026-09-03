@@ -11,9 +11,9 @@ export default function StepDot({ active, done, index, label }) {
         className={
           "w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold font-mono border shrink-0 transition-all duration-300 " +
           (done
-            ? "bg-primary-light text-primary-dark border-primary-light shadow-sm"
+            ? "bg-primary/10 text-primary-dark border-primary/30 shadow-sm"
             : active
-            ? "bg-primary-light text-primary-dark border-primary-light shadow-sm ring-2 ring-primary-light"
+            ? "bg-primary/10 text-primary-dark border-primary/30 shadow-sm ring-2 ring-primary"
             : "bg-slate-50 text-slate-400 border-slate-200")
         }
       >

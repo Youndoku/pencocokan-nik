@@ -25,7 +25,7 @@ export default function DuplicateRecipients({ penerimaGanda, programColumns }) {
     <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-          <Users size={15} className="text-accent-gold" />
+          <Users size={15} className="text-neutral-900" />
           Penerima Bantuan Ganda
           <span className="px-2 py-0.5 bg-accent-gold/15 text-neutral-900 rounded-lg text-[10px] font-semibold">
             {penerimaGanda.length.toLocaleString("id-ID")} orang
@@ -90,7 +90,7 @@ export default function DuplicateRecipients({ penerimaGanda, programColumns }) {
                 {programColumns.map((col) => (
                   <td key={col} className="text-center py-2 px-1">
                     {r.programs[col] === 1 ? (
-                      <span className="inline-block w-5 h-5 rounded-full bg-primary-light text-primary-dark text-[10px] font-bold leading-5">
+                      <span className="inline-block w-5 h-5 rounded-full bg-primary/10 text-primary-dark text-[10px] font-bold leading-5">
                         ✓
                       </span>
                     ) : (

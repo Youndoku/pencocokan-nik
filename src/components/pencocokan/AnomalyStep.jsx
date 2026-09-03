@@ -91,7 +91,7 @@ export default function AnomalyStep({
     <div className="animate-fade-in">
       {/* Intro Alert */}
       <div className="flex items-start gap-3 bg-accent-gold/15 border border-accent-gold/40 rounded-xl p-4 mb-4 shadow-xs">
-        <ShieldAlert className="text-accent-gold shrink-0 mt-0.5" size={18} />
+        <ShieldAlert className="text-neutral-900 shrink-0 mt-0.5" size={18} />
         <div>
           <h4 className="text-sm font-semibold text-neutral-900 m-0 mb-1">
             Konfirmasi Temuan Anomali Data
@@ -111,14 +111,14 @@ export default function AnomalyStep({
             onClick={() => setActiveTab("name")}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "name"
-                ? "border-primary text-primary font-bold"
+                ? "border-primary text-primary-dark font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
             Perbedaan Nama
             <span
               className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                activeTab === "name" ? "bg-primary-light text-primary-dark" : "bg-slate-100 text-slate-600"
+                activeTab === "name" ? "bg-primary/10 text-primary-dark" : "bg-slate-100 text-slate-600"
               }`}
             >
               {nameMismatches.length}
@@ -131,14 +131,14 @@ export default function AnomalyStep({
             onClick={() => setActiveTab("nik")}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "nik"
-                ? "border-primary text-primary font-bold"
+                ? "border-primary text-primary-dark font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
             Format NIK Tidak Standar
             <span
               className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                activeTab === "nik" ? "bg-primary-light text-primary-dark" : "bg-slate-100 text-slate-600"
+                activeTab === "nik" ? "bg-primary/10 text-primary-dark" : "bg-slate-100 text-slate-600"
               }`}
             >
               {invalidNiks.length}
@@ -151,14 +151,14 @@ export default function AnomalyStep({
             onClick={() => setActiveTab("duplicate")}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
               activeTab === "duplicate"
-                ? "border-primary text-primary font-bold"
+                ? "border-primary text-primary-dark font-bold"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
             NIK Duplikat
             <span
               className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                activeTab === "duplicate" ? "bg-primary-light text-primary-dark" : "bg-slate-100 text-slate-600"
+                activeTab === "duplicate" ? "bg-primary/10 text-primary-dark" : "bg-slate-100 text-slate-600"
               }`}
             >
               {duplicateNiks.length}
@@ -189,7 +189,7 @@ export default function AnomalyStep({
             <div className="flex gap-2 shrink-0">
               <button
                 onClick={() => onBulkNameResolution("valid")}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-primary-light bg-primary-light text-primary-dark text-xs font-semibold hover:bg-primary-light/70 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-primary/30 bg-primary/10 text-primary-dark text-xs font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
               >
                 <Check size={13} /> Validkan Semua
               </button>
@@ -228,7 +228,7 @@ export default function AnomalyStep({
                               onClick={() => onSetNameResolution(item.id, "valid")}
                               className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
                                 res === "valid"
-                                  ? "bg-primary text-white shadow-xs"
+                                  ? "bg-primary-dark text-white shadow-xs"
                                   : "text-slate-600 hover:text-slate-800"
                               }`}
                             >
@@ -312,7 +312,7 @@ export default function AnomalyStep({
             <div className="flex gap-2 shrink-0">
               <button
                 onClick={() => onBulkNikResolution("valid")}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-primary-light bg-primary-light text-primary-dark text-xs font-semibold hover:bg-primary-light/70 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-primary/30 bg-primary/10 text-primary-dark text-xs font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
               >
                 <Check size={13} /> Tetap Cocokkan
               </button>
@@ -353,7 +353,7 @@ export default function AnomalyStep({
                               onClick={() => onSetNikResolution(item.id, "valid")}
                               className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
                                 res === "valid"
-                                  ? "bg-primary text-white shadow-xs"
+                                  ? "bg-primary-dark text-white shadow-xs"
                                   : "text-slate-600 hover:text-slate-800"
                               }`}
                             >
@@ -521,7 +521,7 @@ export default function AnomalyStep({
         </button>
         <button
           onClick={onNext}
-          className="flex-1 h-11 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-dark hover:shadow-lg hover:shadow-primary-light transition-all duration-300 active:scale-[0.98] cursor-pointer"
+          className="flex-1 h-11 rounded-xl bg-primary-dark text-white text-sm font-semibold hover:shadow-lg hover:shadow-primary-light transition-all duration-300 active:scale-[0.98] cursor-pointer"
         >
           Terapkan & Selesaikan
         </button>

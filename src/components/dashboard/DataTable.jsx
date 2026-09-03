@@ -129,7 +129,7 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
               }}
               className={`px-3 py-1.5 text-[10px] font-semibold transition-colors cursor-pointer ${
                 statusFilter === f.val
-                  ? "bg-primary text-white"
+                  ? "bg-primary-dark text-white"
                   : "bg-white text-slate-500 hover:bg-slate-50"
               }`}
             >
@@ -188,7 +188,7 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
                       } ${
                         isResult
                           ? Number(val) === 1
-                            ? "text-primary font-bold"
+                            ? "text-primary-dark font-bold"
                             : "text-accent-red font-bold"
                           : "text-slate-700"
                       }`}

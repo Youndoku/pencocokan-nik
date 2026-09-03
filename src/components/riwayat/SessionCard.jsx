@@ -40,7 +40,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
     <div
       className={`group bg-white rounded-2xl border shadow-sm p-4 transition-all duration-200 hover:shadow-md ${
         selected
-          ? "border-primary-light bg-primary-light/30 ring-2 ring-primary-light"
+          ? "border-primary/30 bg-primary/10 ring-2 ring-primary"
           : "border-slate-200/60"
       }`}
     >
@@ -108,7 +108,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
               total
             </span>
             <span>
-              <span className="font-bold text-primary">
+              <span className="font-bold text-primary-dark">
                 {(ringkasan?.cocok || 0).toLocaleString("id-ID")}
               </span>{" "}
               cocok
@@ -127,7 +127,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
       <div className="flex gap-1.5 mt-3 pt-3 border-t border-slate-100">
         <button
           onClick={() => navigate(`/dashboard/${id}`)}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-primary-light text-primary-dark rounded-xl text-[11px] font-semibold hover:bg-primary-light/70 transition-colors cursor-pointer"
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-primary/10 text-primary-dark rounded-xl text-[11px] font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
         >
           <BarChart3 size={13} />
           Dashboard
@@ -144,7 +144,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
             e.stopPropagation();
             onHapus(id);
           }}
-          className="flex items-center justify-center gap-1.5 px-3 py-2 text-accent-red hover:bg-accent-red/10 hover:text-accent-red rounded-xl text-[11px] font-medium transition-colors cursor-pointer"
+          className="flex items-center justify-center gap-1.5 px-3 py-2 text-accent-red hover:bg-accent-red/15 hover:text-accent-red rounded-xl text-[11px] font-medium transition-colors cursor-pointer"
         >
           <Trash2 size={13} />
         </button>

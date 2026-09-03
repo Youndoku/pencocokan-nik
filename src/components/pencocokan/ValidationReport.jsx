@@ -11,7 +11,7 @@ function SeverityIcon({ type }) {
   if (type === "success")
     return <CheckCircle2 size={14} className="text-primary shrink-0" />;
   if (type === "warning")
-    return <AlertTriangle size={14} className="text-accent-gold shrink-0" />;
+    return <AlertTriangle size={14} className="text-neutral-900 shrink-0" />;
   return <Info size={14} className="text-accent-sky shrink-0" />;
 }
 
@@ -19,7 +19,7 @@ function ValidationItem({ type, label, value, detail, children }) {
   const [expanded, setExpanded] = useState(false);
 
   const bgMap = {
-    success: "bg-primary-light border-primary-light",
+    success: "bg-primary/10 border-primary/30",
     warning: "bg-accent-gold/15 border-accent-gold/40",
     info: "bg-accent-sky/10 border-accent-sky/30",
   };
@@ -79,7 +79,7 @@ export default function ValidationReport({ validasi, label }) {
     <div className="mt-3 animate-fade-in">
       <p className="text-xs font-semibold text-slate-600 mb-2 flex items-center gap-1.5">
         {hasIssues ? (
-          <AlertTriangle size={12} className="text-accent-gold" />
+          <AlertTriangle size={12} className="text-neutral-900" />
         ) : (
           <CheckCircle2 size={12} className="text-primary" />
         )}

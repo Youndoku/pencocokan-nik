@@ -11,9 +11,9 @@ export default function UploadSlot({ title, subtitle, file, onFile, loading }) {
       className={
         "rounded-xl border p-5 bg-white transition-all duration-300 hover:shadow-md " +
         (loading
-          ? "border-primary-light bg-primary-light/10"
+          ? "border-primary/30 bg-primary/10"
           : file
-          ? "border-primary-light bg-primary-light/30"
+          ? "border-primary/30 bg-primary/10"
           : "border-slate-200 hover:border-primary-light")
       }
     >
@@ -22,9 +22,9 @@ export default function UploadSlot({ title, subtitle, file, onFile, loading }) {
           className={
             "w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-300 " +
             (loading
-              ? "bg-primary-light text-primary-dark"
+              ? "bg-primary/10 text-primary-dark"
               : file
-              ? "bg-primary-light text-primary-dark"
+              ? "bg-primary/10 text-primary-dark"
               : "bg-slate-100 text-slate-400")
           }
         >
@@ -43,7 +43,7 @@ export default function UploadSlot({ title, subtitle, file, onFile, loading }) {
       </div>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-sm text-primary font-medium">
+        <div className="flex items-center gap-2 text-sm text-primary-dark font-medium">
           <Loader2 size={14} className="animate-spin" />
           <span>Sedang membaca dan memproses Excel...</span>
         </div>
@@ -69,7 +69,7 @@ export default function UploadSlot({ title, subtitle, file, onFile, loading }) {
               e.target.value = "";
             }}
           />
-          <span className="inline-flex items-center gap-1 text-sm text-primary hover:text-primary-dark font-medium transition-colors font-semibold">
+          <span className="inline-flex items-center gap-1 text-sm text-primary-dark font-medium transition-colors font-semibold">
             Pilih file .xlsx <ChevronRight size={14} />
           </span>
         </label>

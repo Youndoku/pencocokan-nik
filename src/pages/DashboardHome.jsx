@@ -25,7 +25,7 @@ export default function DashboardHome() {
         </p>
         <button
           onClick={() => navigate("/pencocokan")}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-xs font-semibold hover:bg-primary-dark transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-dark text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer"
         >
           <PlusCircle size={14} />
           Mulai Proses Data

@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "tailwindcss" source("./");
 
 /* ── Theme ── */
 /* Font sistem bawaan (bukan Google Fonts) — aplikasi ini 100% offline,

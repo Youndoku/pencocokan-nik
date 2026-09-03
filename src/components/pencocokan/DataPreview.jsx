@@ -30,7 +30,7 @@ export default function DataPreview({
             — klik baris header kolom
           </span>
         </p>
-        <span className="text-xs text-primary-dark font-semibold bg-primary-light px-2 py-0.5 rounded-full">
+        <span className="text-xs text-primary-dark font-semibold bg-primary/10 px-2 py-0.5 rounded-full">
           Header: baris {barisHeader + 1}
         </span>
       </div>
@@ -49,7 +49,7 @@ export default function DataPreview({
                   className={
                     "cursor-pointer border-b border-slate-100 last:border-0 transition-all duration-200 " +
                     (isHeader
-                      ? "bg-primary-light/80 text-primary-dark font-semibold hover:bg-primary-light"
+                      ? "bg-primary/10 text-primary-dark font-semibold hover:bg-primary/15"
                       : isAboveHeader
                       ? "bg-slate-50/50 text-slate-400 hover:bg-slate-100/50"
                       : "hover:bg-slate-50 text-slate-700")

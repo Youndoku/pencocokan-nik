@@ -126,7 +126,7 @@ export default function PencocokanPage() {
       <div className="w-full max-w-xl">
         {/* Header */}
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary-light text-primary-dark mb-4 shadow-sm">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary-dark mb-4 shadow-sm">
             <ShieldCheck size={24} />
           </div>
           <h1 className="text-xl font-bold m-0 mb-1.5 text-slate-900 tracking-tight">

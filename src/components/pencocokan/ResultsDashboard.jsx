@@ -61,7 +61,7 @@ export default function ResultsDashboard({
     <div className="space-y-5 animate-fade-in">
       {/* Success Banner */}
       <div className="text-center py-3">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-light border border-primary-light text-primary-dark text-xs font-semibold">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary-dark text-xs font-semibold">
           <CheckCircle2 size={14} />
           Pencocokan selesai — Data tersimpan otomatis
         </div>
@@ -162,7 +162,7 @@ export default function ResultsDashboard({
       <div className="space-y-2">
         <button
           onClick={onDownload}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-xs font-semibold hover:bg-primary-dark transition-colors shadow-sm cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-dark text-white rounded-xl text-xs font-semibold transition-colors shadow-sm cursor-pointer"
         >
           <Download size={14} />
           Unduh Excel
