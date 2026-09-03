@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "recharts";
 
-const COLORS = ["#10b981", "#ef4444", "#f59e0b"];
+const COLORS = ["#0DA44F", "#D91F2B", "#DBEC20"]; // primary, accent-red, accent-gold
 
 export default function SummaryPanel({ ringkasan, namaKolomBaru }) {
   if (!ringkasan) return null;

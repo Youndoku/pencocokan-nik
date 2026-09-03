@@ -10,12 +10,11 @@ import {
 } from "recharts";
 
 const CHART_COLORS = [
-  "#6366f1",
-  "#10b981",
-  "#ef4444",
-  "#f59e0b",
-  "#8b5cf6",
-  "#06b6d4",
+  "#0DA44F", // primary
+  "#4454AA", // secondary
+  "#D91F2B", // accent-red
+  "#09ABE7", // accent-sky
+  "#0B7A3B", // primary-dark
 ];
 
 export default function DistributionChart({ chartKeterangan }) {

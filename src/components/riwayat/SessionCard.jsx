@@ -87,10 +87,10 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
                   width: `${persen}%`,
                   backgroundColor:
                     persen >= 70
-                      ? "#10b981"
+                      ? "#0DA44F"
                       : persen >= 40
-                        ? "#f59e0b"
-                        : "#ef4444",
+                        ? "#DBEC20"
+                        : "#D91F2B",
                 }}
               />
             </div>

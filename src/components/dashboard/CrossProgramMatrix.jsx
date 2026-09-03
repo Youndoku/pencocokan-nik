@@ -53,7 +53,7 @@ export default function CrossProgramMatrix({ crossMatrix }) {
                       style={{
                         backgroundColor: isDiag
                           ? "#f8fafc"
-                          : `rgba(99, 102, 241, ${intensity * 0.3})`,
+                          : `rgba(13, 164, 79, ${intensity * 0.3})`,
                         color: isDiag ? "#94a3b8" : "#1e293b",
                       }}
                     >

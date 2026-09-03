@@ -19,9 +19,9 @@ import {
 } from "recharts";
 
 const COLORS = {
-  cocok: "#10b981",
-  tidak: "#ef4444",
-  dikecualikan: "#f59e0b",
+  cocok: "#0DA44F",       // primary — Semantic: Success
+  tidak: "#D91F2B",       // accent-red — Semantic: Error
+  dikecualikan: "#DBEC20", // accent-gold — Semantic: Warning
 };
 
 export default function ResultsDashboard({

@@ -3,7 +3,7 @@ import {
   ResponsiveContainer, Cell,
 } from "recharts";
 
-const BAR_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#ec4899"];
+const BAR_COLORS = ["#0DA44F", "#4454AA", "#D91F2B", "#09ABE7", "#0B7A3B"]; // primary, secondary, accent-red, accent-sky, primary-dark — dataviz-validated order
 
 /**
  * Bar chart "Perbandingan Jumlah Cocok per Program" — dulu bagian dari
