@@ -45,7 +45,7 @@ export default function NikSearchBox({ sesiTerbaru }) {
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-4 mb-4 shadow-sm">
       <p className="text-xs font-semibold text-slate-700 mb-2 flex items-center gap-1.5">
-        <UserCheck size={14} className="text-indigo-500" />
+        <UserCheck size={14} className="text-primary" />
         Cari NIK di data terbaru
       </p>
       <div className="relative mb-2">
@@ -59,7 +59,7 @@ export default function NikSearchBox({ sesiTerbaru }) {
           placeholder="Ketik NIK..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 transition-all"
+          className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light transition-all"
         />
       </div>
 
@@ -90,8 +90,8 @@ export default function NikSearchBox({ sesiTerbaru }) {
                       key={col}
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
                         cocok
-                          ? "bg-emerald-50 text-emerald-600"
-                          : "bg-red-50 text-red-500"
+                          ? "bg-primary-light text-primary-dark"
+                          : "bg-accent-red/10 text-accent-red"
                       }`}
                     >
                       {col}: {cocok ? "Cocok" : "Tidak"}

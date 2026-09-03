@@ -40,7 +40,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
     <div
       className={`group bg-white rounded-2xl border shadow-sm p-4 transition-all duration-200 hover:shadow-md ${
         selected
-          ? "border-indigo-300 bg-indigo-50/30 ring-2 ring-indigo-200"
+          ? "border-primary-light bg-primary-light/30 ring-2 ring-primary-light"
           : "border-slate-200/60"
       }`}
     >
@@ -50,7 +50,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
           type="checkbox"
           checked={selected}
           onChange={onToggleSelect}
-          className="mt-1 w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+          className="mt-1 w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
         />
 
         <div className="flex-1 min-w-0">
@@ -71,7 +71,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <ArrowRightLeft size={12} className="text-indigo-400 shrink-0" />
+              <ArrowRightLeft size={12} className="text-primary shrink-0" />
               <span className="text-xs text-slate-500 truncate">
                 vs {namaPembanding}
               </span>
@@ -108,13 +108,13 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
               total
             </span>
             <span>
-              <span className="font-bold text-emerald-600">
+              <span className="font-bold text-primary">
                 {(ringkasan?.cocok || 0).toLocaleString("id-ID")}
               </span>{" "}
               cocok
             </span>
             <span>
-              <span className="font-bold text-red-500">
+              <span className="font-bold text-accent-red">
                 {(ringkasan?.tidak || 0).toLocaleString("id-ID")}
               </span>{" "}
               tidak
@@ -127,7 +127,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
       <div className="flex gap-1.5 mt-3 pt-3 border-t border-slate-100">
         <button
           onClick={() => navigate(`/dashboard/${id}`)}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-indigo-50 text-indigo-700 rounded-xl text-[11px] font-semibold hover:bg-indigo-100 transition-colors cursor-pointer"
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-primary-light text-primary-dark rounded-xl text-[11px] font-semibold hover:bg-primary-light/70 transition-colors cursor-pointer"
         >
           <BarChart3 size={13} />
           Dashboard
@@ -144,7 +144,7 @@ export default function SessionCard({ sesi, onHapus, selected, onToggleSelect })
             e.stopPropagation();
             onHapus(id);
           }}
-          className="flex items-center justify-center gap-1.5 px-3 py-2 text-red-400 hover:bg-red-50 hover:text-red-600 rounded-xl text-[11px] font-medium transition-colors cursor-pointer"
+          className="flex items-center justify-center gap-1.5 px-3 py-2 text-accent-red hover:bg-accent-red/10 hover:text-accent-red rounded-xl text-[11px] font-medium transition-colors cursor-pointer"
         >
           <Trash2 size={13} />
         </button>
