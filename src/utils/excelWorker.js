@@ -650,9 +650,12 @@ self.onmessage = async function (e) {
 
         const wb = XLSX.utils.book_new();
 
-        // Sheet "Hasil"
-        const wsHasil = XLSX.utils.json_to_sheet(finalRows);
-        wsHasil["!cols"] = hitungLebarKolom(finalRows);
+        // Sheet "Hasil" — file unduhan tidak perlu kolom "Keterangan" (itu cuma
+        // buat ditampilkan di dashboard); yang diekspor cuma data asli + kolom
+        // hasil proses (namaKolomBaru) biar tiap proses cuma nambah satu kolom.
+        const rowsUntukExport = finalRows.map(({ Keterangan, ...rest }) => rest);
+        const wsHasil = XLSX.utils.json_to_sheet(rowsUntukExport);
+        wsHasil["!cols"] = hitungLebarKolom(rowsUntukExport);
         amankanAngkaPanjang(wsHasil);
         XLSX.utils.book_append_sheet(wb, wsHasil, "Hasil");
 
