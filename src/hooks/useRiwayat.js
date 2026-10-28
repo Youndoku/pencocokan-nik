@@ -7,6 +7,8 @@ import {
   ambilSesi as dbAmbil,
 } from "../utils/db.js";
 
+const EVENT_BERUBAH = "sesi-berubah";
+
 export function useRiwayat() {
   const [sesiList, setSesiList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,30 +29,39 @@ export function useRiwayat() {
 
   useEffect(() => {
     muat();
+    // Instance lain (mis. sidebar dan footer di App) ikut memuat ulang saat sesi berubah.
+    const onBerubah = (e) => e.detail !== muat && muat();
+    window.addEventListener(EVENT_BERUBAH, onBerubah);
+    return () => window.removeEventListener(EVENT_BERUBAH, onBerubah);
+  }, [muat]);
+
+  const setelahUbah = useCallback(async () => {
+    await muat();
+    window.dispatchEvent(new CustomEvent(EVENT_BERUBAH, { detail: muat }));
   }, [muat]);
 
   const simpanSesi = useCallback(
     async (sesi) => {
       await dbSimpan(sesi);
-      await muat();
+      await setelahUbah();
     },
-    [muat]
+    [setelahUbah]
   );
 
   const hapusSesi = useCallback(
     async (id) => {
       await dbHapus(id);
-      await muat();
+      await setelahUbah();
     },
-    [muat]
+    [setelahUbah]
   );
 
   const hapusBanyakSesi = useCallback(
     async (ids) => {
       await dbHapusBanyak(ids);
-      await muat();
+      await setelahUbah();
     },
-    [muat]
+    [setelahUbah]
   );
 
   const ambilSesi = useCallback(async (id) => {

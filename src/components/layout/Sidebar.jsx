@@ -1,187 +1,115 @@
-import { Link, useLocation } from "react-router-dom";
-import {
-  ShieldCheck,
-  BarChart3,
-  Upload,
-  History,
-  Menu,
-  X,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { LayoutDashboard, History, LifeBuoy, Plus, PanelLeftClose, PanelLeftOpen, Menu, X } from "lucide-react";
+import Button from "../ui/Button.jsx";
+import NavItem from "../ui/NavItem.jsx";
 
-export default function Sidebar({ jumlahSesi = 0 }) {
+const KUNCI_CIUT = "sidebar-ciut";
+
+function bacaCiut() {
+  try {
+    return localStorage.getItem(KUNCI_CIUT) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/** Isi sidebar, dipakai bersama oleh tampilan desktop dan drawer HP. */
+function IsiMenu({ jumlahSesi, collapsed = false }) {
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const isActive = (item) => {
-    if (item.matchPrefix && location.pathname.startsWith(item.matchPrefix)) {
-      return true;
-    }
-    return location.pathname === item.to;
-  };
-
-  const navItems = [
-    { to: "/", label: "Dashboard", icon: BarChart3, matchPrefix: "/dashboard" },
-    { to: "/pencocokan", label: "Proses Data", icon: Upload },
-    { to: "/riwayat", label: "Riwayat & Pencarian", icon: History, badge: jumlahSesi },
-  ];
+  const navigate = useNavigate();
+  // `mulai` membuat PencocokanPage di-mount ulang, jadi wizard selalu dari awal.
+  const prosesBaru = () => navigate("/pencocokan", { state: { mulai: Date.now() } });
+  const dashboardAktif = location.pathname === "/" || location.pathname.startsWith("/dashboard");
 
   return (
     <>
-      {/* Mobile top bar */}
-      <div className="sm:hidden sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-slate-200/60 shadow-sm">
-        <div className="flex items-center justify-between h-14 px-4">
-          <Link
-            to="/"
-            className="flex items-center gap-2.5 text-slate-800 hover:text-primary-dark transition-colors"
-          >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary flex items-center justify-center shadow-sm">
-              <ShieldCheck size={16} className="text-white" />
-            </div>
-            <span className="font-bold text-sm tracking-tight">Pencocokan NIK</span>
-          </Link>
-          <button
-            type="button"
-            onClick={() => setMobileOpen(true)}
-            aria-label="Buka menu"
-            className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
-          >
-            <Menu size={18} />
-          </button>
-        </div>
+      {collapsed ? (
+        <Button icon={Plus} onClick={prosesBaru} aria-label="Proses data baru" title="Proses data baru" className="px-0! w-10 self-center" />
+      ) : (
+        <Button icon={Plus} block onClick={prosesBaru}>
+          Proses data baru
+        </Button>
+      )}
+      <nav aria-label="Menu utama" className="flex flex-col gap-0.5">
+        <NavItem to="/" icon={LayoutDashboard} label="Dashboard" active={dashboardAktif} collapsed={collapsed} />
+        <NavItem to="/riwayat" icon={History} label="Riwayat dan pencarian" count={jumlahSesi || null} collapsed={collapsed} />
+      </nav>
+      <nav aria-label="Menu lain" className="flex flex-col gap-0.5 border-t border-line pt-4">
+        <NavItem to="/bantuan" icon={LifeBuoy} label="Bantuan" collapsed={collapsed} />
+      </nav>
+    </>
+  );
+}
+
+const Brand = () => <div className="px-3 text-sm leading-5 font-semibold tracking-[0.06em]">PENCOCOKAN NIK</div>;
+
+export default function Sidebar({ jumlahSesi = 0 }) {
+  const [collapsed, setCollapsed] = useState(bacaCiut);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const ubahCiut = (nilai) => {
+    setCollapsed(nilai);
+    try {
+      localStorage.setItem(KUNCI_CIUT, nilai ? "1" : "0");
+    } catch {
+      // localStorage tidak tersedia (mode privat): pilihan hanya berlaku sesi ini.
+    }
+  };
+
+  return (
+    <>
+      {/* HP: bar atas + drawer */}
+      <div className="sm:hidden sticky top-0 z-40 flex h-14 items-center justify-between border-b border-line bg-surface px-1">
+        <Brand />
+        <button
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Buka menu"
+          className="grid size-10 place-items-center rounded-md text-lilac-text hover:bg-surface-muted"
+        >
+          <Menu size={18} strokeWidth={1.5} />
+        </button>
       </div>
 
-      {/* Mobile drawer + backdrop */}
       {mobileOpen && (
         <div className="sm:hidden fixed inset-0 z-50">
-          <div
-            className="absolute inset-0 bg-black/30 animate-fade-in"
-            onClick={() => setMobileOpen(false)}
-          />
-          <div className="absolute inset-y-0 left-0 w-64 bg-white shadow-xl p-4 animate-fade-in">
-            <div className="flex items-center justify-between mb-6">
-              <Link
-                to="/"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2.5 text-slate-800"
-              >
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary flex items-center justify-center shadow-sm">
-                  <ShieldCheck size={16} className="text-white" />
-                </div>
-                <span className="font-bold text-sm tracking-tight">Pencocokan NIK</span>
-              </Link>
+          <div className="absolute inset-0 bg-lilac-text/30" onClick={() => setMobileOpen(false)} />
+          <aside
+            aria-label="Navigasi"
+            onClick={(e) => e.target.closest("a, button") && setMobileOpen(false)}
+            className="absolute inset-y-0 left-0 flex w-[232px] flex-col gap-4 bg-surface px-4 py-5 shadow-pop"
+          >
+            <div className="flex items-center justify-between">
+              <Brand />
               <button
                 type="button"
-                onClick={() => setMobileOpen(false)}
                 aria-label="Tutup menu"
-                className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+                className="grid size-8 place-items-center rounded-sm text-ink-muted hover:bg-surface-muted"
               >
-                <X size={18} />
+                <X size={16} strokeWidth={1.5} />
               </button>
             </div>
-            <div className="space-y-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    isActive(item)
-                      ? "bg-primary/10 text-primary-dark"
-                      : "text-slate-600 hover:bg-slate-50"
-                  }`}
-                >
-                  <item.icon size={16} />
-                  {item.label}
-                  {item.badge > 0 && (
-                    <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-primary-dark text-white text-xs font-bold">
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </div>
+            <IsiMenu jumlahSesi={jumlahSesi} />
+          </aside>
         </div>
       )}
 
-      {/* Desktop sidebar */}
+      {/* Desktop */}
       <aside
-        className={`hidden sm:flex sm:flex-col sticky top-0 h-screen shrink-0 bg-white/80 backdrop-blur-lg border-r border-slate-200/60 shadow-sm transition-all duration-200 ${
-          collapsed ? "w-16" : "w-56"
-        }`}
+        aria-label="Navigasi"
+        className={`hidden sm:flex sticky top-0 h-screen shrink-0 flex-col gap-4 border-r border-line bg-surface py-5 ${collapsed ? "w-[72px] px-4" : "w-[232px] px-4"}`}
       >
-        <div
-          className={`flex items-center h-14 px-4 ${
-            collapsed ? "justify-center" : "justify-between"
-          }`}
-        >
-          <Link
-            to="/"
-            onClick={(e) => {
-              if (collapsed) {
-                e.preventDefault();
-                setCollapsed(false);
-              }
-            }}
-            className="flex items-center gap-2.5 text-slate-800 hover:text-primary-dark transition-colors"
-            title={collapsed ? "Perluas sidebar" : "Pencocokan NIK"}
-          >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary flex items-center justify-center shadow-sm shrink-0">
-              <ShieldCheck size={16} className="text-white" />
-            </div>
-            {!collapsed && (
-              <span className="font-bold text-sm tracking-tight">Pencocokan NIK</span>
-            )}
-          </Link>
-          {!collapsed && (
-            <button
-              type="button"
-              onClick={() => setCollapsed(true)}
-              title="Ciutkan sidebar"
-              aria-label="Ciutkan sidebar"
-              className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-colors cursor-pointer shrink-0"
-            >
-              <ChevronLeft size={16} />
-            </button>
+        {!collapsed && <Brand />}
+        <IsiMenu jumlahSesi={jumlahSesi} collapsed={collapsed} />
+        <div className={`mt-auto ${collapsed ? "self-center" : "px-3"}`}>
+          {collapsed ? (
+            <Button variant="ghost" icon={PanelLeftOpen} onClick={() => ubahCiut(false)} aria-label="Tampilkan menu" title="Tampilkan menu" />
+          ) : (
+            <Button variant="ghost" icon={PanelLeftClose} onClick={() => ubahCiut(true)}>
+              Sembunyikan menu
+            </Button>
           )}
-        </div>
-
-        <div className="flex-1 px-2 py-2 space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              title={item.label}
-              className={`relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                collapsed ? "justify-center" : ""
-              } ${
-                isActive(item)
-                  ? "bg-primary/10 text-primary-dark"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-              }`}
-            >
-              <span className="relative shrink-0">
-                <item.icon size={16} />
-                {collapsed && item.badge > 0 && (
-                  <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-primary" />
-                )}
-              </span>
-              {!collapsed && (
-                <>
-                  {item.label}
-                  {item.badge > 0 && (
-                    <span className="ml-auto inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary-dark text-white text-xs font-bold">
-                      {item.badge}
-                    </span>
-                  )}
-                </>
-              )}
-            </Link>
-          ))}
         </div>
       </aside>
     </>
