@@ -1,18 +1,26 @@
 import { useState } from "react";
-import { AlertCircle, CheckCircle, HelpCircle, ShieldAlert, ChevronLeft, ChevronRight, Search, Check, Ban, Copy } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Card from "../ui/Card.jsx";
+import Button from "../ui/Button.jsx";
+import SearchInput from "../ui/SearchInput.jsx";
+import SegmentedControl from "../ui/SegmentedControl.jsx";
+import { samarkanNIK } from "../../utils/normalize.js";
 
-const LABEL_FILE = {
-  gabungan: "Data Gabungan",
-  pembanding: "Data Pembanding",
-};
+const PER_HALAMAN = 10;
+const OPSI_NAMA = [
+  { value: "valid", label: "Validkan" },
+  { value: "abaikan", label: "Abaikan" },
+];
+const OPSI_NIK = [
+  { value: "valid", label: "Cocokkan" },
+  { value: "abaikan", label: "Abaikan" },
+];
+const LABEL_FILE = { gabungan: "Data gabungan", pembanding: "Data pembanding" };
 
 /**
- * UI Langkah 3: Konfirmasi Anomali.
- * Memungkinkan user meninjau data anomali (Perbedaan Nama, Format NIK Tidak
- * Standar, dan NIK Duplikat), memvalidkan atau mengabaikan satu per satu
- * atau secara massal, sebelum menyelesaikan pencocokan. NIK Duplikat murni
- * informasional (matching tetap memakai kemunculan pertama per NIK) — di
- * sini cuma supaya user sadar ada NIK yang muncul lebih dari sekali.
+ * Langkah 3: periksa anomali (perbedaan nama, format NIK, NIK duplikat).
+ * NIK duplikat hanya informasi: pencocokan memakai baris pertama per NIK.
  */
 export default function AnomalyStep({
   anomalies,
@@ -24,508 +32,207 @@ export default function AnomalyStep({
   onBulkNikResolution,
   onBack,
   onNext,
-  loadingMatching,
 }) {
   const { nameMismatches = [], invalidNiks = [], duplicateNiks = [] } = anomalies;
-  const [activeTab, setActiveTab] = useState(
-    nameMismatches.length > 0 ? "name" : invalidNiks.length > 0 ? "nik" : "duplicate"
-  );
 
-  // Search & Pagination States
-  const [nameSearch, setNameSearch] = useState("");
-  const [nikSearch, setNikSearch] = useState("");
-  const [duplicateSearch, setDuplicateSearch] = useState("");
-  const [namePage, setNamePage] = useState(1);
-  const [nikPage, setNikPage] = useState(1);
-  const [duplicatePage, setDuplicatePage] = useState(1);
-  const itemsPerPage = 10;
+  const jenis = {
+    nama: {
+      label: "Perbedaan nama",
+      sub: "NIK sama, nama di kedua file berbeda",
+      items: nameMismatches,
+      teks: (it) => [it.nik, it.nameGabungan, it.namePembanding],
+      kolom: [
+        ["NIK", (it) => samarkanNIK(it.nik)],
+        ["Nama di data gabungan", (it) => it.nameGabungan],
+        ["Nama di data pembanding", (it) => it.namePembanding],
+      ],
+      opsi: OPSI_NAMA,
+      res: nameMismatchResolutions,
+      onRes: onSetNameResolution,
+      onBulk: onBulkNameResolution,
+      bulk: ["Validkan semua", "Abaikan semua"],
+      catatan: "Pilihan bawaan untuk perbedaan nama adalah Abaikan.",
+      nama: (it) => it.nameGabungan,
+    },
+    format: {
+      label: "Format NIK",
+      judul: "Format NIK tidak standar",
+      sub: "NIK kosong, berisi selain angka, atau bukan 16 digit",
+      items: invalidNiks,
+      teks: (it) => [it.nikRaw, it.name, it.reason],
+      kolom: [
+        ["NIK", (it) => it.nikRaw || "(kosong)"],
+        ["Nama", (it) => it.name],
+        ["Masalah", (it) => it.reason],
+      ],
+      opsi: OPSI_NIK,
+      res: invalidNikResolutions,
+      onRes: onSetNikResolution,
+      onBulk: onBulkNikResolution,
+      bulk: ["Cocokkan semua", "Abaikan semua"],
+      catatan: "Pilihan bawaan untuk format NIK adalah Cocokkan: NIK dirapikan lalu tetap dicoba dicocokkan.",
+      nama: (it) => it.name || it.nikRaw,
+    },
+    duplikat: {
+      label: "NIK duplikat",
+      sub: "NIK yang muncul lebih dari sekali dalam satu file",
+      items: duplicateNiks,
+      teks: (it) => [it.nik, ...it.baris.map((b) => b.name)],
+      kolom: [
+        ["NIK", (it) => samarkanNIK(it.nik)],
+        ["File", (it) => LABEL_FILE[it.file]],
+        ["Jumlah baris", (it) => it.jumlah.toLocaleString("id-ID")],
+        ["Nama", (it) => [...new Set(it.baris.map((b) => b.name).filter(Boolean))].join(", ")],
+      ],
+      catatan: "Yang dipakai hanya baris pertama.",
+    },
+  };
 
-  // Filtered lists
-  const filteredNameMismatches = nameMismatches.filter((item) => {
-    const q = nameSearch.toLowerCase();
-    return (
-      item.nik.toLowerCase().includes(q) ||
-      item.nameGabungan.toLowerCase().includes(q) ||
-      item.namePembanding.toLowerCase().includes(q)
-    );
-  });
+  const tersedia = Object.keys(jenis).filter((k) => jenis[k].items.length > 0);
+  const [tab, setTab] = useState(tersedia[0]);
+  const [cari, setCari] = useState("");
+  const [halaman, setHalaman] = useState(1);
 
-  const filteredInvalidNiks = invalidNiks.filter((item) => {
-    const q = nikSearch.toLowerCase();
-    return (
-      item.nikRaw.toLowerCase().includes(q) ||
-      item.name.toLowerCase().includes(q) ||
-      item.reason.toLowerCase().includes(q)
-    );
-  });
+  const j = jenis[tab];
+  const q = cari.trim().toLowerCase();
+  const tersaring = q
+    ? j.items.filter((it) => j.teks(it).some((t) => String(t ?? "").toLowerCase().includes(q)))
+    : j.items;
+  const jumlahHalaman = Math.max(1, Math.ceil(tersaring.length / PER_HALAMAN));
+  const hal = Math.min(halaman, jumlahHalaman);
+  const tampil = tersaring.slice((hal - 1) * PER_HALAMAN, hal * PER_HALAMAN);
+  const totalPerlu = nameMismatches.length + invalidNiks.length + duplicateNiks.length;
 
-  const filteredDuplicateNiks = duplicateNiks.filter((item) => {
-    const q = duplicateSearch.toLowerCase();
-    if (!q) return true;
-    return (
-      item.nik.toLowerCase().includes(q) ||
-      item.baris.some((b) => b.name.toLowerCase().includes(q))
-    );
-  });
-
-  // Pages counts
-  const namePagesCount = Math.max(1, Math.ceil(filteredNameMismatches.length / itemsPerPage));
-  const nikPagesCount = Math.max(1, Math.ceil(filteredInvalidNiks.length / itemsPerPage));
-  const duplicatePagesCount = Math.max(1, Math.ceil(filteredDuplicateNiks.length / itemsPerPage));
-
-  // Current page items
-  const currentNameItems = filteredNameMismatches.slice(
-    (namePage - 1) * itemsPerPage,
-    namePage * itemsPerPage
-  );
-  const currentNikItems = filteredInvalidNiks.slice(
-    (nikPage - 1) * itemsPerPage,
-    nikPage * itemsPerPage
-  );
-  const currentDuplicateItems = filteredDuplicateNiks.slice(
-    (duplicatePage - 1) * itemsPerPage,
-    duplicatePage * itemsPerPage
-  );
+  const gantiTab = (t) => {
+    setTab(t);
+    setCari("");
+    setHalaman(1);
+  };
 
   return (
-    <div className="animate-fade-in">
-      {/* Intro Alert */}
-      <div className="flex items-start gap-3 bg-accent-gold/15 border border-accent-gold/40 rounded-xl p-4 mb-4 shadow-xs">
-        <ShieldAlert className="text-neutral-900 shrink-0 mt-0.5" size={18} />
+    <>
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] bg-lilac-soft p-4">
         <div>
-          <h4 className="text-sm font-semibold text-neutral-900 m-0 mb-1">
-            Konfirmasi Temuan Anomali Data
-          </h4>
-          <p className="text-sm text-neutral-900 m-0 leading-relaxed">
-            Ditemukan data yang tidak sinkron. Mohon pilih apakah ingin
-            <strong> memvalidkan </strong> data tersebut (dianggap cocok) atau
-            <strong> mengabaikan </strong> (dianggap tidak cocok) sebelum menyimpan hasil.
+          <p className="body-strong m-0 tabular-nums">
+            {totalPerlu.toLocaleString("id-ID")} data perlu diperiksa sebelum hasil disimpan
           </p>
+          <p className="body m-0 text-ink-muted">Validkan berarti dihitung cocok, abaikan berarti dihitung tidak cocok.</p>
         </div>
+        <Link to="/bantuan#anomali" className="body-strong text-lilac-main hover:text-lilac-text">
+          Pelajari jenis anomali
+        </Link>
       </div>
 
-      {/* Tabs Menu */}
-      <div className="flex border-b border-slate-200 mb-4 bg-white rounded-t-xl px-1 pt-1">
-        {nameMismatches.length > 0 && (
-          <button
-            onClick={() => setActiveTab("name")}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-              activeTab === "name"
-                ? "border-primary text-primary-dark font-bold"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Perbedaan Nama
-            <span
-              className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
-                activeTab === "name" ? "bg-primary/10 text-primary-dark" : "bg-slate-100 text-slate-600"
-              }`}
-            >
-              {nameMismatches.length}
-            </span>
-          </button>
-        )}
-
-        {invalidNiks.length > 0 && (
-          <button
-            onClick={() => setActiveTab("nik")}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-              activeTab === "nik"
-                ? "border-primary text-primary-dark font-bold"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Format NIK Tidak Standar
-            <span
-              className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
-                activeTab === "nik" ? "bg-primary/10 text-primary-dark" : "bg-slate-100 text-slate-600"
-              }`}
-            >
-              {invalidNiks.length}
-            </span>
-          </button>
-        )}
-
-        {duplicateNiks.length > 0 && (
-          <button
-            onClick={() => setActiveTab("duplicate")}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-              activeTab === "duplicate"
-                ? "border-primary text-primary-dark font-bold"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            NIK Duplikat
-            <span
-              className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
-                activeTab === "duplicate" ? "bg-primary/10 text-primary-dark" : "bg-slate-100 text-slate-600"
-              }`}
-            >
-              {duplicateNiks.length}
-            </span>
-          </button>
-        )}
-      </div>
-
-      {/* Tab 1: Perbedaan Nama */}
-      {activeTab === "name" && nameMismatches.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-b-xl p-4 shadow-sm mb-5">
-          {/* Saring & Massal */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-2.5 text-slate-400" size={14} />
-              <input
-                type="text"
-                placeholder="Cari NIK atau Nama..."
-                value={nameSearch}
-                onChange={(e) => {
-                  setNameSearch(e.target.value);
-                  setNamePage(1);
-                }}
-                className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
-              />
-            </div>
-
-            <div className="flex gap-2 shrink-0">
-              <button
-                onClick={() => onBulkNameResolution("valid")}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-primary/30 bg-primary/10 text-primary-dark text-sm font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
-              >
-                <Check size={13} /> Validkan Semua
-              </button>
-              <button
-                onClick={() => onBulkNameResolution("abaikan")}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 text-sm font-semibold hover:bg-slate-100 transition-colors cursor-pointer"
-              >
-                <Ban size={13} /> Abaikan Semua
-              </button>
-            </div>
-          </div>
-
-          {/* Table */}
-          <div className="overflow-x-auto border border-slate-100 rounded-lg mb-4">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="text-left px-3 py-2 text-slate-500 font-semibold">NIK</th>
-                  <th className="text-left px-3 py-2 text-slate-500 font-semibold">Nama (Gabungan)</th>
-                  <th className="text-left px-3 py-2 text-slate-500 font-semibold">Nama (Pembanding)</th>
-                  <th className="text-center px-3 py-2 text-slate-500 font-semibold w-36">Keputusan</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentNameItems.length > 0 ? (
-                  currentNameItems.map((item) => {
-                    const res = nameMismatchResolutions[item.id] || "abaikan";
-                    return (
-                      <tr key={item.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
-                        <td className="px-3 py-2.5 font-mono text-slate-600">{item.nik}</td>
-                        <td className="px-3 py-2.5 text-slate-800 font-medium">{item.nameGabungan}</td>
-                        <td className="px-3 py-2.5 text-slate-800 font-medium">{item.namePembanding}</td>
-                        <td className="px-3 py-2 text-center">
-                          <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50">
-                            <button
-                              onClick={() => onSetNameResolution(item.id, "valid")}
-                              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
-                                res === "valid"
-                                  ? "bg-primary-dark text-white shadow-xs"
-                                  : "text-slate-600 hover:text-slate-800"
-                              }`}
-                            >
-                              Validkan
-                            </button>
-                            <button
-                              onClick={() => onSetNameResolution(item.id, "abaikan")}
-                              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
-                                res === "abaikan"
-                                  ? "bg-slate-300 text-slate-700 shadow-xs"
-                                  : "text-slate-600 hover:text-slate-800"
-                              }`}
-                            >
-                              Abaikan
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="text-center py-6 text-slate-400 italic">
-                      Tidak ada perbedaan nama yang cocok dengan kata kunci
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          {namePagesCount > 1 && (
-            <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-              <span className="text-sm text-slate-500">
-                Menampilkan {((namePage - 1) * itemsPerPage) + 1} - {Math.min(namePage * itemsPerPage, filteredNameMismatches.length)} dari {filteredNameMismatches.length} baris
-              </span>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setNamePage(prev => Math.max(1, prev - 1))}
-                  disabled={namePage === 1}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  <ChevronLeft size={14} />
-                </button>
-                <span className="text-sm font-semibold px-2">
-                  {namePage} / {namePagesCount}
-                </span>
-                <button
-                  onClick={() => setNamePage(prev => Math.min(namePagesCount, prev + 1))}
-                  disabled={namePage === namePagesCount}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  <ChevronRight size={14} />
-                </button>
-              </div>
+      <Card
+        title={j.judul || j.label}
+        subtitle={j.sub}
+        action={
+          <SegmentedControl
+            label="Jenis anomali"
+            value={tab}
+            onChange={gantiTab}
+            options={tersedia.map((k) => ({
+              value: k,
+              label: `${jenis[k].label} (${jenis[k].items.length.toLocaleString("id-ID")})`,
+            }))}
+          />
+        }
+        className="[&>header]:flex-wrap"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <SearchInput
+            className="max-w-[360px] flex-[1_1_260px]"
+            placeholder="Cari NIK atau nama"
+            aria-label="Cari NIK atau nama"
+            value={cari}
+            onChange={(v) => {
+              setCari(v);
+              setHalaman(1);
+            }}
+          />
+          {j.onBulk && (
+            <div className="flex gap-2">
+              <Button variant="secondary" size="sm" onClick={() => j.onBulk("valid")}>
+                {j.bulk[0]}
+              </Button>
+              <Button variant="secondary" size="sm" onClick={() => j.onBulk("abaikan")}>
+                {j.bulk[1]}
+              </Button>
             </div>
           )}
         </div>
-      )}
 
-      {/* Tab 2: Format NIK Tidak Standar */}
-      {activeTab === "nik" && invalidNiks.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-b-xl p-4 shadow-sm mb-5">
-          {/* Saring & Massal */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-2.5 text-slate-400" size={14} />
-              <input
-                type="text"
-                placeholder="Cari NIK, Nama, atau Masalah..."
-                value={nikSearch}
-                onChange={(e) => {
-                  setNikSearch(e.target.value);
-                  setNikPage(1);
-                }}
-                className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
-              />
-            </div>
-
-            <div className="flex gap-2 shrink-0">
-              <button
-                onClick={() => onBulkNikResolution("valid")}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-primary/30 bg-primary/10 text-primary-dark text-sm font-semibold hover:bg-primary/15 transition-colors cursor-pointer"
-              >
-                <Check size={13} /> Tetap Cocokkan
-              </button>
-              <button
-                onClick={() => onBulkNikResolution("abaikan")}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 text-sm font-semibold hover:bg-slate-100 transition-colors cursor-pointer"
-              >
-                <Ban size={13} /> Abaikan Semua
-              </button>
-            </div>
-          </div>
-
-          {/* Table */}
-          <div className="overflow-x-auto border border-slate-100 rounded-lg mb-4">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="text-left px-3 py-2 text-slate-500 font-semibold w-12">Baris</th>
-                  <th className="text-left px-3 py-2 text-slate-500 font-semibold">NIK di File</th>
-                  <th className="text-left px-3 py-2 text-slate-500 font-semibold">Nama</th>
-                  <th className="text-left px-3 py-2 text-slate-500 font-semibold text-neutral-900">Masalah</th>
-                  <th className="text-center px-3 py-2 text-slate-500 font-semibold w-40">Keputusan</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentNikItems.length > 0 ? (
-                  currentNikItems.map((item) => {
-                    const res = invalidNikResolutions[item.id] || "valid";
-                    return (
-                      <tr key={item.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
-                        <td className="px-3 py-2.5 font-mono text-slate-400">{item.rowIdx + 2}</td>
-                        <td className="px-3 py-2.5 font-mono text-slate-600 font-semibold">{item.nikRaw || "(kosong)"}</td>
-                        <td className="px-3 py-2.5 text-slate-800 font-medium">{item.name}</td>
-                        <td className="px-3 py-2.5 text-neutral-900 font-medium">{item.reason}</td>
-                        <td className="px-3 py-2 text-center">
-                          <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50">
-                            <button
-                              onClick={() => onSetNikResolution(item.id, "valid")}
-                              className={`px-2 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
-                                res === "valid"
-                                  ? "bg-primary-dark text-white shadow-xs"
-                                  : "text-slate-600 hover:text-slate-800"
-                              }`}
-                            >
-                              Cocokkan
-                            </button>
-                            <button
-                              onClick={() => onSetNikResolution(item.id, "abaikan")}
-                              className={`px-2 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
-                                res === "abaikan"
-                                  ? "bg-slate-300 text-slate-700 shadow-xs"
-                                  : "text-slate-600 hover:text-slate-800"
-                              }`}
-                            >
-                              Abaikan
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={5} className="text-center py-6 text-slate-400 italic">
-                      Tidak ada NIK tidak standar yang cocok dengan kata kunci
-                    </td>
-                  </tr>
+        <div className="overflow-x-auto">
+          <table aria-label={j.judul || j.label} className="w-full min-w-[720px] border-collapse text-left">
+            <thead>
+              <tr className="border-b border-line">
+                {j.kolom.map(([h]) => (
+                  <th key={h} scope="col" className="caption px-3 py-2 font-normal text-ink-muted">
+                    {h}
+                  </th>
+                ))}
+                {j.opsi && (
+                  <th scope="col" className="caption px-3 py-2 text-right font-normal text-ink-muted">
+                    Keputusan
+                  </th>
                 )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          {nikPagesCount > 1 && (
-            <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-              <span className="text-sm text-slate-500">
-                Menampilkan {((nikPage - 1) * itemsPerPage) + 1} - {Math.min(nikPage * itemsPerPage, filteredInvalidNiks.length)} dari {filteredInvalidNiks.length} baris
-              </span>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setNikPage(prev => Math.max(1, prev - 1))}
-                  disabled={nikPage === 1}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  <ChevronLeft size={14} />
-                </button>
-                <span className="text-sm font-semibold px-2">
-                  {nikPage} / {nikPagesCount}
-                </span>
-                <button
-                  onClick={() => setNikPage(prev => Math.min(nikPagesCount, prev + 1))}
-                  disabled={nikPage === nikPagesCount}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  <ChevronRight size={14} />
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tab 3: NIK Duplikat */}
-      {activeTab === "duplicate" && duplicateNiks.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-b-xl p-4 shadow-sm mb-5">
-          {/* Info */}
-          <div className="flex items-start gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 mb-4">
-            <Copy className="text-slate-400 shrink-0 mt-0.5" size={14} />
-            <p className="text-sm text-slate-600 leading-relaxed m-0">
-              NIK di bawah ini muncul lebih dari sekali di file yang sama.
-              Pencocokan hanya memakai <strong>kemunculan pertama</strong> per
-              NIK — baris lain dengan NIK yang sama bisa jadi tercocokkan ke
-              nama yang salah. Ini murni informasi, tidak perlu diputuskan;
-              cek datanya kalau perlu.
-            </p>
-          </div>
-
-          {/* Saring */}
-          <div className="relative mb-4">
-            <Search className="absolute left-2.5 top-2.5 text-slate-400" size={14} />
-            <input
-              type="text"
-              placeholder="Cari NIK atau Nama..."
-              value={duplicateSearch}
-              onChange={(e) => {
-                setDuplicateSearch(e.target.value);
-                setDuplicatePage(1);
-              }}
-              className="w-full h-8 pl-8 pr-3 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary"
-            />
-          </div>
-
-          {/* Table */}
-          <div className="overflow-x-auto border border-slate-100 rounded-lg mb-4">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="text-left px-3 py-2 text-slate-500 font-semibold">NIK</th>
-                  <th className="text-left px-3 py-2 text-slate-500 font-semibold">File</th>
-                  <th className="text-center px-3 py-2 text-slate-500 font-semibold w-20">Jumlah</th>
-                  <th className="text-left px-3 py-2 text-slate-500 font-semibold">Baris & Nama</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tampil.length === 0 ? (
+                <tr>
+                  <td colSpan={j.kolom.length + 1} className="body px-3 py-6 text-center text-ink-muted">
+                    Tidak ada data yang cocok dengan pencarian.
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {currentDuplicateItems.length > 0 ? (
-                  currentDuplicateItems.map((item) => (
-                    <tr key={item.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
-                      <td className="px-3 py-2.5 font-mono text-slate-600">{item.nik}</td>
-                      <td className="px-3 py-2.5 text-slate-600">{LABEL_FILE[item.file] || item.file}</td>
-                      <td className="px-3 py-2.5 text-center font-bold text-neutral-900">{item.jumlah}</td>
-                      <td className="px-3 py-2.5 text-slate-700">
-                        {item.baris
-                          .map((b) => `Baris ${b.rowIdx + 2}${b.name ? ` (${b.name})` : ""}`)
-                          .join(", ")}
+              ) : (
+                tampil.map((it) => (
+                  <tr key={it.id} className="border-b border-line">
+                    {j.kolom.map(([h, isi], i) => (
+                      <td key={h} className={`body px-3 py-3.5 ${i === 0 ? "whitespace-nowrap tabular-nums" : ""}`}>
+                        {isi(it)}
                       </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="text-center py-6 text-slate-400 italic">
-                      Tidak ada NIK duplikat yang cocok dengan kata kunci
-                    </td>
+                    ))}
+                    {j.opsi && (
+                      <td className="px-3 py-3.5 text-right">
+                        <SegmentedControl
+                          label={`Keputusan untuk ${j.nama(it)}`}
+                          options={j.opsi}
+                          value={j.res[it.id] || (tab === "nama" ? "abaikan" : "valid")}
+                          onChange={(v) => j.onRes(it.id, v)}
+                        />
+                      </td>
+                    )}
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
-          {/* Pagination */}
-          {duplicatePagesCount > 1 && (
-            <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-              <span className="text-sm text-slate-500">
-                Menampilkan {((duplicatePage - 1) * itemsPerPage) + 1} - {Math.min(duplicatePage * itemsPerPage, filteredDuplicateNiks.length)} dari {filteredDuplicateNiks.length} NIK
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="caption m-0 text-ink-muted">{j.catatan}</p>
+          {jumlahHalaman > 1 && (
+            <div className="flex items-center gap-2">
+              <span className="caption text-ink-muted tabular-nums">
+                Menampilkan {(hal - 1) * PER_HALAMAN + 1}–{Math.min(hal * PER_HALAMAN, tersaring.length)} dari{" "}
+                {tersaring.length.toLocaleString("id-ID")}
               </span>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setDuplicatePage(prev => Math.max(1, prev - 1))}
-                  disabled={duplicatePage === 1}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  <ChevronLeft size={14} />
-                </button>
-                <span className="text-sm font-semibold px-2">
-                  {duplicatePage} / {duplicatePagesCount}
-                </span>
-                <button
-                  onClick={() => setDuplicatePage(prev => Math.min(duplicatePagesCount, prev + 1))}
-                  disabled={duplicatePage === duplicatePagesCount}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  <ChevronRight size={14} />
-                </button>
-              </div>
+              <Button variant="secondary" size="sm" icon={ChevronLeft} aria-label="Halaman sebelumnya" disabled={hal === 1} onClick={() => setHalaman(hal - 1)} />
+              <Button variant="secondary" size="sm" icon={ChevronRight} aria-label="Halaman berikutnya" disabled={hal === jumlahHalaman} onClick={() => setHalaman(hal + 1)} />
             </div>
           )}
         </div>
-      )}
+      </Card>
 
-      {/* Buttons */}
-      <div className="flex gap-2">
-        <button
-          onClick={onBack}
-          className="h-11 px-5 rounded-xl border border-slate-200 text-sm text-slate-700 hover:bg-slate-50 transition-all duration-200 cursor-pointer font-medium"
-        >
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-line bg-surface p-4">
+        <Button variant="secondary" onClick={onBack}>
           Kembali
-        </button>
-        <button
-          onClick={onNext}
-          className="flex-1 h-11 rounded-xl bg-primary-dark text-white text-sm font-semibold hover:shadow-lg hover:shadow-primary-light transition-all duration-300 active:scale-[0.98] cursor-pointer"
-        >
-          Terapkan & Selesaikan
-        </button>
+        </Button>
+        <Button iconRight={ChevronRight} onClick={onNext}>
+          Simpan hasil
+        </Button>
       </div>
-    </div>
+    </>
   );
 }

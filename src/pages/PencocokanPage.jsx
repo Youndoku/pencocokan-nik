@@ -1,19 +1,25 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { AlertCircle } from "lucide-react";
 import { usePencocokanNIK } from "../hooks/usePencocokanNIK.js";
 import { useRiwayat } from "../hooks/useRiwayat.js";
 import { generateId } from "../utils/db.js";
-import StepDot from "../components/pencocokan/StepDot.jsx";
+import Button from "../components/ui/Button.jsx";
+import Card from "../components/ui/Card.jsx";
+import ProgressBar from "../components/ui/ProgressBar.jsx";
+import Stepper from "../components/pencocokan/Stepper.jsx";
 import UploadStep from "../components/pencocokan/UploadStep.jsx";
 import ConfigureStep from "../components/pencocokan/ConfigureStep.jsx";
 import AnomalyStep from "../components/pencocokan/AnomalyStep.jsx";
-import ResultsDashboard from "../components/pencocokan/ResultsDashboard.jsx";
-import { AlertTriangle, ShieldCheck } from "lucide-react";
+import ResultsStep from "../components/pencocokan/ResultsStep.jsx";
 
 export default function PencocokanPage() {
   const navigate = useNavigate();
-  const { simpanSesi } = useRiwayat();
+  const [searchParams] = useSearchParams();
+  const dari = searchParams.get("dari");
+  const { sesiList, loading: loadingRiwayat, simpanSesi } = useRiwayat();
   const [sesiId, setSesiId] = useState(null);
+  const [sumber, setSumber] = useState(null); // "sesi" | "file", null = belum dipilih
   const savedRef = useRef(false);
 
   const {
@@ -26,12 +32,12 @@ export default function PencocokanPage() {
     kolomNikGabungan, kolomNamaGabungan,
     kolomNikPembanding, kolomNamaPembanding,
     kolomStatusPembanding, statusTerpilih, namaKolomBaru,
-    daftarStatusUnik, anomalies,
+    daftarStatusUnik, validasi, anomalies,
     nameMismatchResolutions, invalidNikResolutions,
     setNameMismatchResolutions, setInvalidNikResolutions,
     hasil, dataHasil, keteranganDistribusi, mismatchLog, kolomTersedia,
-    reset,
     handleGabunganFile, handlePembandingFile,
+    pakaiSesi, hapusGabungan,
     ubahBarisHeaderGabungan, ubahBarisHeaderPembanding,
     goToConfigure, ubahKolomStatus, toggleStatus,
     setKolomNikGabungan, setKolomNamaGabungan,
@@ -41,10 +47,25 @@ export default function PencocokanPage() {
     excelBuffer,
   } = usePencocokanNIK();
 
-  const hasAnomalies =
-    anomalies.nameMismatches.length > 0 ||
-    anomalies.invalidNiks.length > 0 ||
-    (anomalies.duplicateNiks?.length || 0) > 0;
+  const kolomProgram = [...(gabungan?.kolomProgram || []), namaKolomBaru];
+
+  // Sumber awal data gabungan: sesi dari ?dari=, atau sesi terbaru, atau unggah file.
+  useEffect(() => {
+    if (sumber !== null || loadingRiwayat) return;
+    const awal = sesiList.find((s) => s.id === dari) ?? sesiList[0];
+    if (awal) {
+      setSumber("sesi");
+      pakaiSesi(awal);
+    } else {
+      setSumber("file");
+    }
+  }, [sumber, loadingRiwayat, sesiList, dari, pakaiSesi]);
+
+  const gantiSumber = (s) => {
+    setSumber(s);
+    if (s === "sesi" && sesiList[0]) pakaiSesi(sesiList[0]);
+    else hapusGabungan();
+  };
 
   // Auto-save to IndexedDB when results are ready
   useEffect(() => {
@@ -59,6 +80,7 @@ export default function PencocokanPage() {
         namaGabungan: gabungan?.fileName || "",
         namaPembanding: pembanding?.fileName || "",
         namaKolomBaru,
+        kolomProgram,
         konfigurasi: {
           kolomNikGabungan,
           kolomNamaGabungan,
@@ -89,21 +111,12 @@ export default function PencocokanPage() {
         keteranganDistribusi: keteranganDistribusi || {},
       });
     }
+    // Simpan sekali saat hasil siap (dijaga savedRef); nilai lain dibaca apa adanya saat itu.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, hasil, dataHasil]);
 
-  const handleReset = () => {
-    savedRef.current = false;
-    setSesiId(null);
-    reset();
-  };
-
-  const handleSetNameResolution = (id, resolution) => {
-    setNameMismatchResolutions((prev) => ({ ...prev, [id]: resolution }));
-  };
-
-  const handleSetNikResolution = (id, resolution) => {
-    setInvalidNikResolutions((prev) => ({ ...prev, [id]: resolution }));
-  };
+  const idxSesi = sesiList.findIndex((s) => s.id === sesiId);
+  const nomorSesi = idxSesi >= 0 ? sesiList.length - idxSesi : sesiList.length + 1;
 
   const handleBulkNameResolution = (resolution) => {
     const nextRes = { ...nameMismatchResolutions };
@@ -122,126 +135,110 @@ export default function PencocokanPage() {
   };
 
   return (
-    <div className="flex items-start justify-center px-4 py-8 sm:py-12 animate-fade-in">
-      <div className="w-full max-w-xl">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary-dark mb-4 shadow-sm">
-            <ShieldCheck size={24} />
-          </div>
-          <h1 className="text-xl font-bold m-0 mb-1.5 text-slate-900 tracking-tight">
-            Pencocokan Data NIK
-          </h1>
-          <p className="text-sm sm:text-sm text-slate-500 m-0 max-w-sm mx-auto leading-relaxed">
-            Cocokkan data gabungan OPD dengan data pembanding, lalu unduh hasil
-            dalam format Excel. 100% offline &amp; aman.
-          </p>
+    <>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex min-w-0 flex-col gap-2">
+          <h1 className="title-lg m-0">Proses data baru</h1>
+          <p className="body m-0 text-ink-muted">Padankan data gabungan dengan data pembanding satu program.</p>
         </div>
+        <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
+          Batalkan proses
+        </Button>
+      </header>
 
-        {/* Step Indicator */}
-        <div className="flex gap-2 mb-7">
-          <StepDot index={1} label="Unggah" active={step === 1} done={step > 1} />
-          <StepDot index={2} label="Konfigurasi" active={step === 2} done={step > 2} />
-          {hasAnomalies && (
-            <StepDot index={3} label="Anomali" active={step === 3} done={step > 3} />
+      <Stepper step={step} />
+
+      {error && (
+        <div role="alert" className="flex items-start gap-2 rounded-[12px] bg-negative-soft p-4 text-negative">
+          <AlertCircle size={16} strokeWidth={1.5} aria-hidden="true" className="mt-0.5 shrink-0" />
+          <p className="body m-0">{error}</p>
+        </div>
+      )}
+
+      {loadingMatching ? (
+        <Card title="Memproses data" subtitle="Jangan tutup halaman ini sampai selesai.">
+          <ProgressBar value={progress.percent} label={progressText} start={progressText} end={`${progress.percent}%`} />
+        </Card>
+      ) : (
+        <>
+          {step === 1 && (
+            <UploadStep
+              sesiList={sesiList}
+              sumber={sumber}
+              onSumber={gantiSumber}
+              gabungan={gabungan}
+              pembanding={pembanding}
+              onPilihSesi={pakaiSesi}
+              barisHeaderGabungan={barisHeaderGabungan}
+              barisHeaderPembanding={barisHeaderPembanding}
+              loadingGabungan={loadingGabungan}
+              loadingPembanding={loadingPembanding}
+              progressText={progressText}
+              validasi={validasi}
+              kolomNikGabungan={kolomNikGabungan}
+              kolomNikPembanding={kolomNikPembanding}
+              onGabunganFile={handleGabunganFile}
+              onPembandingFile={handlePembandingFile}
+              onBarisHeaderGabungan={ubahBarisHeaderGabungan}
+              onBarisHeaderPembanding={ubahBarisHeaderPembanding}
+              onNext={goToConfigure}
+            />
           )}
-          <StepDot
-            index={hasAnomalies ? 4 : 3}
-            label="Hasil"
-            active={step === 4}
-            done={false}
-          />
-        </div>
 
-        {/* Error */}
-        {error && (
-          <div className="flex items-start gap-2 bg-accent-red/10 text-accent-red border border-accent-red/30 rounded-xl px-4 py-3 text-sm mb-4 animate-fade-in font-medium">
-            <AlertTriangle size={16} className="shrink-0 mt-0.5" />
-            <span>{error}</span>
-          </div>
-        )}
+          {step === 2 && gabungan && pembanding && (
+            <ConfigureStep
+              gabungan={gabungan}
+              pembanding={pembanding}
+              kolomNikGabungan={kolomNikGabungan}
+              kolomNamaGabungan={kolomNamaGabungan}
+              kolomNikPembanding={kolomNikPembanding}
+              kolomNamaPembanding={kolomNamaPembanding}
+              kolomStatusPembanding={kolomStatusPembanding}
+              statusTerpilih={statusTerpilih}
+              namaKolomBaru={namaKolomBaru}
+              daftarStatusUnik={daftarStatusUnik}
+              onKolomNikGabungan={setKolomNikGabungan}
+              onKolomNamaGabungan={setKolomNamaGabungan}
+              onKolomNikPembanding={setKolomNikPembanding}
+              onKolomNamaPembanding={setKolomNamaPembanding}
+              onKolomStatus={ubahKolomStatus}
+              onToggleStatus={toggleStatus}
+              onNamaKolomBaru={setNamaKolomBaru}
+              onBack={() => setStep(1)}
+              onProses={scanAnomalies}
+            />
+          )}
 
-        {/* Steps */}
-        {step === 1 && (
-          <UploadStep
-            gabungan={gabungan}
-            pembanding={pembanding}
-            barisHeaderGabungan={barisHeaderGabungan}
-            barisHeaderPembanding={barisHeaderPembanding}
-            loadingGabungan={loadingGabungan}
-            loadingPembanding={loadingPembanding}
-            onGabunganFile={handleGabunganFile}
-            onPembandingFile={handlePembandingFile}
-            onBarisHeaderGabungan={ubahBarisHeaderGabungan}
-            onBarisHeaderPembanding={ubahBarisHeaderPembanding}
-            onNext={goToConfigure}
-          />
-        )}
+          {step === 3 && (
+            <AnomalyStep
+              anomalies={anomalies}
+              nameMismatchResolutions={nameMismatchResolutions}
+              invalidNikResolutions={invalidNikResolutions}
+              onSetNameResolution={(id, r) => setNameMismatchResolutions((prev) => ({ ...prev, [id]: r }))}
+              onSetNikResolution={(id, r) => setInvalidNikResolutions((prev) => ({ ...prev, [id]: r }))}
+              onBulkNameResolution={handleBulkNameResolution}
+              onBulkNikResolution={handleBulkNikResolution}
+              onBack={() => setStep(2)}
+              onNext={() => finalizeMatching(nameMismatchResolutions, invalidNikResolutions)}
+            />
+          )}
 
-        {step === 2 && gabungan && pembanding && (
-          <ConfigureStep
-            gabungan={gabungan}
-            pembanding={pembanding}
-            kolomNikGabungan={kolomNikGabungan}
-            kolomNamaGabungan={kolomNamaGabungan}
-            kolomNikPembanding={kolomNikPembanding}
-            kolomNamaPembanding={kolomNamaPembanding}
-            kolomStatusPembanding={kolomStatusPembanding}
-            statusTerpilih={statusTerpilih}
-            namaKolomBaru={namaKolomBaru}
-            daftarStatusUnik={daftarStatusUnik}
-            onKolomNikGabungan={setKolomNikGabungan}
-            onKolomNamaGabungan={setKolomNamaGabungan}
-            onKolomNikPembanding={setKolomNikPembanding}
-            onKolomNamaPembanding={setKolomNamaPembanding}
-            onKolomStatus={ubahKolomStatus}
-            onToggleStatus={toggleStatus}
-            onNamaKolomBaru={setNamaKolomBaru}
-            onBack={() => setStep(1)}
-            onProses={scanAnomalies}
-            loadingMatching={loadingMatching}
-            progressText={progressText}
-            progress={progress}
-          />
-        )}
-
-        {step === 3 && hasAnomalies && (
-          <AnomalyStep
-            anomalies={anomalies}
-            nameMismatchResolutions={nameMismatchResolutions}
-            invalidNikResolutions={invalidNikResolutions}
-            onSetNameResolution={handleSetNameResolution}
-            onSetNikResolution={handleSetNikResolution}
-            onBulkNameResolution={handleBulkNameResolution}
-            onBulkNikResolution={handleBulkNikResolution}
-            onBack={() => setStep(2)}
-            onNext={() =>
-              finalizeMatching(nameMismatchResolutions, invalidNikResolutions)
-            }
-            loadingMatching={loadingMatching}
-          />
-        )}
-
-        {step === 4 && hasil && (
-          <ResultsDashboard
-            hasil={hasil}
-            dataHasil={dataHasil}
-            namaKolomBaru={namaKolomBaru}
-            namaGabungan={gabungan?.fileName}
-            namaPembanding={pembanding?.fileName}
-            sesiId={sesiId}
-            onReset={handleReset}
-            onDownload={handleDownload}
-            hasSaved={savedRef.current}
-          />
-        )}
-
-        {/* Privacy footer */}
-        <p className="text-center text-sm text-slate-400 mt-8">
-          Proses dilakukan sepenuhnya di web browser komputer Anda tanpa
-          mengirim data keluar.
-        </p>
-      </div>
-    </div>
+          {step === 4 && hasil && (
+            <ResultsStep
+              hasil={hasil}
+              namaKolomBaru={namaKolomBaru}
+              nomorSesi={nomorSesi}
+              sesiId={sesiId}
+              kolomProgram={kolomProgram}
+              anomalies={anomalies}
+              nameMismatchResolutions={nameMismatchResolutions}
+              invalidNikResolutions={invalidNikResolutions}
+              onDownload={handleDownload}
+              onPadankanLain={() => navigate(`/pencocokan?dari=${sesiId}`, { state: { mulai: Date.now() } })}
+            />
+          )}
+        </>
+      )}
+    </>
   );
 }

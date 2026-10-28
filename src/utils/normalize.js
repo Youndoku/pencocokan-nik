@@ -27,3 +27,12 @@ export function normalisasiNama(v) {
   s = s.replace(/\s+/g, " ");
   return s;
 }
+
+/**
+ * Samarkan NIK 16 digit untuk tampilan: 6 digit + •••••• + 4 digit.
+ * Nilai lain (bukan 16 digit) dikembalikan apa adanya.
+ */
+export function samarkanNIK(v) {
+  const s = String(v ?? "").trim();
+  return /^\d{16}$/.test(s) ? `${s.slice(0, 6)}••••••${s.slice(-4)}` : s;
+}
