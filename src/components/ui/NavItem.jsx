@@ -17,7 +17,7 @@ export default function NavItem({ to, icon: Icon, label, count, end, active, col
         return `relative flex h-10 items-center gap-3 rounded-md px-3 text-sm text-lilac-text no-underline hover:bg-surface-muted ${collapsed ? "justify-center" : ""} ${on ? "bg-surface-muted font-medium before:absolute before:-left-4 before:top-2.5 before:bottom-2.5 before:w-[3px] before:rounded-r-[3px] before:bg-lilac-main" : ""}`;
       }}
     >
-      {Icon && <Icon size={18} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />}
+      {Icon && <Icon size={20} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />}
       {!collapsed && <span className="flex-1">{label}</span>}
       {!collapsed && count != null && (
         <span className="micro inline-grid h-[18px] min-w-[18px] place-items-center rounded-full bg-lilac-text px-[5px] text-on-lilac tabular-nums">

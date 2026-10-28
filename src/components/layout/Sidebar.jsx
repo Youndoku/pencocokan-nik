@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, History, LifeBuoy, Plus, PanelLeftClose, PanelLeftOpen, Menu, X } from "lucide-react";
+import { LayoutGrid, History, Headset, Plus, ChevronsLeft, ChevronsRight, Menu, X } from "lucide-react";
 import Button from "../ui/Button.jsx";
 import NavItem from "../ui/NavItem.jsx";
 
@@ -32,11 +32,11 @@ function IsiMenu({ jumlahSesi, collapsed = false }) {
         </Button>
       )}
       <nav aria-label="Menu utama" className="flex flex-col gap-0.5">
-        <NavItem to="/" icon={LayoutDashboard} label="Dashboard" active={dashboardAktif} collapsed={collapsed} />
+        <NavItem to="/" icon={LayoutGrid} label="Dashboard" active={dashboardAktif} collapsed={collapsed} />
         <NavItem to="/riwayat" icon={History} label="Riwayat dan pencarian" count={jumlahSesi || null} collapsed={collapsed} />
       </nav>
       <nav aria-label="Menu lain" className="flex flex-col gap-0.5 border-t border-line pt-4">
-        <NavItem to="/bantuan" icon={LifeBuoy} label="Bantuan" collapsed={collapsed} />
+        <NavItem to="/bantuan" icon={Headset} label="Bantuan" collapsed={collapsed} />
       </nav>
     </>
   );
@@ -104,9 +104,9 @@ export default function Sidebar({ jumlahSesi = 0 }) {
         <IsiMenu jumlahSesi={jumlahSesi} collapsed={collapsed} />
         <div className={`mt-auto ${collapsed ? "self-center" : "px-3"}`}>
           {collapsed ? (
-            <Button variant="ghost" icon={PanelLeftOpen} onClick={() => ubahCiut(false)} aria-label="Tampilkan menu" title="Tampilkan menu" />
+            <Button variant="ghost" icon={ChevronsRight} onClick={() => ubahCiut(false)} aria-label="Tampilkan menu" title="Tampilkan menu" />
           ) : (
-            <Button variant="ghost" icon={PanelLeftClose} onClick={() => ubahCiut(true)}>
+            <Button variant="ghost" icon={ChevronsLeft} onClick={() => ubahCiut(true)}>
               Sembunyikan menu
             </Button>
           )}
