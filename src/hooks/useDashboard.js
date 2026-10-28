@@ -1,68 +1,23 @@
 import { useMemo } from "react";
-import { detectProgramColumns } from "../utils/autoDetectColumns.js";
-import {
-  buildCrossMatrix,
-  findDuplicateRecipients,
-  programSummary,
-} from "../utils/crossProgramAnalysis.js";
+import { kolomProgramSesi } from "../utils/autoDetectColumns.js";
+import { analisisLintasProgram } from "../utils/crossProgramAnalysis.js";
 
 /**
- * Process dashboard data from matching results.
- *
- * @param {Object} params
- * @param {Array<Record<string, any>>} params.dataHasil
- * @param {string} params.namaKolomBaru
- * @param {string} params.kolomNik
- * @param {string} params.kolomNama
- * @param {Object} params.keteranganDistribusi
+ * Turunan data dashboard satu sesi. Kolom program = `sesi.kolomProgram`
+ * (B2), dengan fallback deteksi otomatis untuk sesi lama.
  */
-export function useDashboard({
-  dataHasil,
-  namaKolomBaru,
-  kolomNik,
-  kolomNama,
-  keteranganDistribusi,
-}) {
-  const kolomProgram = useMemo(() => {
-    if (!dataHasil || dataHasil.length === 0) return [];
-    return detectProgramColumns(dataHasil, namaKolomBaru);
-  }, [dataHasil, namaKolomBaru]);
-
-  const hasCrossProgram = kolomProgram.length > 0;
-
-  const crossMatrix = useMemo(() => {
-    if (!hasCrossProgram || !dataHasil) return null;
-    // Include current column in matrix analysis
-    const allPrograms = [...kolomProgram, namaKolomBaru].filter(Boolean);
-    return buildCrossMatrix(dataHasil, allPrograms);
-  }, [dataHasil, kolomProgram, namaKolomBaru, hasCrossProgram]);
-
-  const penerimaGanda = useMemo(() => {
-    if (!hasCrossProgram || !dataHasil) return [];
-    const allPrograms = [...kolomProgram, namaKolomBaru].filter(Boolean);
-    return findDuplicateRecipients(dataHasil, allPrograms, kolomNik, kolomNama);
-  }, [dataHasil, kolomProgram, namaKolomBaru, kolomNik, kolomNama, hasCrossProgram]);
-
-  const ringkasanProgram = useMemo(() => {
-    if (!hasCrossProgram || !dataHasil) return [];
-    const allPrograms = [...kolomProgram, namaKolomBaru].filter(Boolean);
-    return programSummary(dataHasil, allPrograms);
-  }, [dataHasil, kolomProgram, namaKolomBaru, hasCrossProgram]);
-
-  // Format keterangan distribusi for chart
-  const chartKeterangan = useMemo(() => {
-    if (!keteranganDistribusi) return [];
-    return Object.entries(keteranganDistribusi)
-      .map(([label, value]) => ({ label, value }))
-      .sort((a, b) => b.value - a.value);
-  }, [keteranganDistribusi]);
-
-  return {
-    kolomProgram,
-    hasCrossProgram,
-    crossMatrix,
-    penerimaGanda,
-    ringkasanProgram,
-    chartKeterangan,
-  };
+export function useDashboard(sesi) {
+  return useMemo(() => {
+    if (!sesi) return null;
+    const programs = kolomProgramSesi(sesi);
+    const k = sesi.konfigurasi || {};
+    return {
+      programs,
+      ...analisisLintasProgram(sesi.dataHasil || [], programs, {
+        kolomNik: k.kolomNikGabungan,
+        kolomNama: k.kolomNamaGabungan,
+        kolomKecamatan: k.kolomKecamatan,
+      }),
+    };
+  }, [sesi]);
 }

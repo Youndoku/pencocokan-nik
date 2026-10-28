@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Check, ChevronRight, Plus } from "lucide-react";
 import Card from "../ui/Card.jsx";
 import Button from "../ui/Button.jsx";
-import SegmentedBar, { Legend } from "../ui/SegmentedBar.jsx";
+import HasilPemadanan from "../dashboard/HasilPemadanan.jsx";
 import { XlsxIcon } from "./FileSlot.jsx";
 
 const angka = (n) => (n ?? 0).toLocaleString("id-ID");
@@ -28,14 +28,6 @@ export default function ResultsStep({
   onDownload,
   onPadankanLain,
 }) {
-  const statusTidakDihitung = hasil.dikecualikanStatus || 0;
-  const tidakCocok = hasil.tidak - statusTidakDihitung;
-  const kategori = [
-    { label: "Cocok", color: "var(--color-lilac-main)", value: hasil.cocok },
-    hasil.useStatus && { label: "Status tidak dihitung", color: "var(--color-lilac-second)", value: statusTidakDihitung },
-    { label: "Tidak cocok", color: "var(--color-surface-muted)", value: tidakCocok },
-  ].filter(Boolean);
-
   const { nameMismatches = [], invalidNiks = [], duplicateNiks = [] } = anomalies;
   const [namaValid, namaAbaikan] = hitungKeputusan(nameMismatches, nameMismatchResolutions, "abaikan");
   const [nikValid, nikAbaikan] = hitungKeputusan(invalidNiks, invalidNikResolutions, "valid");
@@ -65,23 +57,15 @@ export default function ResultsStep({
       </div>
 
       <div className="flex flex-wrap items-stretch gap-3">
-        <Card
+        <HasilPemadanan
           className="flex-[999_1_560px]"
-          title="Hasil pemadanan"
-          subtitle={`Hasil pencocokan NIK dengan data pembanding ${namaKolomBaru}`}
-        >
-          <div className="flex flex-wrap items-end gap-6">
-            <div className="min-w-0 flex-[1_1_240px]">
-              <div className="amount-xl tabular-nums">{angka(hasil.cocok)}</div>
-              <p className="body m-0 text-ink-muted">NIK cocok dari {angka(hasil.total)} baris data gabungan</p>
-            </div>
-            <Legend className="min-w-0 flex-[1_1_300px]" items={kategori.map((k) => ({ ...k, value: angka(k.value) }))} />
-          </div>
-          <SegmentedBar
-            segments={kategori}
-            label={`${angka(hasil.total)} baris: ${kategori.map((k) => `${angka(k.value)} ${k.label.toLowerCase()}`).join(", ")}`}
-          />
-        </Card>
+          total={hasil.total}
+          cocok={hasil.cocok}
+          tidak={hasil.tidak}
+          dikecualikanStatus={hasil.dikecualikanStatus}
+          pakaiStatus={hasil.useStatus}
+          namaKolomBaru={namaKolomBaru}
+        />
 
         <Card className="flex-[1_1_320px]" title="Keputusan anomali" subtitle="Bisa dilihat lagi di dashboard sesi ini">
           {keputusan.length === 0 ? (

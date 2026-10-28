@@ -1,25 +1,36 @@
 import { useState, useMemo } from "react";
-import {
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  ArrowUpDown,
-  Download,
-} from "lucide-react";
+import { ArrowUpDown, Download } from "lucide-react";
+import Card from "../ui/Card.jsx";
+import Button from "../ui/Button.jsx";
+import SearchInput from "../ui/SearchInput.jsx";
+import SegmentedControl from "../ui/SegmentedControl.jsx";
+import { Paginasi } from "../pencocokan/AnomalyTable.jsx";
+import { samarkanNIK } from "../../utils/normalize.js";
 
 const PER_PAGE = 25;
 
-export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
+/** Kategori baris untuk kolom program sesi ini (Keterangan membedakan status tidak dihitung). */
+function kategori(row, kolom) {
+  if (Number(row[kolom]) === 1) return "cocok";
+  return String(row.Keterangan || "").includes("tidak dihitung") ? "status" : "tidak";
+}
+const LABEL = { cocok: "Cocok", status: "Status tidak dihitung", tidak: "Tidak cocok" };
+
+/**
+ * Kartu "Data hasil": semua baris sesi dengan pencarian, filter kategori,
+ * urut per kolom, NIK disamarkan, dan unduh hasil filter.
+ */
+export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia, kolomNik, programs = [], pakaiStatus }) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [sortCol, setSortCol] = useState("");
   const [sortAsc, setSortAsc] = useState(true);
-  const [statusFilter, setStatusFilter] = useState("all"); // all | cocok | tidak
+  const [filter, setFilter] = useState("semua");
+  const [nikLengkap, setNikLengkap] = useState(false);
 
-  // Columns to display (limit to manageable number)
+  // Maksimal 6 kolom data + kolom program sesi ini + Keterangan
   const displayColumns = useMemo(() => {
     if (!kolomTersedia) return [];
-    // Show max 8 columns, prioritizing NIK, Nama, result column, Keterangan
     const priority = [namaKolomBaru, "Keterangan"];
     const prioritized = priority.filter((c) => kolomTersedia.includes(c));
     const rest = kolomTersedia.filter((c) => !priority.includes(c)).slice(0, 6);
@@ -28,209 +39,136 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia }) {
 
   const filtered = useMemo(() => {
     if (!dataHasil) return [];
-    let data = dataHasil;
+    let data = filter === "semua" ? dataHasil : dataHasil.filter((r) => kategori(r, namaKolomBaru) === filter);
 
-    // Status filter
-    if (statusFilter === "cocok" && namaKolomBaru) {
-      data = data.filter((r) => Number(r[namaKolomBaru]) === 1);
-    } else if (statusFilter === "tidak" && namaKolomBaru) {
-      data = data.filter((r) => Number(r[namaKolomBaru]) !== 1);
-    }
-
-    // Search
     if (search.trim()) {
       const q = search.toLowerCase();
-      data = data.filter((row) =>
-        Object.values(row).some((v) =>
-          String(v ?? "")
-            .toLowerCase()
-            .includes(q)
-        )
-      );
+      data = data.filter((row) => Object.values(row).some((v) => String(v ?? "").toLowerCase().includes(q)));
     }
 
-    // Sort
     if (sortCol) {
       data = [...data].sort((a, b) => {
-        const valA = a[sortCol] ?? "";
-        const valB = b[sortCol] ?? "";
-        const cmp = String(valA).localeCompare(String(valB), "id-ID", {
-          numeric: true,
-        });
+        const cmp = String(a[sortCol] ?? "").localeCompare(String(b[sortCol] ?? ""), "id-ID", { numeric: true });
         return sortAsc ? cmp : -cmp;
       });
     }
-
     return data;
-  }, [dataHasil, search, sortCol, sortAsc, statusFilter, namaKolomBaru]);
+  }, [dataHasil, search, sortCol, sortAsc, filter, namaKolomBaru]);
 
-  const totalPages = Math.ceil(filtered.length / PER_PAGE);
-  const paged = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  const hal = Math.min(page, totalPages);
+  const paged = filtered.slice((hal - 1) * PER_PAGE, hal * PER_PAGE);
 
   const handleSort = (col) => {
-    if (sortCol === col) {
-      setSortAsc(!sortAsc);
-    } else {
+    if (sortCol === col) setSortAsc(!sortAsc);
+    else {
       setSortCol(col);
       setSortAsc(true);
     }
     setPage(1);
   };
 
+  // Kolom Keterangan hanya untuk tampilan, tidak ikut file unduhan.
   const handleExportFiltered = async () => {
     if (filtered.length === 0) return;
     const XLSX = await import("xlsx");
-    const ws = XLSX.utils.json_to_sheet(filtered);
+    const ws = XLSX.utils.json_to_sheet(filtered.map(({ Keterangan: _k, ...r }) => r));
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Data Filter");
     XLSX.writeFile(wb, `data_filtered_${namaKolomBaru || "hasil"}.xlsx`);
   };
 
+  const isi = (row, col) => {
+    const val = row[col];
+    if (col === namaKolomBaru) return LABEL[kategori(row, col)];
+    if (programs.includes(col)) return Number(val) === 1 ? "Cocok" : Number(val) === 2 ? "Tidak cocok" : "";
+    if (col === kolomNik && !nikLengkap) return samarkanNIK(val);
+    return String(val ?? "");
+  };
+
+  const opsiFilter = [
+    { value: "semua", label: "Semua" },
+    { value: "cocok", label: "Cocok" },
+    pakaiStatus && { value: "status", label: "Status tidak dihitung" },
+    { value: "tidak", label: "Tidak cocok" },
+  ].filter(Boolean);
+
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-base font-semibold text-slate-800">Tabel Data</h2>
-        <span className="text-xs text-slate-400">
-          {filtered.length.toLocaleString("id-ID")} baris
-        </span>
+    <Card
+      title="Data hasil"
+      subtitle={`${filtered.length.toLocaleString("id-ID")} baris ditampilkan`}
+      action={
+        <Button variant="secondary" size="sm" aria-pressed={nikLengkap} onClick={() => setNikLengkap(!nikLengkap)}>
+          {nikLengkap ? "Samarkan NIK" : "Tampilkan NIK lengkap"}
+        </Button>
+      }
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <SearchInput
+          className="max-w-[360px] flex-[1_1_260px]"
+          placeholder="Cari NIK atau nama"
+          aria-label="Cari NIK atau nama"
+          value={search}
+          onChange={(v) => {
+            setSearch(v);
+            setPage(1);
+          }}
+        />
+        <SegmentedControl
+          label="Filter hasil"
+          options={opsiFilter}
+          value={filter}
+          onChange={(v) => {
+            setFilter(v);
+            setPage(1);
+          }}
+        />
+        <Button variant="secondary" size="sm" icon={Download} disabled={filtered.length === 0} onClick={handleExportFiltered} className="ml-auto">
+          Unduh hasil filter
+        </Button>
       </div>
 
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2 mb-3">
-        <div className="relative flex-1 min-w-[160px]">
-          <Search
-            size={13}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-          <input
-            type="text"
-            placeholder="Cari..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light transition-all"
-          />
-        </div>
-
-        {/* Quick filters */}
-        <div className="flex rounded-xl border border-slate-200 overflow-hidden">
-          {[
-            { val: "all", label: "Semua" },
-            { val: "cocok", label: "Cocok" },
-            { val: "tidak", label: "Tidak" },
-          ].map((f) => (
-            <button
-              key={f.val}
-              onClick={() => {
-                setStatusFilter(f.val);
-                setPage(1);
-              }}
-              className={`px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
-                statusFilter === f.val
-                  ? "bg-primary-dark text-white"
-                  : "bg-white text-slate-500 hover:bg-slate-50"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-
-        <button
-          onClick={handleExportFiltered}
-          className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 font-medium hover:bg-slate-100 transition-colors cursor-pointer"
-        >
-          <Download size={12} />
-          Export
-        </button>
-      </div>
-
-      {/* Table */}
-      <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
-        <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-white">
-            <tr className="border-b border-slate-200">
+      <div className="max-h-[480px] overflow-auto">
+        <table className="w-full border-collapse text-left tabular-nums">
+          <thead className="sticky top-0 bg-surface">
+            <tr className="border-b border-line">
               {displayColumns.map((col) => (
-                <th
-                  key={col}
-                  onClick={() => handleSort(col)}
-                  className="text-left py-2 px-2 text-slate-500 font-medium cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap"
-                >
-                  <span className="inline-flex items-center gap-1">
+                <th key={col} scope="col" aria-sort={sortCol === col ? (sortAsc ? "ascending" : "descending") : undefined} className="p-0">
+                  <button
+                    type="button"
+                    onClick={() => handleSort(col)}
+                    className="caption inline-flex cursor-pointer items-center gap-1 whitespace-nowrap border-0 bg-transparent px-2 py-2 text-ink-muted hover:text-lilac-text"
+                  >
                     {col}
-                    {sortCol === col && (
-                      <ArrowUpDown size={10} className="text-primary" />
-                    )}
-                  </span>
+                    {sortCol === col && <ArrowUpDown size={12} strokeWidth={1.5} aria-hidden="true" />}
+                  </button>
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {paged.map((row, i) => (
-              <tr
-                key={i}
-                className="border-b border-slate-50 hover:bg-slate-50/50"
-              >
-                {displayColumns.map((col) => {
-                  const val = row[col];
-                  const isResult = col === namaKolomBaru;
-                  const isKeterangan = col === "Keterangan";
-                  return (
-                    <td
-                      key={col}
-                      className={`py-1.5 px-2 ${
-                        isKeterangan
-                          ? "min-w-[220px] whitespace-normal"
-                          : "max-w-[180px] truncate"
-                      } ${
-                        isResult
-                          ? Number(val) === 1
-                            ? "text-primary-dark font-bold"
-                            : "text-accent-red font-bold"
-                          : "text-slate-700"
-                      }`}
-                    >
-                      {isResult
-                        ? Number(val) === 1
-                          ? "1 (Cocok)"
-                          : "2 (Tidak)"
-                        : String(val ?? "")}
-                    </td>
-                  );
-                })}
+              <tr key={i} className="border-b border-line">
+                {displayColumns.map((col) => (
+                  <td
+                    key={col}
+                    className={`body px-2 py-2 ${col === "Keterangan" ? "min-w-[220px]" : "max-w-[180px] truncate whitespace-nowrap"} ${col === namaKolomBaru ? "font-medium" : ""}`}
+                  >
+                    {isi(row, col)}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
+        {paged.length === 0 && <p className="body m-0 py-6 text-center text-ink-muted">Tidak ada data yang cocok dengan pencarian.</p>}
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
-          <span className="text-xs text-slate-400">
-            Halaman {page} dari {totalPages}
-          </span>
-          <div className="flex gap-1">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="p-1.5 rounded-lg hover:bg-slate-100 disabled:opacity-30 cursor-pointer"
-            >
-              <ChevronLeft size={14} className="text-slate-500" />
-            </button>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="p-1.5 rounded-lg hover:bg-slate-100 disabled:opacity-30 cursor-pointer"
-            >
-              <ChevronRight size={14} className="text-slate-500" />
-            </button>
-          </div>
+        <div className="flex justify-end">
+          <Paginasi hal={hal} jumlahHalaman={totalPages} total={filtered.length} perHalaman={PER_PAGE} onHal={setPage} satuan="baris" />
         </div>
       )}
-    </div>
+    </Card>
   );
 }

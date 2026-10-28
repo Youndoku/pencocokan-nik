@@ -26,6 +26,7 @@ export function usePencocokanNIK() {
   // -- Konfigurasi Kolom --
   const [kolomNikGabungan, setKolomNikGabungan] = useState("");
   const [kolomNamaGabungan, setKolomNamaGabungan] = useState("");
+  const [kolomKecamatan, setKolomKecamatan] = useState(""); // dari data gabungan, opsional
   const [kolomNikPembanding, setKolomNikPembanding] = useState("");
   const [kolomNamaPembanding, setKolomNamaPembanding] = useState("");
   const [kolomStatusPembanding, setKolomStatusPembanding] = useState("");
@@ -60,6 +61,7 @@ export function usePencocokanNIK() {
   const [kolomTersedia, setKolomTersedia] = useState([]);
 
   const workerRef = useRef(null);
+  const kecamatanAsalRef = useRef(undefined); // kolomKecamatan sesi asal, kalau data gabungan dari sesi
 
   // Inisialisasi Web Worker
   useEffect(() => {
@@ -118,6 +120,12 @@ export function usePencocokanNIK() {
             );
             setKolomNikGabungan(guessedNik);
             setKolomNamaGabungan(guessedNama);
+            const asal = kecamatanAsalRef.current;
+            setKolomKecamatan(
+              asal !== undefined && (asal === "" || columns.includes(asal))
+                ? asal
+                : columns.find((c) => /kec/i.test(c)) || ""
+            );
           } else {
             setPembanding((prev) => prev && { ...prev, columns, totalRows });
             setKolomNikPembanding(guessedNik);
@@ -245,6 +253,7 @@ export function usePencocokanNIK() {
   // Handler Upload
   const handleGabunganFile = useCallback((file) => {
     setError("");
+    kecamatanAsalRef.current = undefined;
     setLoadingGabungan(true);
     workerRef.current.postMessage({
       type: "PARSE_FILE",
@@ -259,6 +268,8 @@ export function usePencocokanNIK() {
     const columns = (sesi.kolomTersedia || []).filter((c) => c !== "Keterangan");
     const fileName = `hasil_${sesi.namaKolomBaru || "pencocokan"}.xlsx`;
     setValidasi((prev) => ({ ...prev, gabungan: null }));
+    // Sesi lama belum punya kolomKecamatan (undefined), jadi nanti ditebak dari nama kolom.
+    kecamatanAsalRef.current = sesi.konfigurasi?.kolomKecamatan;
     setGabungan({
       fileName,
       totalRows: rows.length,
@@ -421,6 +432,7 @@ export function usePencocokanNIK() {
     setError("");
     setKolomNikGabungan("");
     setKolomNamaGabungan("");
+    setKolomKecamatan("");
     setKolomNikPembanding("");
     setKolomNamaPembanding("");
     setKolomStatusPembanding("");
@@ -480,6 +492,7 @@ export function usePencocokanNIK() {
     progressText: getProgressMessage(),
     kolomNikGabungan,
     kolomNamaGabungan,
+    kolomKecamatan,
     kolomNikPembanding,
     kolomNamaPembanding,
     kolomStatusPembanding,
@@ -510,6 +523,7 @@ export function usePencocokanNIK() {
     toggleStatus,
     setKolomNikGabungan,
     setKolomNamaGabungan,
+    setKolomKecamatan,
     setKolomNikPembanding,
     setKolomNamaPembanding,
     setNamaKolomBaru,
