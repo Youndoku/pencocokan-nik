@@ -3,10 +3,11 @@
  * Variant: primary, secondary, dark, ghost. Size: md (40px), sm (32px).
  */
 const VARIANTS = {
-  primary: "bg-lilac-main text-on-lilac hover:bg-[linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12))]",
-  secondary: "bg-surface text-lilac-text border-line shadow-xs hover:bg-surface-muted",
-  dark: "bg-lilac-text text-on-lilac hover:bg-[linear-gradient(rgba(255,255,255,.1),rgba(255,255,255,.1))]",
-  ghost: "bg-transparent text-lilac-text px-0! hover:text-lilac-main",
+  // Warna border per variant (bukan di kelas dasar): kalau keduanya ada, urutan CSS Tailwind yang menang.
+  primary: "border-transparent bg-lilac-main text-on-lilac hover:bg-[linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12))]",
+  secondary: "border-line bg-surface text-lilac-text shadow-xs hover:bg-surface-muted",
+  dark: "border-transparent bg-lilac-text text-on-lilac hover:bg-[linear-gradient(rgba(255,255,255,.1),rgba(255,255,255,.1))]",
+  ghost: "border-transparent bg-transparent text-lilac-text px-0! hover:text-lilac-main",
 };
 
 const SIZES = {
@@ -31,7 +32,7 @@ export default function Button({
     <Tag
       {...rest}
       {...typeProp}
-      className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm border border-transparent font-medium transition-colors cursor-pointer disabled:opacity-45 disabled:cursor-not-allowed ${SIZES[size]} ${VARIANTS[variant]} ${block ? "w-full" : ""} ${className}`}
+      className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm border font-medium transition-colors cursor-pointer disabled:opacity-45 disabled:cursor-not-allowed ${SIZES[size]} ${VARIANTS[variant]} ${block ? "w-full" : ""} ${className}`}
     >
       {Icon && <Icon size={iconSize} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />}
       {children}

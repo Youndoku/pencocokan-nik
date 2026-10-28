@@ -28,14 +28,14 @@ export default function DataTable({ dataHasil, namaKolomBaru, kolomTersedia, kol
   const [filter, setFilter] = useState("semua");
   const [nikLengkap, setNikLengkap] = useState(false);
 
-  // Maksimal 6 kolom data + kolom program sesi ini + Keterangan
+  // Maksimal 6 kolom data + semua kolom program (urutan file) + Keterangan
   const displayColumns = useMemo(() => {
     if (!kolomTersedia) return [];
-    const priority = [namaKolomBaru, "Keterangan"];
-    const prioritized = priority.filter((c) => kolomTersedia.includes(c));
-    const rest = kolomTersedia.filter((c) => !priority.includes(c)).slice(0, 6);
-    return [...rest, ...prioritized];
-  }, [kolomTersedia, namaKolomBaru]);
+    const program = [...programs, namaKolomBaru];
+    const data = kolomTersedia.filter((c) => !program.includes(c) && c !== "Keterangan").slice(0, 6);
+    const akhir = kolomTersedia.filter((c) => program.includes(c) || c === "Keterangan");
+    return [...data, ...akhir];
+  }, [kolomTersedia, namaKolomBaru, programs]);
 
   const filtered = useMemo(() => {
     if (!dataHasil) return [];

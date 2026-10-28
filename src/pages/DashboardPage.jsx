@@ -16,7 +16,8 @@ import AnomalyTable from "../components/pencocokan/AnomalyTable.jsx";
 /**
  * Bentuk ulang anomali sesi tersimpan ke format AnomalyTable. Keputusan perbedaan
  * nama hanya tersimpan di mismatchLog ("Keputusan User"); baris "Perlu Konfirmasi"
- * adalah nama berbeda dengan status yang tidak dihitung, jadi tidak pernah ditanyakan.
+ * adalah nama berbeda yang tidak pernah ditanyakan di langkah 3 (status tidak dihitung,
+ * atau format NIK tidak standar sehingga perbedaan nama tidak dipindai).
  */
 function anomaliDariSesi(sesi) {
   const log = sesi.mismatchLog || [];
@@ -25,7 +26,7 @@ function anomaliDariSesi(sesi) {
   const nameMismatches = log.map((m, i) => {
     const id = `nm-${i}`;
     const k = String(m["Keputusan User"] || "");
-    nameRes[id] = k.startsWith("Divalidkan") ? "valid" : k.startsWith("Abaikan") ? "abaikan" : "status";
+    nameRes[id] = k.startsWith("Divalidkan") ? "valid" : k.startsWith("Abaikan") ? "abaikan" : "lewat";
     return { id, nik: String(m.NIK ?? ""), nameGabungan: m[kolomGab], namePembanding: m[kolomPem] };
   });
   return {

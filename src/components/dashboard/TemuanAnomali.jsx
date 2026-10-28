@@ -11,7 +11,7 @@ const hitung = (items, res, bawaan, nilai) => items.filter((it) => (res[it.id] |
 export default function TemuanAnomali({ data, terbuka, onLihat, className = "" }) {
   const { anomalies, nameRes, nikRes } = data;
   const { nameMismatches, invalidNiks, duplicateNiks } = anomalies;
-  const statusNama = hitung(nameMismatches, nameRes, "abaikan", "status");
+  const lewatNama = hitung(nameMismatches, nameRes, "abaikan", "lewat");
 
   const baris = [
     {
@@ -19,7 +19,7 @@ export default function TemuanAnomali({ data, terbuka, onLihat, className = "" }
       n: nameMismatches.length,
       rincian:
         `${angka(hitung(nameMismatches, nameRes, "abaikan", "valid"))} divalidkan, ${angka(hitung(nameMismatches, nameRes, "abaikan", "abaikan"))} diabaikan` +
-        (statusNama > 0 ? `, ${angka(statusNama)} status tidak dihitung` : ""),
+        (lewatNama > 0 ? `, ${angka(lewatNama)} tidak diperiksa` : ""),
       status: "Selesai",
     },
     {

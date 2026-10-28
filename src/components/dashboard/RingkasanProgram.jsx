@@ -64,7 +64,7 @@ function LintasProgramKosong({ program, terbaru }) {
       </div>
       <div className="flex min-w-0 flex-[1_1_320px] flex-col gap-3 rounded-md bg-lilac-bg p-4">
         <p className="body-strong m-0">Cara menambah program</p>
-        <ol className="body m-0 flex flex-col gap-1.5 pl-5">
+        <ol className="body m-0 flex list-decimal flex-col gap-1.5 pl-5">
           <li>Pilih Proses data baru di menu.</li>
           <li>Di data gabungan, pilih Pakai hasil sesi sebelumnya. Sesi terbaru sudah terpilih otomatis.</li>
           <li>Unggah file pembanding program berikutnya.</li>

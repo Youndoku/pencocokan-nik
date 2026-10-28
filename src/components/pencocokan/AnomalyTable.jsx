@@ -16,9 +16,9 @@ const OPSI_NIK = [
   { value: "valid", label: "Cocokkan" },
   { value: "abaikan", label: "Abaikan" },
 ];
-// Label keputusan untuk tampilan read-only (dashboard). "status" = nama berbeda
-// tapi status pembanding tidak dihitung, jadi tidak pernah ditanyakan.
-const LABEL_NAMA = { valid: "Divalidkan", abaikan: "Diabaikan", status: "Status tidak dihitung" };
+// Label keputusan untuk tampilan read-only (dashboard). "lewat" = nama berbeda
+// yang tidak pernah ditanyakan di langkah 3 (status tidak dihitung, atau format NIK tidak standar).
+const LABEL_NAMA = { valid: "Divalidkan", abaikan: "Diabaikan", lewat: "Tidak diperiksa" };
 const LABEL_NIK = { valid: "Dicocokkan", abaikan: "Diabaikan" };
 const LABEL_FILE = { gabungan: "Data gabungan", pembanding: "Data pembanding" };
 
@@ -68,7 +68,7 @@ export default function AnomalyTable({
       items: invalidNiks,
       teks: (it) => [it.nikRaw, it.name, it.reason],
       kolom: [
-        ["NIK", (it) => it.nikRaw || "(kosong)"],
+        ["NIK", (it) => samarkanNIK(it.nikRaw) || "(kosong)"],
         ["Nama", (it) => it.name],
         ["Masalah", (it) => it.reason],
       ],
