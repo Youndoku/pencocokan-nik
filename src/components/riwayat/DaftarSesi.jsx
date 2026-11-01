@@ -51,6 +51,20 @@ export default function DaftarSesi({ sesiList, onHapus }) {
       return next;
     });
 
+  // Pilih semua = semua sesi yang sedang tampil (ikut hasil pencarian).
+  const terlihat = daftar.map(({ s }) => s.id);
+  const semuaTerpilih = terlihat.length > 0 && terlihat.every((id) => dipilih.has(id));
+  const adaTerpilih = terlihat.some((id) => dipilih.has(id));
+  const pilihSemua = () =>
+    setDipilih((prev) => {
+      const next = new Set(prev);
+      for (const id of terlihat) {
+        if (semuaTerpilih) next.delete(id);
+        else next.add(id);
+      }
+      return next;
+    });
+
   const hapus = async () => {
     await onHapus(idPilihan);
     setDipilih(new Set());
@@ -87,7 +101,17 @@ export default function DaftarSesi({ sesiList, onHapus }) {
         <div role="table" aria-label="Daftar sesi" className="flex min-w-[920px] flex-col">
           <div role="row" className={`${GRID} border-b border-line px-3 py-2`}>
             <div role="columnheader">
-              <span className="sr-only">Pilih</span>
+              <input
+                ref={(el) => {
+                  if (el) el.indeterminate = adaTerpilih && !semuaTerpilih;
+                }}
+                type="checkbox"
+                checked={semuaTerpilih}
+                onChange={pilihSemua}
+                disabled={daftar.length === 0}
+                aria-label={cari.trim() ? "Pilih semua sesi hasil pencarian" : "Pilih semua sesi"}
+                className="m-0 size-4 accent-lilac-main"
+              />
             </div>
             <div role="columnheader" className="caption text-ink-muted">Sesi</div>
             <div role="columnheader" className="caption text-ink-muted">Tanggal</div>
