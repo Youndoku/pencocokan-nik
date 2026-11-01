@@ -1,5 +1,3 @@
-const MUTED = "var(--color-surface-muted)";
-
 /**
  * Bar bertumpuk horizontal. `segments`: {value, color, label}[].
  * `label` wajib karena bar dibacakan sebagai satu gambar (role="img").
@@ -16,7 +14,7 @@ export default function SegmentedBar({ segments = [], label, className = "" }) {
           .map((s) => (
             <span
               key={s.label}
-              className={`min-w-1.5 rounded-xs ${s.color === MUTED ? "" : "hatch"}`}
+              className="min-w-1.5 rounded-xs"
               style={{ flexGrow: s.value, flexBasis: 0, backgroundColor: s.color }}
             />
           ))

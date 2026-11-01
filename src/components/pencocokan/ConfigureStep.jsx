@@ -17,8 +17,6 @@ export default function ConfigureStep({
   kolomNamaGabungan,
   kolomNikPembanding,
   kolomNamaPembanding,
-  kolomKecamatan,
-  onKolomKecamatan,
   kolomStatusPembanding,
   statusTerpilih,
   namaKolomBaru,
@@ -43,7 +41,7 @@ export default function ConfigureStep({
         <Card
           className="flex-[1_1_420px]"
           title="Kolom yang dicocokkan"
-          subtitle="Kolom NIK wajib. Kolom nama dan kecamatan boleh dikosongkan."
+          subtitle="Kolom NIK wajib. Kolom nama boleh dikosongkan."
         >
           <div className="grid grid-cols-[minmax(90px,120px)_1fr_1fr] items-center gap-x-3 gap-y-2">
             <span />
@@ -57,11 +55,6 @@ export default function ConfigureStep({
             </span>
             <Select size="md" label="Kolom nama data gabungan" value={kolomNamaGabungan} onChange={onKolomNamaGabungan} options={[...gabungan.columns, TIDAK_DIPAKAI]} />
             <Select size="md" label="Kolom nama data pembanding" value={kolomNamaPembanding} onChange={onKolomNamaPembanding} options={[...pembanding.columns, TIDAK_DIPAKAI]} />
-            <span className="caption-strong font-semibold">
-              Kecamatan <span className="font-normal text-ink-muted">(opsional)</span>
-            </span>
-            <Select size="md" label="Kolom kecamatan data gabungan" value={kolomKecamatan} onChange={onKolomKecamatan} options={[...gabungan.columns, TIDAK_DIPAKAI]} />
-            <span className="caption text-ink-muted">Hanya dari data gabungan, untuk analisis per kecamatan di dashboard</span>
           </div>
           <div className="flex items-start gap-2 rounded-md bg-lilac-bg p-3">
             <Check size={14} strokeWidth={2} aria-hidden="true" className="mt-0.5 shrink-0 text-success" />

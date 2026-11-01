@@ -31,7 +31,7 @@ export default function PencocokanPage() {
     progress, progressText,
     kolomNikGabungan, kolomNamaGabungan,
     kolomNikPembanding, kolomNamaPembanding,
-    kolomKecamatan, setKolomKecamatan,
+    kolomKecamatan,
     kolomStatusPembanding, statusTerpilih, namaKolomBaru,
     daftarStatusUnik, validasi, anomalies,
     nameMismatchResolutions, invalidNikResolutions,
@@ -195,8 +195,6 @@ export default function PencocokanPage() {
               kolomNamaGabungan={kolomNamaGabungan}
               kolomNikPembanding={kolomNikPembanding}
               kolomNamaPembanding={kolomNamaPembanding}
-              kolomKecamatan={kolomKecamatan}
-              onKolomKecamatan={setKolomKecamatan}
               kolomStatusPembanding={kolomStatusPembanding}
               statusTerpilih={statusTerpilih}
               namaKolomBaru={namaKolomBaru}

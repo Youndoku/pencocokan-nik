@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import ExcelWorker from "../utils/excelWorker.js?worker";
-import { kolomProgramSesi } from "../utils/autoDetectColumns.js";
+import { kolomProgramSesi, tebakKolomKecamatan } from "../utils/autoDetectColumns.js";
 
 /** Nama kolom baru bentrok dengan kolom yang sudah ada (dipangkas, tidak peka huruf besar/kecil). */
 export function namaKolomBentrok(columns = [], nama) {
@@ -124,7 +124,7 @@ export function usePencocokanNIK() {
             setKolomKecamatan(
               asal !== undefined && (asal === "" || columns.includes(asal))
                 ? asal
-                : columns.find((c) => /kec/i.test(c)) || ""
+                : tebakKolomKecamatan(columns)
             );
           } else {
             setPembanding((prev) => prev && { ...prev, columns, totalRows });

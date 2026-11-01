@@ -56,3 +56,9 @@ export function ringkasDaftar(nama = []) {
   if (nama.length > 3) return `${nama[0]} sampai ${nama[nama.length - 1]}`;
   return `${nama.slice(0, -1).join(", ")} dan ${nama[nama.length - 1]}`;
 }
+
+/** Tebak kolom kecamatan: utamakan yang berisi "kec" dan "nama" (NAMA_KEC daripada KODE_KEC). */
+export function tebakKolomKecamatan(columns = []) {
+  const kec = columns.filter((c) => /kec/i.test(c));
+  return kec.find((c) => /nama/i.test(c)) || kec[0] || "";
+}

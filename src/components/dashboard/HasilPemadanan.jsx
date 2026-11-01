@@ -26,7 +26,7 @@ export default function HasilPemadanan({ total, cocok, tidak, dikecualikanStatus
           <div className="amount-xl tabular-nums">{angka(cocok)}</div>
           <p className="body m-0 text-ink-muted">NIK cocok dari {angka(total)} baris data gabungan</p>
         </div>
-        <Legend className="min-w-0 flex-[1_1_300px]" items={kategori.map((k) => ({ ...k, value: angka(k.value) }))} />
+        <Legend direction="column" className="min-w-0 flex-[1_1_300px]" items={kategori.map((k) => ({ ...k, value: angka(k.value) }))} />
       </div>
       <SegmentedBar
         segments={kategori}

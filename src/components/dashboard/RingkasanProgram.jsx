@@ -26,7 +26,7 @@ function DistribusiCard({ title, subtitle, jumlah, keterangan, kategori, label }
         <p className="caption m-0 text-ink-muted">{keterangan}</p>
       </div>
       <SegmentedBar segments={kategori} label={label} />
-      <Legend items={kategori.map((k) => ({ ...k, value: angka(k.value) }))} />
+      <Legend direction="column" items={kategori.map((k) => ({ ...k, value: angka(k.value) }))} />
     </Card>
   );
 }

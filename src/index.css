@@ -40,25 +40,6 @@
   --shadow-card: 0 1px 2px #1f1f2808, 0 2px 8px -2px #1f1f280a;
   --shadow-pop: 0 2px 6px #1f1f2810, 0 12px 24px -6px #1f1f281f;
   --shadow-focus: 0 0 0 2px #ffffff, 0 0 0 4px #5b2dff;
-
-  /* Palet lama Kota Batu, dihapus di Fase 7 setelah semua halaman pindah
-     ke Lilac. Lihat Design.md bagian "Palet lama". */
-  --color-primary: #0DA44F;
-  --color-primary-dark: #0B7A3B;
-  --color-primary-light: #C0D8CC;
-
-  --color-secondary: #4454AA;
-  --color-secondary-dark: #3A4164;
-  --color-secondary-light: #DCE1F1;
-
-  --color-accent-sky: #09ABE7;
-  --color-accent-gold: #DBEC20;
-  --color-accent-red: #D91F2B;
-
-  --color-neutral-900: #191D1C;
-  --color-neutral-100: #F4F4F4;
-  --color-neutral-white: #FFFFFF;
-  --color-neutral-400: #B0B0B0;
 }
 
 @layer base {
