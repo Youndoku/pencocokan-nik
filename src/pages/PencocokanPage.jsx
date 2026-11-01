@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useBlocker, useNavigate, useSearchParams } from "react-router-dom";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, X } from "lucide-react";
 import { usePencocokanNIK } from "../hooks/usePencocokanNIK.js";
 import { useRiwayat } from "../hooks/useRiwayat.js";
 import { generateId } from "../utils/db.js";
@@ -156,7 +156,7 @@ export default function PencocokanPage() {
           <h1 className="title-lg m-0">Proses data baru</h1>
           <p className="body m-0 text-ink-muted">Padankan data gabungan dengan data pembanding satu program.</p>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
+        <Button variant="secondary" size="sm" icon={X} onClick={() => navigate("/")}>
           Batalkan proses
         </Button>
       </header>
