@@ -276,7 +276,7 @@ const TOPIK = [
     sub: "Dashboard selalu menampilkan satu sesi. Sesi terbaru berisi semua program.",
     data: BACA_DASHBOARD,
     isi: (
-      <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-3 p-0">
+      <ul className="m-0 grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 xl:grid-cols-3">
         {BACA_DASHBOARD.map((d) => (
           <li key={d.judul} className="flex flex-col gap-1 rounded-[10px] bg-lilac-bg p-4">
             <h3 className="body-strong m-0">{d.judul}</h3>
