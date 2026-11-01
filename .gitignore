@@ -28,3 +28,12 @@ contohfile/
 *.njsproj
 *.sln
 *.sw?
+
+# Dokumen dan bahan kerja lokal (tidak di-upload)
+CLAUDE.md
+Design.md
+docs/spec-redesign.md
+docs/alur-pengguna.md
+docs/design/
+docs/superpowers/
+.impeccable/
