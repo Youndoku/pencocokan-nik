@@ -1,5 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
-import { Check } from "lucide-react";
+import {
+  Blocks,
+  ChartBar,
+  ChartBarStacked,
+  Check,
+  Copy,
+  Filter,
+  Grid3x3,
+  Hash,
+  Layers,
+  MapPin,
+  Table,
+  TriangleAlert,
+  UserX,
+  Users,
+} from "lucide-react";
 import Card from "../components/ui/Card.jsx";
 import Badge from "../components/ui/Badge.jsx";
 import Button from "../components/ui/Button.jsx";
@@ -34,37 +49,70 @@ const PERHATIAN = [
   "Nama kolom program harus berbeda dari kolom yang sudah ada. Nama yang sama akan ditolak supaya kolom lama tidak tertimpa.",
   "Lanjutkan dari sesi terbaru supaya semua program ikut.",
 ];
+// Ikon disimpan terpisah dari data, karena data ikut dijadikan teks pencarian.
 const ANOMALI = [
   {
     judul: "Perbedaan nama",
     isi: "NIK sama, tetapi nama di kedua file berbeda, misalnya karena salah ketik atau singkatan.",
+    contoh: "SITI AMINAH di data gabungan, SITI A. di data pembanding.",
     pilihan: [
-      { nama: "Validkan", arti: "dihitung cocok" },
-      { nama: "Abaikan", arti: "dihitung tidak cocok (pilihan bawaan)" },
+      { nama: "Validkan", hasil: "Cocok" },
+      { nama: "Abaikan", hasil: "Tidak cocok", bawaan: true },
     ],
   },
   {
     judul: "Format NIK tidak standar",
     isi: "NIK kosong, berisi selain angka, atau panjangnya bukan 16 digit.",
+    contoh: "Sel NIK kosong, NIK berisi huruf, atau NIK hanya 15 digit.",
     pilihan: [
-      { nama: "Cocokkan", arti: "tetap dicoba dicocokkan setelah dirapikan (pilihan bawaan)" },
-      { nama: "Abaikan", arti: "dihitung tidak cocok" },
+      { nama: "Cocokkan", hasil: "Tetap dicoba dicocokkan setelah dirapikan", bawaan: true },
+      { nama: "Abaikan", hasil: "Tidak cocok" },
     ],
   },
   {
     judul: "NIK duplikat",
-    isi: "NIK yang sama muncul lebih dari sekali di satu file. Yang dipakai hanya baris pertama.",
-    pilihan: [{ nama: "Informasi", arti: "tidak perlu diputuskan, periksa datanya kalau perlu", netral: true }],
+    isi: "NIK yang sama muncul lebih dari sekali di satu file.",
+    contoh: "NIK yang sama ada di baris 12 dan baris 87.",
+    catatan: "Tidak perlu diputuskan. Yang dipakai hanya baris pertama, jadi periksa datanya kalau perlu.",
   },
 ];
+const IKON_ANOMALI = [UserX, Hash, Copy];
+const CATATAN_ANOMALI = "Pilihan bawaan langsung dipakai kalau tidak diubah. Keputusan bisa diambil satu per satu atau sekaligus.";
+
 const BACA_DASHBOARD = [
-  { judul: "Hasil sesi", isi: "Hasil program yang diproses di sesi itu: jumlah cocok, status tidak dihitung, dan tidak cocok." },
-  { judul: "Penerima per program", isi: "Jumlah penerima tiap program di file, diurutkan dari terbanyak." },
-  { judul: "Jumlah program per NIK", isi: "Berapa NIK yang menerima 0, 1, 2, atau 3 program lebih." },
-  { judul: "Irisan antar program", isi: "Jumlah NIK yang menerima dua program sekaligus. Warna makin gelap berarti makin banyak." },
-  { judul: "Penerima ganda", isi: "Daftar NIK yang menerima lebih dari satu program, untuk diperiksa lebih lanjut." },
-  { judul: "Fokus program", isi: "Filter di judul Ringkasan untuk melihat satu program dan irisannya dengan program lain." },
+  {
+    kelompok: "Hasil sesi",
+    ket: "Bagian atas dashboard, khusus program yang diproses di sesi itu.",
+    items: [
+      { judul: "Hasil pemadanan", isi: "Jumlah cocok, status tidak dihitung, dan tidak cocok untuk program sesi itu." },
+      { judul: "Temuan anomali", isi: "Ringkasan keputusan anomali saat proses. Pilih Lihat detail anomali untuk melihat datanya." },
+    ],
+  },
+  {
+    kelompok: "Ringkasan program",
+    ket: "Bagian bawah dashboard, membandingkan semua program di file.",
+    items: [
+      { judul: "Penerima per program", isi: "Jumlah penerima tiap program, diurutkan dari terbanyak. Klik bar untuk fokus ke program itu." },
+      { judul: "Jumlah program per NIK", isi: "Berapa NIK yang menerima 0, 1, 2, atau 3 program lebih." },
+      { judul: "Irisan antar program", isi: "Jumlah NIK yang menerima dua program sekaligus. Warna makin gelap berarti makin banyak." },
+      { judul: "Kombinasi terbanyak", isi: "Gabungan program yang paling sering diterima bersamaan oleh satu NIK." },
+      { judul: "Penerima per kecamatan", isi: "Jumlah penerima tiap program per kecamatan. Hanya muncul kalau data gabungan punya kolom kecamatan." },
+      { judul: "Penerima ganda", isi: "Daftar NIK yang menerima lebih dari satu program, untuk diperiksa lebih lanjut." },
+      { judul: "Data hasil", isi: "Seluruh baris file hasil beserta keterangannya. Bisa dicari dan disaring." },
+    ],
+  },
 ];
+const IKON_DASHBOARD = [ChartBarStacked, TriangleAlert, ChartBar, Layers, Grid3x3, Blocks, MapPin, Users, Table];
+const TIP_FOKUS = {
+  judul: "Fokus program",
+  isi: "Pilih satu program di Fokus program (judul Ringkasan) untuk melihat program itu dan irisannya dengan program lain. Pilih Semua program untuk kembali.",
+};
+
+const IkonKotak = ({ ikon: Ikon }) => (
+  <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-md bg-lilac-soft text-lilac-main">
+    <Ikon size={16} strokeWidth={1.5} />
+  </span>
+);
 const PRIVASI = [
   "File diproses langsung di browser, tidak diunggah ke server.",
   "Riwayat sesi tersimpan di browser ini saja dan hilang kalau data browser dihapus.",
@@ -209,24 +257,53 @@ const TOPIK = [
     label: "Temuan anomali",
     judul: "Temuan anomali",
     sub: "Muncul sebelum hasil disimpan, hanya kalau ada data yang perlu diperiksa.",
-    data: ANOMALI,
+    data: [ANOMALI, CATATAN_ANOMALI],
     isi: (
-      <div className="flex flex-wrap items-stretch gap-3">
-        {ANOMALI.map((a) => (
-          <div key={a.judul} className="flex flex-[1_1_240px] flex-col gap-2.5 rounded-[10px] border border-line p-4">
-            <p className="body-strong m-0">{a.judul}</p>
-            <p className="body m-0 text-ink-muted">{a.isi}</p>
-            <div className="mt-auto flex flex-col gap-1.5">
-              {a.pilihan.map((p, i) => (
-                <div key={p.nama} className="flex items-baseline gap-2">
-                  <Badge tone={i === 0 && !p.netral ? "lilac" : "neutral"}>{p.nama}</Badge>
-                  <span className="caption text-ink-muted">{p.arti}</span>
-                </div>
-              ))}
+      <>
+        <div className="flex flex-wrap items-stretch gap-3">
+          {ANOMALI.map((a, i) => (
+            <div key={a.judul} className="flex min-w-0 flex-[1_1_260px] flex-col gap-3 rounded-[10px] border border-line p-4">
+              <div className="flex items-center gap-3">
+                <IkonKotak ikon={IKON_ANOMALI[i]} />
+                <h3 className="body-strong m-0">{a.judul}</h3>
+              </div>
+              <p className="body m-0 text-ink-muted">{a.isi}</p>
+              <p className="caption m-0 rounded-md bg-lilac-bg px-3 py-2">
+                <span className="caption-strong">Contoh: </span>
+                {a.contoh}
+              </p>
+              <div className="mt-auto">
+                {a.pilihan ? (
+                  <table className="w-full border-collapse text-left">
+                    <thead>
+                      <tr>
+                        <th scope="col" className="caption pb-1.5 font-normal text-ink-muted">Pilihan</th>
+                        <th scope="col" className="caption pb-1.5 font-normal text-ink-muted">Hasilnya</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {a.pilihan.map((p) => (
+                        <tr key={p.nama} className="border-t border-line align-top">
+                          <th scope="row" className="py-2 pr-3 text-left font-normal">
+                            <span className="flex flex-wrap items-center gap-1.5">
+                              <span className="body-strong">{p.nama}</span>
+                              {p.bawaan && <Badge tone="lilac">Bawaan</Badge>}
+                            </span>
+                          </th>
+                          <td className="body py-2">{p.hasil}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="body m-0 border-t border-line pt-3 text-ink-muted">{a.catatan}</p>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+        <p className="caption m-0 text-ink-muted">{CATATAN_ANOMALI}</p>
+      </>
     ),
   },
   {
@@ -234,16 +311,42 @@ const TOPIK = [
     label: "Membaca dashboard",
     judul: "Membaca dashboard",
     sub: "Dashboard selalu menampilkan satu sesi. Sesi terbaru berisi semua program.",
-    data: BACA_DASHBOARD,
+    data: [BACA_DASHBOARD, TIP_FOKUS],
     isi: (
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-x-6 gap-y-3">
-        {BACA_DASHBOARD.map((d) => (
-          <div key={d.judul} className="flex flex-col gap-0.5 border-t border-line py-3">
-            <span className="body-strong">{d.judul}</span>
-            <span className="body text-ink-muted">{d.isi}</span>
+      <>
+        {BACA_DASHBOARD.map((g, gi) => {
+          const awal = BACA_DASHBOARD.slice(0, gi).reduce((n, x) => n + x.items.length, 0);
+          return (
+            <div key={g.kelompok} className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-baseline gap-x-2">
+                <h3 className="body-strong m-0">{g.kelompok}</h3>
+                <span className="caption text-ink-muted">{g.ket}</span>
+              </div>
+              <ol className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3 p-0">
+                {g.items.map((d, i) => (
+                  <li key={d.judul} className="flex gap-3 rounded-[10px] border border-line p-4">
+                    <IkonKotak ikon={IKON_DASHBOARD[awal + i]} />
+                    <div className="flex min-w-0 flex-col gap-0.5">
+                      <span className="flex items-baseline gap-2">
+                        <span className="caption-strong text-ink-muted tabular-nums" aria-hidden="true">{awal + i + 1}</span>
+                        <span className="body-strong">{d.judul}</span>
+                      </span>
+                      <span className="body text-ink-muted">{d.isi}</span>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          );
+        })}
+        <div className="flex items-start gap-3 rounded-[10px] bg-lilac-soft p-4">
+          <Filter size={16} strokeWidth={1.5} aria-hidden="true" className="mt-0.5 shrink-0 text-lilac-main" />
+          <div className="flex flex-col gap-0.5">
+            <p className="body-strong m-0 text-lilac-main">{TIP_FOKUS.judul}</p>
+            <p className="body m-0">{TIP_FOKUS.isi}</p>
           </div>
-        ))}
-      </div>
+        </div>
+      </>
     ),
   },
   {
