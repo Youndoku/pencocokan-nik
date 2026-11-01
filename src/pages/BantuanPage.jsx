@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Check, X } from "lucide-react";
+import { Check } from "lucide-react";
 import Card from "../components/ui/Card.jsx";
 import Badge from "../components/ui/Badge.jsx";
 import Button from "../components/ui/Button.jsx";
@@ -363,9 +363,6 @@ export default function BantuanPage() {
                 </Button>
               ))}
             </div>
-            <Button variant="ghost" size="sm" icon={X} onClick={() => setCari("")}>
-              Hapus pencarian
-            </Button>
           </div>
         </Card>
       ) : (

@@ -44,6 +44,7 @@ export default function DashboardPage() {
   const { sesiList, ambilSesi } = useRiwayat();
   const [sesi, setSesi] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [gagal, setGagal] = useState(false); // penyimpanan browser tidak bisa dibaca
   const [detailTerbuka, setDetailTerbuka] = useState(false);
   const detailRef = useRef(null);
 
@@ -51,11 +52,21 @@ export default function DashboardPage() {
     let batal = false;
     setLoading(true);
     setDetailTerbuka(false);
-    ambilSesi(id).then((data) => {
-      if (batal) return;
-      setSesi(data);
-      setLoading(false);
-    });
+    setGagal(false);
+    ambilSesi(id)
+      .then((data) => {
+        if (!batal) setSesi(data);
+      })
+      .catch((err) => {
+        console.error("Gagal membaca sesi:", err);
+        if (!batal) {
+          setSesi(null);
+          setGagal(true);
+        }
+      })
+      .finally(() => {
+        if (!batal) setLoading(false);
+      });
     return () => {
       batal = true;
     };
@@ -77,8 +88,12 @@ export default function DashboardPage() {
 
   if (!sesi) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
-        <p className="body m-0 text-ink-muted">Sesi tidak ditemukan.</p>
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 text-center" role={gagal ? "alert" : undefined}>
+        <p className="body m-0 text-ink-muted">
+          {gagal
+            ? "Sesi tidak bisa dibuka karena penyimpanan browser tidak bisa dibaca. Coba muat ulang halaman."
+            : "Sesi tidak ditemukan."}
+        </p>
         <Button as={Link} to="/riwayat" variant="secondary">
           Buka riwayat
         </Button>

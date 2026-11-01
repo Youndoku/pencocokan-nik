@@ -119,6 +119,7 @@ export function usePencocokanNIK() {
                 kolomProgram: prev.sesiId ? prev.kolomProgram : kolomProgram,
               }
             );
+            setLoadingGabungan(false); // balasan LOAD_ROWS dari pakaiSesi
             setKolomNikGabungan(guessedNik);
             setKolomNamaGabungan(guessedNama);
             const asal = kecamatanAsalRef.current;
@@ -271,6 +272,8 @@ export function usePencocokanNIK() {
     setValidasi((prev) => ({ ...prev, gabungan: null }));
     // Sesi lama belum punya kolomKecamatan (undefined), jadi nanti ditebak dari nama kolom.
     kecamatanAsalRef.current = sesi.konfigurasi?.kolomKecamatan;
+    // Lanjut nonaktif sampai worker membalas, supaya pilihan kolom di langkah 2 tidak ditimpa tebakan.
+    setLoadingGabungan(true);
     setGabungan({
       fileName,
       totalRows: rows.length,
