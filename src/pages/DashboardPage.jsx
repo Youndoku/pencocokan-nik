@@ -4,6 +4,7 @@ import { ChevronRight, Loader2 } from "lucide-react";
 import { useRiwayat } from "../hooks/useRiwayat.js";
 import { useDashboard } from "../hooks/useDashboard.js";
 import { kolomProgramSesi, ringkasDaftar } from "../utils/autoDetectColumns.js";
+import { unduhExcelSesi } from "../utils/unduh.js";
 import Badge from "../components/ui/Badge.jsx";
 import Button from "../components/ui/Button.jsx";
 import Select from "../components/ui/Select.jsx";
@@ -111,16 +112,6 @@ export default function DashboardPage() {
   const pakaiStatus = Boolean(konf.kolomStatusPembanding) && (konf.statusTerpilih?.length || 0) > 0;
   const anomali = anomaliDariSesi(sesi);
 
-  const unduhExcel = () => {
-    if (!sesi.excelBuffer) return;
-    const url = URL.createObjectURL(new Blob([sesi.excelBuffer], { type: "application/octet-stream" }));
-    const el = document.createElement("a");
-    el.href = url;
-    el.download = `hasil_${sesi.namaKolomBaru || "pencocokan"}.xlsx`;
-    el.click();
-    setTimeout(() => URL.revokeObjectURL(url), 100);
-  };
-
   return (
     <>
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -140,7 +131,7 @@ export default function DashboardPage() {
             onChange={(sid) => navigate(`/dashboard/${sid}${fokusParam ? `?fokus=${encodeURIComponent(fokusParam)}` : ""}`)}
             options={sesiList.map((s) => ({ value: s.id, label: `Sesi ${nomor(s)}: ${s.namaKolomBaru}` }))}
           />
-          <Button variant="secondary" size="sm" disabled={!sesi.excelBuffer} onClick={unduhExcel}>
+          <Button variant="secondary" size="sm" disabled={!sesi.excelBuffer} onClick={() => unduhExcelSesi(sesi)}>
             Unduh Excel
           </Button>
         </div>

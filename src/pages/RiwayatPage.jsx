@@ -1,182 +1,111 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Loader2, Lock, Plus } from "lucide-react";
 import { useRiwayat } from "../hooks/useRiwayat.js";
-import SessionCard from "../components/riwayat/SessionCard.jsx";
-import StorageInfo from "../components/riwayat/StorageInfo.jsx";
+import Card from "../components/ui/Card.jsx";
+import Button from "../components/ui/Button.jsx";
 import NikSearchBox from "../components/riwayat/NikSearchBox.jsx";
-import {
-  History,
-  Search,
-  Trash2,
-  PlusCircle,
-  ArrowUpDown,
-  Loader2,
-  Inbox,
-} from "lucide-react";
+import DaftarSesi from "../components/riwayat/DaftarSesi.jsx";
+import KonfirmasiDialog from "../components/riwayat/KonfirmasiDialog.jsx";
+
+const SUB_DAFTAR = "Setiap sesi menambah satu kolom program. Sesi terbaru berisi semua program.";
 
 export default function RiwayatPage() {
+  const { sesiList, jumlahSesi, loading, hapusBanyakSesi } = useRiwayat();
+  const [hapusSemua, setHapusSemua] = useState(false);
   const navigate = useNavigate();
-  const { sesiList, jumlahSesi, loading, hapusSesi, hapusBanyakSesi, totalUkuran } =
-    useRiwayat();
-  const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState("tanggal"); // tanggal | persentase
-  const [selectedIds, setSelectedIds] = useState(new Set());
-
-  const filtered = useMemo(() => {
-    let list = sesiList;
-
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(
-        (s) =>
-          s.namaGabungan.toLowerCase().includes(q) ||
-          s.namaPembanding.toLowerCase().includes(q) ||
-          (s.namaKolomBaru || "").toLowerCase().includes(q)
-      );
-    }
-
-    if (sortBy === "persentase") {
-      list = [...list].sort(
-        (a, b) => (b.ringkasan?.persentase || 0) - (a.ringkasan?.persentase || 0)
-      );
-    }
-    // Default: already sorted by tanggal descending from hook
-
-    return list;
-  }, [sesiList, search, sortBy]);
-
-  const toggleSelect = (id) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  const handleBulkDelete = async () => {
-    if (selectedIds.size === 0) return;
-    if (
-      !window.confirm(
-        `Hapus ${selectedIds.size} sesi yang dipilih? Tindakan ini tidak dapat dibatalkan.`
-      )
-    )
-      return;
-    await hapusBanyakSesi(Array.from(selectedIds));
-    setSelectedIds(new Set());
-  };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 size={24} className="animate-spin text-primary" />
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader2 size={24} strokeWidth={1.5} className="animate-spin text-lilac-main" aria-label="Memuat" />
       </div>
     );
   }
 
+  const ada = jumlahSesi > 0;
+
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 animate-fade-in">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-          <History size={20} className="text-primary-dark" />
-        </div>
-        <div>
-          <h1 className="text-lg font-bold text-slate-900 tracking-tight">
-            Riwayat & Pencarian
-          </h1>
-          <p className="text-sm text-slate-500">
-            {jumlahSesi} sesi tersimpan di perangkat ini
-          </p>
-        </div>
+    <>
+      <header className="flex flex-col gap-2">
+        <h1 className="title-lg m-0">Riwayat dan pencarian</h1>
+        <p className="body m-0 text-ink-muted">
+          Cari NIK di data terbaru, buka kembali sesi lama, atau hapus sesi yang tidak dipakai.
+        </p>
+      </header>
+
+      <div className="flex flex-wrap items-stretch gap-3">
+        <NikSearchBox key={sesiList[0]?.id ?? "kosong"} sesi={sesiList[0] ?? null} className="flex-[999_1_560px]" />
+
+        <Card title="Penyimpanan" subtitle="Riwayat hanya tersimpan di browser ini" className="flex-[1_1_320px]">
+          <div>
+            <div className="amount-lg tabular-nums">{jumlahSesi}</div>
+            <p className="caption m-0 text-ink-muted">sesi tersimpan</p>
+          </div>
+          {ada ? (
+            <>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-start gap-2">
+                  <Lock size={16} strokeWidth={1.5} aria-hidden="true" className="mt-0.5 shrink-0 text-success" />
+                  <p className="body m-0">Data tidak dikirim ke server.</p>
+                </div>
+                <p className="body m-0 text-ink-muted">
+                  Riwayat akan hilang kalau data browser dihapus atau aplikasi dibuka di komputer lain. Unduh Excel hasil yang perlu disimpan.
+                </p>
+              </div>
+              <div>
+                <Button variant="secondary" size="sm" onClick={() => setHapusSemua(true)}>
+                  Hapus semua riwayat
+                </Button>
+              </div>
+            </>
+          ) : (
+            <p className="body m-0 text-ink-muted">Data tidak dikirim ke server.</p>
+          )}
+        </Card>
       </div>
 
-      {jumlahSesi === 0 ? (
-        /* Empty state */
-        <div className="text-center py-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-100 mb-4">
-            <Inbox size={28} className="text-slate-300" />
-          </div>
-          <p className="text-sm text-slate-500 mb-4">
-            Belum ada riwayat pencocokan
-          </p>
-          <button
-            onClick={() => navigate("/pencocokan")}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-dark text-white rounded-xl text-sm font-semibold transition-all hover:shadow-lg hover:shadow-primary-light cursor-pointer"
-          >
-            <PlusCircle size={14} />
-            Mulai Proses Data
-          </button>
-        </div>
-      ) : (
-        <>
-          <NikSearchBox sesiTerbaru={sesiList[0] ?? null} />
-
-          {/* Toolbar */}
-          <div className="flex items-center gap-2 mb-4">
-            <div className="relative flex-1">
-              <Search
-                size={14}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-              <input
-                type="text"
-                placeholder="Cari nama file..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-all"
-              />
-            </div>
-
-            <button
-              onClick={() =>
-                setSortBy(sortBy === "tanggal" ? "persentase" : "tanggal")
-              }
-              className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
-            >
-              <ArrowUpDown size={13} />
-              {sortBy === "tanggal" ? "Tanggal" : "% Cocok"}
-            </button>
-
-            {selectedIds.size > 0 && (
-              <button
-                onClick={handleBulkDelete}
-                className="flex items-center gap-1.5 px-3 py-2 bg-accent-red/10 text-accent-red border border-accent-red/30 rounded-xl text-sm font-semibold hover:bg-accent-red/15 transition-colors cursor-pointer animate-fade-in"
-              >
-                <Trash2 size={13} />
-                Hapus ({selectedIds.size})
-              </button>
+      <Card
+        title={
+          <span className="flex items-center gap-2">
+            Daftar sesi
+            {ada && (
+              <span className="micro inline-grid h-[18px] min-w-[18px] place-items-center rounded-full bg-lilac-text px-[5px] text-on-lilac tabular-nums">
+                {jumlahSesi}
+              </span>
             )}
+          </span>
+        }
+        subtitle={SUB_DAFTAR}
+      >
+        {ada ? (
+          <DaftarSesi sesiList={sesiList} onHapus={hapusBanyakSesi} />
+        ) : (
+          <div className="flex flex-col items-start gap-4 rounded-[10px] bg-lilac-bg px-6 py-10">
+            <div className="flex max-w-[520px] flex-col gap-1">
+              <p className="body-strong m-0">Belum ada sesi</p>
+              <p className="body m-0 text-ink-muted">
+                Sesi muncul di sini setelah proses data pertama selesai. Dari sini Anda bisa membuka dashboard sesi lama, mengunduh hasilnya lagi, atau menghapusnya.
+              </p>
+            </div>
+            <Button variant="secondary" icon={Plus} onClick={() => navigate("/pencocokan", { state: { mulai: Date.now() } })}>
+              Proses data baru
+            </Button>
           </div>
+        )}
+      </Card>
 
-          {/* Session list */}
-          <div className="space-y-3">
-            {filtered.map((sesi) => (
-              <SessionCard
-                key={sesi.id}
-                sesi={sesi}
-                selected={selectedIds.has(sesi.id)}
-                onToggleSelect={() => toggleSelect(sesi.id)}
-                onHapus={async (id) => {
-                  if (window.confirm("Hapus sesi ini?")) {
-                    await hapusSesi(id);
-                    setSelectedIds((prev) => {
-                      const next = new Set(prev);
-                      next.delete(id);
-                      return next;
-                    });
-                  }
-                }}
-              />
-            ))}
-          </div>
-
-          {/* Storage info */}
-          <div className="mt-6">
-            <StorageInfo totalUkuran={totalUkuran} jumlahSesi={jumlahSesi} />
-          </div>
-        </>
-      )}
-    </div>
+      <KonfirmasiDialog
+        open={hapusSemua}
+        judul="Hapus semua riwayat?"
+        pesan={`Semua ${jumlahSesi} sesi akan dihapus dari browser ini dan tidak bisa dikembalikan. Unduh Excel hasil yang masih diperlukan dulu.`}
+        labelHapus="Hapus semua"
+        onBatal={() => setHapusSemua(false)}
+        onHapus={async () => {
+          await hapusBanyakSesi(sesiList.map((s) => s.id));
+          setHapusSemua(false);
+        }}
+      />
+    </>
   );
 }

@@ -68,14 +68,6 @@ export function useRiwayat() {
     return dbAmbil(id);
   }, []);
 
-  // Estimate storage size in bytes (rough)
-  const totalUkuran = sesiList.reduce((acc, s) => {
-    const ringkasanSize = JSON.stringify(s.ringkasan || {}).length;
-    const dataSize = s.dataHasil ? JSON.stringify(s.dataHasil).length : 0;
-    const bufferSize = s.excelBuffer ? s.excelBuffer.byteLength : 0;
-    return acc + ringkasanSize + dataSize + bufferSize;
-  }, 0);
-
   return {
     sesiList,
     jumlahSesi: sesiList.length,
@@ -84,7 +76,6 @@ export function useRiwayat() {
     hapusSesi,
     hapusBanyakSesi,
     ambilSesi,
-    totalUkuran,
     muat,
   };
 }

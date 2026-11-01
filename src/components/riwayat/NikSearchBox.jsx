@@ -1,114 +1,97 @@
 import { useMemo, useState } from "react";
-import { Search, UserCheck } from "lucide-react";
-import { detectProgramColumns } from "../../utils/autoDetectColumns.js";
+import Card from "../ui/Card.jsx";
+import Badge from "../ui/Badge.jsx";
+import SearchInput from "../ui/SearchInput.jsx";
+import { kolomProgramSesi } from "../../utils/autoDetectColumns.js";
+import { normalisasiNIK, samarkanNIK } from "../../utils/normalize.js";
 
-const MIN_QUERY_LENGTH = 3;
+const MIN_DIGIT = 3;
+const MAKS_HASIL = 5;
 
-export default function NikSearchBox({ sesiTerbaru }) {
+/** Kartu "Cari NIK" di data sesi terbaru. Tanpa sesi: kolom nonaktif. */
+export default function NikSearchBox({ sesi, className = "" }) {
   const [query, setQuery] = useState("");
 
-  const dataHasil = sesiTerbaru?.dataHasil ?? null;
-  const kolomNik = sesiTerbaru?.konfigurasi?.kolomNikGabungan ?? "";
-  const kolomNama = sesiTerbaru?.konfigurasi?.kolomNamaGabungan ?? "";
-  const namaKolomBaru = sesiTerbaru?.namaKolomBaru ?? "";
+  const dataHasil = sesi?.dataHasil ?? null;
+  const konf = sesi?.konfigurasi ?? {};
+  const kolomNik = konf.kolomNikGabungan ?? "";
+  const programs = useMemo(() => (sesi ? kolomProgramSesi(sesi) : []), [sesi]);
 
-  const programColumns = useMemo(() => {
-    if (!dataHasil || dataHasil.length === 0) return [];
-    return detectProgramColumns(dataHasil, namaKolomBaru);
-  }, [dataHasil, namaKolomBaru]);
-
-  const statusColumns = useMemo(
-    () => [...programColumns, namaKolomBaru].filter(Boolean),
-    [programColumns, namaKolomBaru]
-  );
-
+  const q = normalisasiNIK(query);
   const hasil = useMemo(() => {
-    const q = query.trim();
-    if (q.length < MIN_QUERY_LENGTH || !dataHasil || !kolomNik) return null;
-    return dataHasil.filter((row) => String(row[kolomNik] ?? "").includes(q));
-  }, [query, dataHasil, kolomNik]);
+    if (q.length < MIN_DIGIT || !dataHasil || !kolomNik) return null;
+    return dataHasil.filter((row) => normalisasiNIK(row[kolomNik]).includes(q));
+  }, [q, dataHasil, kolomNik]);
 
-  const hasilDitampilkan = hasil ? hasil.slice(0, 5) : null;
-
-  if (!sesiTerbaru) return null;
-
-  if (!dataHasil) {
+  if (!sesi) {
     return (
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 mb-4 shadow-sm">
-        <p className="text-sm text-slate-400">
-          Data tidak tersedia untuk pencarian NIK.
-        </p>
-      </div>
+      <Card title="Cari NIK" subtitle="Pencarian tersedia setelah ada sesi" className={className}>
+        <SearchInput placeholder="Ketik NIK" aria-label="Cari NIK" disabled className="pointer-events-none opacity-55" />
+      </Card>
     );
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-4 mb-4 shadow-sm">
-      <p className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-1.5">
-        <UserCheck size={14} className="text-primary" />
-        Cari NIK di data terbaru
-      </p>
-      <div className="relative mb-2">
-        <Search
-          size={14}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-        />
-        <input
-          type="text"
-          aria-label="Cari NIK di data terbaru"
-          placeholder="Ketik NIK..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-all"
-        />
-      </div>
-
-      {hasil && hasil.length === 0 && (
-        <p className="text-sm text-slate-400 px-1">
-          NIK tidak ditemukan di data terbaru.
-        </p>
-      )}
-
-      {hasil && hasil.length > 0 && (
-        <div className="space-y-2">
-          {hasilDitampilkan.map((row, i) => (
-            <div
-              key={i}
-              className="border border-slate-100 rounded-xl p-3 bg-slate-50/60"
-            >
-              <p className="text-sm font-semibold text-slate-800">
-                {String(row[kolomNama] ?? "-")}
-              </p>
-              <p className="text-xs text-slate-500 mb-2">
-                {String(row[kolomNik] ?? "-")}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {statusColumns.map((col) => {
-                  const cocok = Number(row[col]) === 1;
-                  return (
-                    <span
-                      key={col}
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                        cocok
-                          ? "bg-primary/10 text-primary-dark"
-                          : "bg-accent-red/10 text-accent-red"
-                      }`}
-                    >
-                      {col}: {cocok ? "Cocok" : "Tidak"}
-                    </span>
-                  );
-                })}
+    <Card
+      title="Cari NIK"
+      subtitle={`Di sesi terbaru, ${sesi.namaGabungan} dibandingkan dengan ${sesi.namaPembanding}. Ketik minimal 3 angka.`}
+      className={className}
+    >
+      {!dataHasil ? (
+        <p className="body m-0 text-ink-muted">Data tidak tersedia untuk pencarian NIK.</p>
+      ) : (
+        <>
+          <SearchInput placeholder="Ketik NIK" aria-label="Cari NIK di sesi terbaru" inputMode="numeric" value={query} onChange={setQuery} />
+          {hasil && (
+            <p className="caption-strong m-0 text-ink-muted tabular-nums" role="status">
+              {hasil.length === 0 ? "NIK tidak ditemukan di data terbaru." : `${hasil.length.toLocaleString("id-ID")} hasil ditemukan`}
+            </p>
+          )}
+          {hasil?.slice(0, MAKS_HASIL).map((row, i) => {
+            const menerima = programs.filter((p) => Number(row[p]) === 1);
+            const tidak = programs.filter((p) => Number(row[p]) !== 1);
+            const kec = konf.kolomKecamatan ? String(row[konf.kolomKecamatan] ?? "").trim() : "";
+            return (
+              <div key={i} className="flex flex-col gap-3 rounded-[10px] bg-lilac-bg p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="body-strong m-0">{String(row[konf.kolomNamaGabungan] ?? "-")}</p>
+                    <p className="caption m-0 text-ink-muted tabular-nums">
+                      {samarkanNIK(normalisasiNIK(row[kolomNik]))}
+                      {kec && `, Kecamatan ${kec}`}
+                    </p>
+                  </div>
+                  <Badge tone="lilac">
+                    Menerima {menerima.length} dari {programs.length} program
+                  </Badge>
+                </div>
+                {menerima.length > 0 && <DaftarProgram judul="Menerima" items={menerima} tone="lilac" />}
+                {tidak.length > 0 && <DaftarProgram judul="Tidak menerima" items={tidak} tone="neutral" />}
               </div>
-            </div>
-          ))}
-        </div>
+            );
+          })}
+          {hasil && hasil.length > MAKS_HASIL && (
+            <p className="caption m-0 text-ink-muted tabular-nums">
+              Menampilkan {MAKS_HASIL} dari {hasil.length.toLocaleString("id-ID")} hasil. Ketik NIK lebih lengkap untuk mempersempit.
+            </p>
+          )}
+        </>
       )}
+    </Card>
+  );
+}
 
-      {hasil && hasil.length > 5 && (
-        <p className="text-xs text-slate-400 px-1 mt-2">
-          Menampilkan 5 dari {hasil.length} hasil. Ketik NIK lebih lengkap untuk mempersempit.
-        </p>
-      )}
+function DaftarProgram({ judul, items, tone }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="caption-strong">{judul}</span>
+      <div className="flex flex-wrap gap-1">
+        {items.map((p) => (
+          <Badge key={p} tone={tone}>
+            {p}
+          </Badge>
+        ))}
+      </div>
     </div>
   );
 }
