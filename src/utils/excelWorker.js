@@ -519,7 +519,7 @@ self.onmessage = async function (e) {
 
         // Pengaman B1: kolom program baru tidak boleh menimpa kolom yang sudah ada.
         const namaBaru = String(namaKolomBaru ?? "").trim().toLowerCase();
-        if (state.parsedGabungan.columns.some((c) => String(c).trim().toLowerCase() === namaBaru)) {
+        if ([...state.parsedGabungan.columns, "Keterangan"].some((c) => String(c).trim().toLowerCase() === namaBaru)) {
           throw new Error(
             `Nama kolom "${namaKolomBaru}" sudah dipakai di data gabungan. Pakai nama lain supaya kolom lama tidak tertimpa.`
           );

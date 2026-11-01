@@ -17,7 +17,7 @@ export default function NikSearchBox({ sesi, className = "" }) {
   const kolomNik = konf.kolomNikGabungan ?? "";
   const programs = useMemo(() => (sesi ? kolomProgramSesi(sesi) : []), [sesi]);
 
-  const q = normalisasiNIK(query);
+  const q = query.replace(/\D/g, "");
   const hasil = useMemo(() => {
     if (q.length < MIN_DIGIT || !dataHasil || !kolomNik) return null;
     return dataHasil.filter((row) => normalisasiNIK(row[kolomNik]).includes(q));

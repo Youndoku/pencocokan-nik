@@ -30,7 +30,7 @@ const LANGKAH_TAMBAH = [
   "Unggah file pembanding program berikutnya, lalu lanjutkan seperti biasa.",
 ];
 const PERHATIAN = [
-  "Nama kolom program harus berbeda dari kolom yang sudah ada. Nama yang sama akan menimpa kolom lama.",
+  "Nama kolom program harus berbeda dari kolom yang sudah ada. Nama yang sama akan ditolak supaya kolom lama tidak tertimpa.",
   "Lanjutkan dari sesi terbaru supaya semua program ikut.",
 ];
 const ANOMALI = [

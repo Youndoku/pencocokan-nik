@@ -30,12 +30,15 @@ export function normalisasiNama(v) {
 
 /**
  * Samarkan NIK untuk tampilan: 6 digit + •••••• + 4 digit. Berlaku untuk semua
- * nilai berisi angka saja sepanjang 12 digit atau lebih (termasuk NIK yang panjangnya
+ * nilai berisi angka (boleh diselingi spasi, titik, strip) sepanjang 12 digit atau lebih (termasuk NIK yang panjangnya
  * salah dan No KK). Nilai lain dikembalikan apa adanya.
  */
 export function samarkanNIK(v) {
   const s = String(v ?? "").trim();
-  return /^\d{12,}$/.test(s) ? `${s.slice(0, 6)}••••••${s.slice(-4)}` : s;
+  // Angka boleh diselingi spasi, titik, strip, atau diawali petik (NIK teks dari Excel).
+  if (!/^'?[\d\s.-]+$/.test(s)) return s;
+  const d = normalisasiNIK(s);
+  return d.length >= 12 ? `${d.slice(0, 6)}••••••${d.slice(-4)}` : s;
 }
 
 /** Kunci pembanding nama kecamatan: tanpa awalan "Kec."/"Kecamatan", huruf besar, tanpa spasi, "-", "_", ".". */
@@ -73,4 +76,17 @@ export function labelKecamatan(nama) {
   return (
     KECAMATAN_RESMI.find((r) => levenshtein(kunci, r.toUpperCase()) <= (r.length >= 7 ? 2 : 1)) || ""
   );
+}
+
+/**
+ * Pemberi label kecamatan untuk satu analisis: nama resmi kalau mirip, kalau tidak ejaan pertama
+ * yang ditemui untuk kuncinya. "" kalau kosong (termasuk sel yang hanya berisi "Kecamatan").
+ */
+export function buatLabelKecamatan() {
+  const perKunci = {};
+  return (nama) => {
+    const kunci = kunciKecamatan(nama);
+    if (!kunci) return "";
+    return labelKecamatan(nama) || (perKunci[kunci] ??= String(nama).trim());
+  };
 }

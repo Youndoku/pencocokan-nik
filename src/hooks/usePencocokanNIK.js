@@ -5,7 +5,8 @@ import { kolomProgramSesi, tebakKolomKecamatan } from "../utils/autoDetectColumn
 /** Nama kolom baru bentrok dengan kolom yang sudah ada (dipangkas, tidak peka huruf besar/kecil). */
 export function namaKolomBentrok(columns = [], nama) {
   const n = String(nama ?? "").trim().toLowerCase();
-  return Boolean(n) && columns.some((c) => String(c).trim().toLowerCase() === n);
+  // "Keterangan" dipakai kolom tampilan dashboard, jadi ikut ditolak.
+  return Boolean(n) && [...columns, "Keterangan"].some((c) => String(c).trim().toLowerCase() === n);
 }
 
 /**

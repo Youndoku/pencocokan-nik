@@ -11,11 +11,10 @@ const EVENT_BERUBAH = "sesi-berubah";
 
 export function useRiwayat() {
   const [sesiList, setSesiList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // hanya untuk muat pertama, supaya halaman tidak berkedip tiap sesi berubah
 
   const muat = useCallback(async () => {
     try {
-      setLoading(true);
       const data = await ambilSemuaSesi();
       // Sort descending by tanggal (newest first)
       data.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));

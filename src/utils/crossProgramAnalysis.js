@@ -1,4 +1,4 @@
-import { kunciKecamatan, labelKecamatan } from "./normalize.js";
+import { buatLabelKecamatan } from "./normalize.js";
 
 /**
  * Build a cross-program overlap matrix.
@@ -48,6 +48,7 @@ export function findDuplicateRecipients(
   kolomKecamatan = ""
 ) {
   const results = [];
+  const beriLabel = kolomKecamatan ? buatLabelKecamatan() : null;
 
   for (const row of rows) {
     const programs = {};
@@ -63,7 +64,7 @@ export function findDuplicateRecipients(
       results.push({
         nik: String(row[kolomNik] || ""),
         nama: String(row[kolomNama] || ""),
-        kecamatan: kolomKecamatan ? labelKecamatan(row[kolomKecamatan]) || String(row[kolomKecamatan] ?? "").trim() : "",
+        kecamatan: beriLabel ? beriLabel(row[kolomKecamatan]) : "",
         programs,
         diterima,
         count: diterima.length,
@@ -99,7 +100,7 @@ export function analisisLintasProgram(rows = [], programs = [], { kolomNik, kolo
   const fokus = Object.fromEntries(urutan.map((p) => [p, [0, 0, 0]]));
   const kombinasiMap = new Map();
   const kec = kolomKecamatan ? { jumlah: {}, tanpa: 0, tanpaPer: Object.fromEntries(urutan.map((p) => [p, 0])) } : null;
-  const labelPerKunci = {};
+  const beriLabel = buatLabelKecamatan();
 
   for (const row of rows) {
     const diterima = urutan.filter((p) => Number(row[p]) === 1);
@@ -112,15 +113,12 @@ export function analisisLintasProgram(rows = [], programs = [], { kolomNik, kolo
       kombinasiMap.set(key, (kombinasiMap.get(key) || 0) + 1);
     }
     if (kec) {
-      const nama = String(row[kolomKecamatan] ?? "").trim();
-      const kunci = kunciKecamatan(nama);
-      if (!kunci) {
+      const label = beriLabel(row[kolomKecamatan]);
+      if (!label) {
         kec.tanpa++;
         for (const p of diterima) kec.tanpaPer[p]++;
         continue;
       }
-      // Nama resmi kalau mirip; kalau tidak, ejaan pertama yang ditemui untuk kunci ini.
-      const label = labelKecamatan(nama) || (labelPerKunci[kunci] ??= nama);
       const baris = (kec.jumlah[label] ??= Object.fromEntries(urutan.map((p) => [p, 0])));
       for (const p of diterima) baris[p]++;
     }
