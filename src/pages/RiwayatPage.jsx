@@ -6,7 +6,7 @@ import Card from "../components/ui/Card.jsx";
 import Button from "../components/ui/Button.jsx";
 import NikSearchBox from "../components/riwayat/NikSearchBox.jsx";
 import DaftarSesi from "../components/riwayat/DaftarSesi.jsx";
-import KonfirmasiDialog from "../components/riwayat/KonfirmasiDialog.jsx";
+import KonfirmasiDialog from "../components/ui/KonfirmasiDialog.jsx";
 
 const SUB_DAFTAR = "Setiap sesi menambah satu kolom program. Sesi terbaru berisi semua program.";
 

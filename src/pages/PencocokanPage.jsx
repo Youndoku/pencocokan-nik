@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useBlocker, useNavigate, useSearchParams } from "react-router-dom";
 import { AlertCircle } from "lucide-react";
 import { usePencocokanNIK } from "../hooks/usePencocokanNIK.js";
 import { useRiwayat } from "../hooks/useRiwayat.js";
 import { generateId } from "../utils/db.js";
 import Button from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
+import KonfirmasiDialog from "../components/ui/KonfirmasiDialog.jsx";
 import ProgressBar from "../components/ui/ProgressBar.jsx";
 import Stepper from "../components/pencocokan/Stepper.jsx";
 import UploadStep from "../components/pencocokan/UploadStep.jsx";
@@ -47,6 +48,18 @@ export default function PencocokanPage() {
     scanAnomalies, finalizeMatching, handleDownload,
     excelBuffer,
   } = usePencocokanNIK();
+
+  // Penjaga: ada isian yang belum disimpan (sebelum langkah Hasil) atau proses sedang berjalan.
+  const adaIsian = step < 4 && Boolean(gabungan || pembanding || loadingGabungan || loadingPembanding || loadingMatching);
+  const blocker = useBlocker(adaIsian);
+
+  // Muat ulang atau tutup tab: browser menampilkan konfirmasinya sendiri.
+  useEffect(() => {
+    if (!adaIsian) return;
+    const cegah = (e) => e.preventDefault();
+    window.addEventListener("beforeunload", cegah);
+    return () => window.removeEventListener("beforeunload", cegah);
+  }, [adaIsian]);
 
   const kolomProgram = [...(gabungan?.kolomProgram || []), namaKolomBaru];
 
@@ -147,6 +160,19 @@ export default function PencocokanPage() {
           Batalkan proses
         </Button>
       </header>
+
+      <KonfirmasiDialog
+        open={blocker.state === "blocked"}
+        judul="Tinggalkan proses data?"
+        pesan={
+          loadingMatching
+            ? "Data sedang diproses. Kalau ditinggalkan, proses dihentikan dan hasilnya tidak disimpan."
+            : "File dan pengaturan yang sudah diisi akan hilang karena hasilnya belum disimpan."
+        }
+        labelHapus="Tinggalkan"
+        onBatal={() => blocker.reset?.()}
+        onHapus={() => blocker.proceed?.()}
+      />
 
       <Stepper step={step} />
 

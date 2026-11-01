@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import Button from "../ui/Button.jsx";
+import Button from "./Button.jsx";
 
 /** Dialog konfirmasi hapus (dialog bawaan browser). Esc atau "Batal" = batal. */
 export default function KonfirmasiDialog({ open, judul, pesan, labelHapus, onBatal, onHapus }) {

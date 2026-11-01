@@ -6,7 +6,7 @@ import Button from "../ui/Button.jsx";
 import ProgressBar from "../ui/ProgressBar.jsx";
 import SearchInput from "../ui/SearchInput.jsx";
 import Select from "../ui/Select.jsx";
-import KonfirmasiDialog from "./KonfirmasiDialog.jsx";
+import KonfirmasiDialog from "../ui/KonfirmasiDialog.jsx";
 import { kolomProgramSesi } from "../../utils/autoDetectColumns.js";
 import { persen } from "../../utils/format.js";
 import { unduhExcelSesi } from "../../utils/unduh.js";
