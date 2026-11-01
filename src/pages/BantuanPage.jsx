@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import Card from "../components/ui/Card.jsx";
 import Badge from "../components/ui/Badge.jsx";
+import Button from "../components/ui/Button.jsx";
 import SearchInput from "../components/ui/SearchInput.jsx";
 
 // Teks disalin dari Bantuan.dc.html, definisi angka 2 mengikuti K3 di spec.
@@ -88,6 +89,9 @@ const FAQ = [
     jawab: 'Dashboard menyamakan tulisan nama kecamatan ke nama resmi Kemendagri: Batu, Bumiaji, dan Junrejo. Huruf besar/kecil, spasi, tanda hubung, awalan "Kec.", dan salah ketik ringan diabaikan, jadi "Bumi Aji", "BUMIAJI", dan "bmiaji" dihitung sebagai Bumiaji. Nama yang terlalu berbeda tetap ditampilkan sesuai tulisan aslinya. File Excel hasil tidak diubah.',
   },
 ];
+
+// Kata yang pasti punya hasil, ditawarkan saat pencarian kosong.
+const SARAN = ["NIK", "anomali", "kecamatan", "Excel", "sesi"];
 
 /** Semua teks di dalam data (string, array, objek) digabung jadi satu untuk pencarian. */
 const teksDari = (v) =>
@@ -337,6 +341,34 @@ export default function BantuanPage() {
         />
       </header>
 
+      {q && tampil.length > 0 && (
+        <p className="caption m-0 text-ink-muted tabular-nums" role="status">
+          {tampil.length} topik cocok dengan “{cari.trim()}”
+        </p>
+      )}
+
+      {tampil.length === 0 ? (
+        <Card role="status">
+          <div className="flex flex-col items-start gap-4 rounded-[10px] bg-lilac-bg px-6 py-10">
+            <div className="flex max-w-[520px] flex-col gap-1">
+              <p className="body-strong m-0 break-words">Tidak ada topik untuk “{cari.trim()}”</p>
+              <p className="body m-0 text-ink-muted">
+                Coba kata yang lebih umum atau periksa ejaannya. Bisa juga mulai dari salah satu kata ini:
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {SARAN.map((s) => (
+                <Button key={s} variant="secondary" size="sm" onClick={() => setCari(s)}>
+                  {s}
+                </Button>
+              ))}
+            </div>
+            <Button variant="ghost" size="sm" icon={X} onClick={() => setCari("")}>
+              Hapus pencarian
+            </Button>
+          </div>
+        </Card>
+      ) : (
       <div className="flex flex-wrap items-start gap-4">
         <nav
           aria-label="Topik bantuan"
@@ -357,7 +389,6 @@ export default function BantuanPage() {
         </nav>
 
         <div className="flex min-w-0 flex-[999_1_560px] flex-col gap-3">
-          {tampil.length === 0 && <p className="caption m-0 text-ink-muted">Tidak ada topik yang cocok.</p>}
           {tampil.map((t) => (
             <Card key={t.id} id={t.id} title={t.judul} subtitle={t.sub} className="scroll-mt-5">
               {t.isi}
@@ -365,6 +396,7 @@ export default function BantuanPage() {
           ))}
         </div>
       </div>
+      )}
     </>
   );
 }
