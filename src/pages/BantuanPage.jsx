@@ -1,20 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  Blocks,
-  ChartBar,
-  ChartBarStacked,
-  Check,
-  Copy,
-  Filter,
-  Grid3x3,
-  Hash,
-  Layers,
-  MapPin,
-  Table,
-  TriangleAlert,
-  UserX,
-  Users,
-} from "lucide-react";
+import { Check, Copy, Hash, UserX } from "lucide-react";
 import Card from "../components/ui/Card.jsx";
 import Badge from "../components/ui/Badge.jsx";
 import Button from "../components/ui/Button.jsx";
@@ -79,34 +64,123 @@ const ANOMALI = [
 const IKON_ANOMALI = [UserX, Hash, Copy];
 const CATATAN_ANOMALI = "Pilihan bawaan langsung dipakai kalau tidak diubah. Keputusan bisa diambil satu per satu atau sekaligus.";
 
+// Urutan dan lebar kotak denah mengikuti tata letak DashboardPage + RingkasanProgram (sesi ≥2 program).
+// lebar: 1 = kartu sempit, 2 = kartu lebar, 3 = selebar halaman, 0 = pilihan di judul bagian (bukan kartu).
 const BACA_DASHBOARD = [
   {
     kelompok: "Hasil sesi",
-    ket: "Bagian atas dashboard, khusus program yang diproses di sesi itu.",
+    ket: "Khusus program yang diproses di sesi itu.",
     items: [
-      { judul: "Hasil pemadanan", isi: "Jumlah cocok, status tidak dihitung, dan tidak cocok untuk program sesi itu." },
-      { judul: "Temuan anomali", isi: "Ringkasan keputusan anomali saat proses. Pilih Lihat detail anomali untuk melihat datanya." },
+      { judul: "Hasil pemadanan", lebar: 2, isi: "Jumlah cocok, status tidak dihitung, dan tidak cocok untuk program sesi itu." },
+      { judul: "Temuan anomali", lebar: 1, isi: "Ringkasan keputusan anomali saat proses. Pilih Lihat detail anomali untuk melihat datanya." },
     ],
   },
   {
     kelompok: "Ringkasan program",
-    ket: "Bagian bawah dashboard, membandingkan semua program di file.",
+    ket: "Membandingkan semua program di file.",
     items: [
-      { judul: "Penerima per program", isi: "Jumlah penerima tiap program, diurutkan dari terbanyak. Klik bar untuk fokus ke program itu." },
-      { judul: "Jumlah program per NIK", isi: "Berapa NIK yang menerima 0, 1, 2, atau 3 program lebih." },
-      { judul: "Irisan antar program", isi: "Jumlah NIK yang menerima dua program sekaligus. Warna makin gelap berarti makin banyak." },
-      { judul: "Kombinasi terbanyak", isi: "Gabungan program yang paling sering diterima bersamaan oleh satu NIK." },
-      { judul: "Penerima per kecamatan", isi: "Jumlah penerima tiap program per kecamatan. Hanya muncul kalau data gabungan punya kolom kecamatan." },
-      { judul: "Penerima ganda", isi: "Daftar NIK yang menerima lebih dari satu program, untuk diperiksa lebih lanjut." },
-      { judul: "Data hasil", isi: "Seluruh baris file hasil beserta keterangannya. Bisa dicari dan disaring." },
+      { judul: "Fokus program", lebar: 0, isi: "Pilih satu program untuk melihat program itu dan irisannya dengan program lain. Pilih Semua program untuk kembali." },
+      { judul: "Penerima per program", lebar: 2, isi: "Jumlah penerima tiap program, dari terbanyak. Klik bar untuk fokus ke program itu." },
+      { judul: "Jumlah program per NIK", lebar: 1, isi: "Berapa NIK yang menerima 0, 1, 2, atau 3 program lebih." },
+      { judul: "Irisan antar program", lebar: 2, isi: "Jumlah NIK yang menerima dua program sekaligus. Warna makin gelap berarti makin banyak." },
+      { judul: "Kombinasi terbanyak", lebar: 1, isi: "Gabungan program yang paling sering diterima bersamaan oleh satu NIK." },
+      { judul: "Penerima per kecamatan", lebar: 3, isi: "Jumlah penerima tiap program per kecamatan. Hanya muncul kalau data gabungan punya kolom kecamatan." },
+      { judul: "Penerima ganda", lebar: 3, isi: "Daftar NIK yang menerima lebih dari satu program, untuk diperiksa lebih lanjut." },
+      { judul: "Data hasil", lebar: 3, isi: "Seluruh baris file hasil beserta keterangannya. Bisa dicari dan disaring." },
     ],
   },
-];
-const IKON_DASHBOARD = [ChartBarStacked, TriangleAlert, ChartBar, Layers, Grid3x3, Blocks, MapPin, Users, Table];
-const TIP_FOKUS = {
-  judul: "Fokus program",
-  isi: "Pilih satu program di Fokus program (judul Ringkasan) untuk melihat program itu dan irisannya dengan program lain. Pilih Semua program untuk kembali.",
-};
+].reduce((acc, g) => {
+  const awal = acc.reduce((n, x) => n + x.items.length, 0);
+  return [...acc, { ...g, items: g.items.map((it, i) => ({ ...it, no: String(awal + i + 1) })) }];
+}, []);
+
+const Nomor = ({ no, on }) => (
+  <span
+    aria-hidden="true"
+    className={`micro grid size-5 shrink-0 place-items-center rounded-full tabular-nums ${on ? "bg-lilac-main text-on-lilac" : "bg-lilac-text text-on-lilac"}`}
+  >
+    {no}
+  </span>
+);
+
+/** Denah mini dashboard + daftar bernomor. Arahkan kursor ke salah satu untuk menyorot pasangannya. */
+function DenahDashboard() {
+  const [sorot, setSorot] = useState(null);
+  const ikut = (no) => ({ onMouseEnter: () => setSorot(no), onMouseLeave: () => setSorot(null) });
+  const lebarKolom = { 1: "col-span-1", 2: "col-span-2", 3: "col-span-3" };
+
+  return (
+    <div className="flex flex-wrap items-start gap-6">
+      {/* Denah hanya gambaran; isi lengkapnya ada di daftar sebelahnya. */}
+      <div aria-hidden="true" className="flex w-full max-w-[380px] flex-[1_1_300px] flex-col gap-2 rounded-[10px] bg-lilac-bg p-3">
+        {BACA_DASHBOARD.map((g) => {
+          const pilihan = g.items.find((it) => it.lebar === 0);
+          return (
+            <div key={g.kelompok} className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <span className="micro text-ink-muted">{g.kelompok}</span>
+                {pilihan && (
+                  <span
+                    {...ikut(pilihan.no)}
+                    className={`flex items-center gap-1 rounded-sm border px-1.5 py-0.5 ${sorot === pilihan.no ? "border-lilac-main bg-lilac-soft" : "border-line bg-surface"}`}
+                  >
+                    <Nomor no={pilihan.no} on={sorot === pilihan.no} />
+                    <span className="micro text-ink-muted">Fokus</span>
+                  </span>
+                )}
+              </div>
+              <div className="grid grid-cols-3 gap-1.5">
+                {g.items
+                  .filter((it) => it.lebar > 0)
+                  .map((it) => (
+                    <div
+                      key={it.no}
+                      {...ikut(it.no)}
+                      className={`flex min-w-0 items-start gap-1.5 rounded-md border p-1.5 transition-colors ${lebarKolom[it.lebar]} ${it.lebar === 3 ? "h-9" : "h-14"} ${sorot === it.no ? "border-lilac-main bg-lilac-soft" : "border-line bg-surface"}`}
+                    >
+                      <Nomor no={it.no} on={sorot === it.no} />
+                      <span className="micro truncate text-ink-muted">{it.judul}</span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex min-w-0 flex-[999_1_320px] flex-col gap-4">
+        {BACA_DASHBOARD.map((g) => (
+          <div key={g.kelompok} className="flex flex-col gap-1">
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <h3 className="body-strong m-0">{g.kelompok}</h3>
+              <span className="caption text-ink-muted">{g.ket}</span>
+            </div>
+            <ol className="m-0 flex list-none flex-col p-0">
+              {g.items.map((it) => (
+                <li
+                  key={it.no}
+                  {...ikut(it.no)}
+                  className={`flex items-start gap-3 rounded-md border-b border-line px-2 py-2.5 last:border-b-0 ${sorot === it.no ? "bg-lilac-soft" : ""}`}
+                >
+                  <span className="mt-0.5">
+                    <Nomor no={it.no} on={sorot === it.no} />
+                  </span>
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <span className="body-strong">
+                      <span className="sr-only">{it.no}. </span>
+                      {it.judul}
+                    </span>
+                    <span className="body text-ink-muted">{it.isi}</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const IkonKotak = ({ ikon: Ikon }) => (
   <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-md bg-lilac-soft text-lilac-main">
@@ -305,43 +379,8 @@ const TOPIK = [
     label: "Membaca dashboard",
     judul: "Membaca dashboard",
     sub: "Dashboard selalu menampilkan satu sesi. Sesi terbaru berisi semua program.",
-    data: [BACA_DASHBOARD, TIP_FOKUS],
-    isi: (
-      <>
-        {BACA_DASHBOARD.map((g, gi) => {
-          const awal = BACA_DASHBOARD.slice(0, gi).reduce((n, x) => n + x.items.length, 0);
-          return (
-            <div key={g.kelompok} className="flex flex-col gap-3">
-              <div className="flex flex-wrap items-baseline gap-x-2">
-                <h3 className="body-strong m-0">{g.kelompok}</h3>
-                <span className="caption text-ink-muted">{g.ket}</span>
-              </div>
-              <ol className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3 p-0">
-                {g.items.map((d, i) => (
-                  <li key={d.judul} className="flex gap-3 rounded-[10px] border border-line p-4">
-                    <IkonKotak ikon={IKON_DASHBOARD[awal + i]} />
-                    <div className="flex min-w-0 flex-col gap-0.5">
-                      <span className="flex items-baseline gap-2">
-                        <span className="caption-strong text-ink-muted tabular-nums" aria-hidden="true">{awal + i + 1}</span>
-                        <span className="body-strong">{d.judul}</span>
-                      </span>
-                      <span className="body text-ink-muted">{d.isi}</span>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          );
-        })}
-        <div className="flex items-start gap-3 rounded-[10px] bg-lilac-soft p-4">
-          <Filter size={16} strokeWidth={1.5} aria-hidden="true" className="mt-0.5 shrink-0 text-lilac-main" />
-          <div className="flex flex-col gap-0.5">
-            <p className="body-strong m-0 text-lilac-main">{TIP_FOKUS.judul}</p>
-            <p className="body m-0">{TIP_FOKUS.isi}</p>
-          </div>
-        </div>
-      </>
-    ),
+    data: BACA_DASHBOARD,
+    isi: <DenahDashboard />,
   },
   {
     id: "privasi",
