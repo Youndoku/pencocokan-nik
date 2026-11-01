@@ -53,8 +53,8 @@ const PERHATIAN = [
 const ANOMALI = [
   {
     judul: "Perbedaan nama",
-    isi: "NIK sama, tetapi nama di kedua file berbeda, misalnya karena salah ketik atau singkatan.",
-    contoh: "SITI AMINAH di data gabungan, SITI A. di data pembanding.",
+    isi: "NIK sama, tetapi nama di kedua file berbeda.",
+    contoh: "SITI AMINAH dan SITI A.",
     pilihan: [
       { nama: "Validkan", hasil: "Cocok" },
       { nama: "Abaikan", hasil: "Tidak cocok", bawaan: true },
@@ -62,18 +62,18 @@ const ANOMALI = [
   },
   {
     judul: "Format NIK tidak standar",
-    isi: "NIK kosong, berisi selain angka, atau panjangnya bukan 16 digit.",
-    contoh: "Sel NIK kosong, NIK berisi huruf, atau NIK hanya 15 digit.",
+    isi: "NIK kosong, berisi selain angka, atau bukan 16 digit.",
+    contoh: "Sel kosong, ada huruf, atau 15 digit.",
     pilihan: [
-      { nama: "Cocokkan", hasil: "Tetap dicoba dicocokkan setelah dirapikan", bawaan: true },
+      { nama: "Cocokkan", hasil: "Tetap dicocokkan", bawaan: true },
       { nama: "Abaikan", hasil: "Tidak cocok" },
     ],
   },
   {
     judul: "NIK duplikat",
     isi: "NIK yang sama muncul lebih dari sekali di satu file.",
-    contoh: "NIK yang sama ada di baris 12 dan baris 87.",
-    catatan: "Tidak perlu diputuskan. Yang dipakai hanya baris pertama, jadi periksa datanya kalau perlu.",
+    contoh: "NIK sama di baris 12 dan 87.",
+    pilihan: [{ nama: "Tidak ada pilihan", hasil: "Baris pertama yang dipakai" }],
   },
 ];
 const IKON_ANOMALI = [UserX, Hash, Copy];
@@ -272,33 +272,27 @@ const TOPIK = [
                 <span className="caption-strong">Contoh: </span>
                 {a.contoh}
               </p>
-              <div className="mt-auto">
-                {a.pilihan ? (
-                  <table className="w-full border-collapse text-left">
-                    <thead>
-                      <tr>
-                        <th scope="col" className="caption pb-1.5 font-normal text-ink-muted">Pilihan</th>
-                        <th scope="col" className="caption pb-1.5 font-normal text-ink-muted">Hasilnya</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {a.pilihan.map((p) => (
-                        <tr key={p.nama} className="border-t border-line align-top">
-                          <th scope="row" className="py-2 pr-3 text-left font-normal">
-                            <span className="flex flex-wrap items-center gap-1.5">
-                              <span className="body-strong">{p.nama}</span>
-                              {p.bawaan && <Badge tone="lilac">Bawaan</Badge>}
-                            </span>
-                          </th>
-                          <td className="body py-2">{p.hasil}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p className="body m-0 border-t border-line pt-3 text-ink-muted">{a.catatan}</p>
-                )}
-              </div>
+              <table className="w-full table-fixed border-collapse text-left">
+                <thead>
+                  <tr>
+                    <th scope="col" className="caption w-1/2 pb-1.5 font-normal text-ink-muted">Pilihan</th>
+                    <th scope="col" className="caption pb-1.5 font-normal text-ink-muted">Hasilnya</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {a.pilihan.map((p) => (
+                    <tr key={p.nama} className="border-t border-line align-top">
+                      <th scope="row" className="py-2 pr-3 text-left font-normal">
+                        <span className="flex flex-wrap items-center gap-1.5">
+                          <span className="body-strong">{p.nama}</span>
+                          {p.bawaan && <Badge tone="lilac">Bawaan</Badge>}
+                        </span>
+                      </th>
+                      <td className="body py-2">{p.hasil}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ))}
         </div>
