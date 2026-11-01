@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Check, Copy, Hash, UserX } from "lucide-react";
+import { AlertCircle, Check, Copy, Hash, UserX } from "lucide-react";
 import Card from "../components/ui/Card.jsx";
 import Badge from "../components/ui/Badge.jsx";
 import Button from "../components/ui/Button.jsx";
@@ -208,7 +208,10 @@ const TOPIK = [
           ))}
         </ol>
         <div className="flex flex-[1_1_280px] flex-col gap-2 rounded-[10px] bg-lilac-soft p-4">
-          <p className="body-strong m-0 text-lilac-main">Perlu diperhatikan</p>
+          <p className="body-strong m-0 flex items-center gap-2 text-lilac-main">
+            <AlertCircle size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+            Perlu diperhatikan
+          </p>
           <ul className="body m-0 flex flex-col gap-1.5 pl-[18px]">
             {PERHATIAN.map((p) => (
               <li key={p}>{p}</li>
@@ -273,12 +276,9 @@ const TOPIK = [
     sub: "Dashboard selalu menampilkan satu sesi. Sesi terbaru berisi semua program.",
     data: BACA_DASHBOARD,
     isi: (
-      <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-x-6 gap-y-5 p-0">
+      <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-3 p-0">
         {BACA_DASHBOARD.map((d) => (
-          <li
-            key={d.judul}
-            className="relative flex flex-col gap-1 border-t border-line pt-4 before:absolute before:-top-px before:left-0 before:h-0.5 before:w-8 before:rounded-full before:bg-lilac-main"
-          >
+          <li key={d.judul} className="flex flex-col gap-1 rounded-[10px] bg-lilac-bg p-4">
             <h3 className="body-strong m-0">{d.judul}</h3>
             <p className="body m-0 text-ink-muted">{d.isi}</p>
           </li>
