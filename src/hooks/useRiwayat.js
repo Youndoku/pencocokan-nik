@@ -7,13 +7,14 @@ import {
   ambilSesi as dbAmbil,
 } from "../utils/db.js";
 
+const EVENT_BERUBAH = "sesi-berubah";
+
 export function useRiwayat() {
   const [sesiList, setSesiList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // hanya untuk muat pertama, supaya halaman tidak berkedip tiap sesi berubah
 
   const muat = useCallback(async () => {
     try {
-      setLoading(true);
       const data = await ambilSemuaSesi();
       // Sort descending by tanggal (newest first)
       data.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
@@ -27,43 +28,44 @@ export function useRiwayat() {
 
   useEffect(() => {
     muat();
+    // Instance lain (mis. sidebar dan footer di App) ikut memuat ulang saat sesi berubah.
+    const onBerubah = (e) => e.detail !== muat && muat();
+    window.addEventListener(EVENT_BERUBAH, onBerubah);
+    return () => window.removeEventListener(EVENT_BERUBAH, onBerubah);
+  }, [muat]);
+
+  const setelahUbah = useCallback(async () => {
+    await muat();
+    window.dispatchEvent(new CustomEvent(EVENT_BERUBAH, { detail: muat }));
   }, [muat]);
 
   const simpanSesi = useCallback(
     async (sesi) => {
       await dbSimpan(sesi);
-      await muat();
+      await setelahUbah();
     },
-    [muat]
+    [setelahUbah]
   );
 
   const hapusSesi = useCallback(
     async (id) => {
       await dbHapus(id);
-      await muat();
+      await setelahUbah();
     },
-    [muat]
+    [setelahUbah]
   );
 
   const hapusBanyakSesi = useCallback(
     async (ids) => {
       await dbHapusBanyak(ids);
-      await muat();
+      await setelahUbah();
     },
-    [muat]
+    [setelahUbah]
   );
 
   const ambilSesi = useCallback(async (id) => {
     return dbAmbil(id);
   }, []);
-
-  // Estimate storage size in bytes (rough)
-  const totalUkuran = sesiList.reduce((acc, s) => {
-    const ringkasanSize = JSON.stringify(s.ringkasan || {}).length;
-    const dataSize = s.dataHasil ? JSON.stringify(s.dataHasil).length : 0;
-    const bufferSize = s.excelBuffer ? s.excelBuffer.byteLength : 0;
-    return acc + ringkasanSize + dataSize + bufferSize;
-  }, 0);
 
   return {
     sesiList,
@@ -73,7 +75,6 @@ export function useRiwayat() {
     hapusSesi,
     hapusBanyakSesi,
     ambilSesi,
-    totalUkuran,
     muat,
   };
 }

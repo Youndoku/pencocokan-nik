@@ -1,5 +1,6 @@
 import * as XLSX from "xlsx";
 import { normalisasiNIK, normalisasiNama } from "./normalize.js";
+import { detectProgramColumns } from "./autoDetectColumns.js";
 
 // State global worker untuk menyimpan data agar tidak perlu dikirim bolak-balik
 let state = {
@@ -219,6 +220,7 @@ self.onmessage = async function (e) {
             previewRows: trimmed.slice(0, 100), // Kirim 100 baris pertama untuk preview
             totalRows: trimmed.length,
             fileName: file.name,
+            fileSize: file.size,
             guessedHeaderIdx,
           },
         });
@@ -248,7 +250,32 @@ self.onmessage = async function (e) {
             fileType,
             columns,
             totalRows: rows.length,
+            // Kolom program lama di file gabungan (tebakan, untuk file yang diunggah).
+            kolomProgram: fileType === "gabungan" ? detectProgramColumns(rows) : [],
           },
+        });
+        break;
+      }
+
+      // Data gabungan dari hasil sesi sebelumnya: sudah berupa objek per baris,
+      // jadi langkah tebak baris judul kolom dilewati.
+      case "LOAD_ROWS": {
+        const { fileType, rows, columns, fileName } = payload;
+        const kolom = new Set(columns);
+        rows.forEach((r) => Object.keys(r).forEach((k) => kolom.add(k)));
+        const parsed = { rows, columns: Array.from(kolom), fileName };
+        if (fileType === "gabungan") {
+          state.gabunganRaw = null;
+          state.gabunganFileName = fileName;
+          state.parsedGabungan = parsed;
+        } else {
+          state.pembandingRaw = null;
+          state.pembandingFileName = fileName;
+          state.parsedPembanding = parsed;
+        }
+        self.postMessage({
+          type: "HEADER_SUCCESS",
+          payload: { fileType, columns: parsed.columns, totalRows: rows.length },
         });
         break;
       }
@@ -337,11 +364,14 @@ self.onmessage = async function (e) {
         if (!state.parsedPembanding || !state.parsedPembanding.rows) {
           throw new Error("Data pembanding belum di-parse.");
         }
-        const set = new Set();
+        const jumlah = new Map();
         state.parsedPembanding.rows.forEach((r) => {
-          set.add(String(r[columnName] ?? "").trim() || "(kosong)");
+          const v = String(r[columnName] ?? "").trim() || "(kosong)";
+          jumlah.set(v, (jumlah.get(v) || 0) + 1);
         });
-        const values = Array.from(set).sort();
+        const values = Array.from(jumlah.keys())
+          .sort()
+          .map((nilai) => ({ nilai, jumlah: jumlah.get(nilai) }));
         self.postMessage({
           type: "UNIQUE_VALUES_SUCCESS",
           payload: {
@@ -486,6 +516,14 @@ self.onmessage = async function (e) {
           statusTerpilih,
           namaKolomBaru,
         } = config;
+
+        // Pengaman B1: kolom program baru tidak boleh menimpa kolom yang sudah ada.
+        const namaBaru = String(namaKolomBaru ?? "").trim().toLowerCase();
+        if ([...state.parsedGabungan.columns, "Keterangan"].some((c) => String(c).trim().toLowerCase() === namaBaru)) {
+          throw new Error(
+            `Nama kolom "${namaKolomBaru}" sudah dipakai di data gabungan. Pakai nama lain supaya kolom lama tidak tertimpa.`
+          );
+        }
 
         const statusSet = new Set(statusTerpilih);
         const useStatus = Boolean(kolomStatusPembanding) && statusSet.size > 0;
@@ -642,8 +680,10 @@ self.onmessage = async function (e) {
           }
         }
 
-        const kolomTersedia =
-          finalRows.length > 0 ? Object.keys(finalRows[0]) : [];
+        // Dari daftar kolom, bukan kunci baris pertama: sel kosong tidak punya kunci.
+        const kolomTersedia = Array.from(
+          new Set([...state.parsedGabungan.columns, namaKolomBaru, "Keterangan"])
+        );
 
         // 3. Generate XLSX
         self.postMessage({ type: "PROGRESS", payload: { step: "writing_excel", percent: 70 } });
@@ -653,7 +693,7 @@ self.onmessage = async function (e) {
         // Sheet "Hasil" — file unduhan tidak perlu kolom "Keterangan" (itu cuma
         // buat ditampilkan di dashboard); yang diekspor cuma data asli + kolom
         // hasil proses (namaKolomBaru) biar tiap proses cuma nambah satu kolom.
-        const rowsUntukExport = finalRows.map(({ Keterangan, ...rest }) => rest);
+        const rowsUntukExport = finalRows.map(({ Keterangan: _keterangan, ...rest }) => rest);
         const wsHasil = XLSX.utils.json_to_sheet(rowsUntukExport);
         wsHasil["!cols"] = hitungLebarKolom(rowsUntukExport);
         amankanAngkaPanjang(wsHasil);

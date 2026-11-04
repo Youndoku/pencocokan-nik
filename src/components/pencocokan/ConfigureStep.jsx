@@ -1,9 +1,14 @@
-import ColumnSelect from "./ColumnSelect.jsx";
-import { Settings2, Loader2 } from "lucide-react";
+import { AlertCircle, Check, ChevronRight } from "lucide-react";
+import Card from "../ui/Card.jsx";
+import Select from "../ui/Select.jsx";
+import Button from "../ui/Button.jsx";
+import { namaKolomBentrok } from "../../hooks/usePencocokanNIK.js";
+import { ringkasDaftar } from "../../utils/autoDetectColumns.js";
+
+const TIDAK_DIPAKAI = { value: "", label: "Tidak dipakai" };
 
 /**
- * UI Langkah 2: Pemetaan kolom + filter status + nama kolom baru.
- * Menampilkan progress bar interaktif saat proses pencocokan berjalan di Web Worker.
+ * Langkah 2: kolom NIK/nama, status penerima (opsional), dan nama kolom program baru.
  */
 export default function ConfigureStep({
   gabungan,
@@ -25,141 +30,121 @@ export default function ConfigureStep({
   onNamaKolomBaru,
   onBack,
   onProses,
-  loadingMatching,
-  progressText,
-  progress,
 }) {
-  if (loadingMatching) {
-    return (
-      <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm flex flex-col items-center justify-center min-h-[300px] animate-fade-in text-center">
-        <Loader2 size={36} className="text-primary animate-spin mb-4" />
-        <h3 className="text-base font-semibold text-slate-800 m-0 mb-2">
-          Memproses Pencocokan Data
-        </h3>
-        <p className="text-sm text-slate-500 max-w-xs leading-relaxed m-0 mb-6">
-          {progressText}
-        </p>
-
-        {/* Progress Bar Container */}
-        <div className="w-full max-w-xs bg-slate-100 rounded-full h-2.5 mb-2 overflow-hidden">
-          <div
-            className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-out"
-            style={{ width: `${progress.percent}%` }}
-          ></div>
-        </div>
-        <span className="text-sm font-mono font-semibold text-slate-600">
-          {progress.percent}%
-        </span>
-      </div>
-    );
-  }
+  const kosong = !namaKolomBaru.trim();
+  const bentrok = namaKolomBentrok(gabungan.columns, namaKolomBaru);
+  const programAda = gabungan.kolomProgram || [];
 
   return (
-    <div className="animate-fade-in">
-      <div className="bg-white border border-slate-200 rounded-xl p-5 mb-4 shadow-sm">
-        <p className="text-sm font-semibold m-0 mb-4 flex items-center gap-1.5 text-slate-900">
-          <Settings2 size={15} className="text-primary" /> Pemetaan kolom
-        </p>
-
-        {/* Kolom NIK & Nama untuk kedua file */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <ColumnSelect
-            label={`Kolom NIK — ${gabungan.fileName}`}
-            value={kolomNikGabungan}
-            onChange={onKolomNikGabungan}
-            columns={gabungan.columns}
-          />
-          <ColumnSelect
-            label={`Kolom NIK — ${pembanding.fileName}`}
-            value={kolomNikPembanding}
-            onChange={onKolomNikPembanding}
-            columns={pembanding.columns}
-          />
-          <ColumnSelect
-            label={`Kolom nama — ${gabungan.fileName}`}
-            value={kolomNamaGabungan}
-            onChange={onKolomNamaGabungan}
-            columns={gabungan.columns}
-            optional
-          />
-          <ColumnSelect
-            label={`Kolom nama — ${pembanding.fileName}`}
-            value={kolomNamaPembanding}
-            onChange={onKolomNamaPembanding}
-            columns={pembanding.columns}
-            optional
-          />
-        </div>
-
-        {/* Kolom status (opsional) */}
-        <div className="border-t border-slate-100 pt-4 mb-4">
-          <ColumnSelect
-            label="Kolom status/keterangan pembanding"
-            value={kolomStatusPembanding}
-            onChange={onKolomStatus}
-            columns={pembanding.columns}
-            optional
-          />
-        </div>
-
-        {/* Checklist nilai status */}
-        {kolomStatusPembanding && (
-          <div className="mb-4 bg-slate-50 rounded-lg p-3">
-            <p className="text-sm text-slate-500 m-0 mb-2 font-medium">
-              Centang status yang dihitung sebagai valid/cocok:
-            </p>
-            {daftarStatusUnik.length > 0 ? (
-              <div className="flex flex-col gap-1.5 max-h-40 overflow-y-auto pr-1">
-                {daftarStatusUnik.map((val) => (
-                  <label
-                    key={val}
-                    className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer hover:text-slate-900 transition-colors"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={statusTerpilih.has(val)}
-                      onChange={() => onToggleStatus(val)}
-                      className="rounded border-slate-300 text-primary focus:ring-primary-light"
-                    />
-                    {val}
-                  </label>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-slate-400 m-0 italic">Sedang memuat daftar status...</p>
-            )}
+    <>
+      <div className="flex flex-wrap items-stretch gap-3">
+        <Card
+          className="flex-[1_1_420px]"
+          title="Kolom yang dicocokkan"
+          subtitle="Kolom NIK wajib. Kolom nama boleh dikosongkan."
+        >
+          <div className="grid grid-cols-[minmax(90px,120px)_1fr_1fr] items-center gap-x-3 gap-y-2">
+            <span />
+            <span className="caption text-ink-muted">Data gabungan</span>
+            <span className="caption text-ink-muted">Data pembanding</span>
+            <span className="caption-strong font-semibold">NIK</span>
+            <Select size="md" label="Kolom NIK data gabungan" value={kolomNikGabungan} onChange={onKolomNikGabungan} options={gabungan.columns} />
+            <Select size="md" label="Kolom NIK data pembanding" value={kolomNikPembanding} onChange={onKolomNikPembanding} options={pembanding.columns} />
+            <span className="caption-strong font-semibold">
+              Nama <span className="font-normal text-ink-muted">(opsional)</span>
+            </span>
+            <Select size="md" label="Kolom nama data gabungan" value={kolomNamaGabungan} onChange={onKolomNamaGabungan} options={[...gabungan.columns, TIDAK_DIPAKAI]} />
+            <Select size="md" label="Kolom nama data pembanding" value={kolomNamaPembanding} onChange={onKolomNamaPembanding} options={[...pembanding.columns, TIDAK_DIPAKAI]} />
           </div>
-        )}
+          <div className="flex items-start gap-2 rounded-md bg-lilac-bg p-3">
+            <Check size={14} strokeWidth={2} aria-hidden="true" className="mt-0.5 shrink-0 text-success" />
+            <p className="body m-0">Kolom terisi otomatis dari nama judul kolom. Periksa sebelum lanjut.</p>
+          </div>
+        </Card>
 
-        {/* Nama kolom baru */}
-        <div className="border-t border-slate-100 pt-4">
-          <label className="text-sm text-slate-500 font-medium block mb-1">
-            Nama kolom baru di hasil
+        <Card
+          className="flex-[1_1_360px]"
+          title={
+            <>
+              Status penerima <span className="font-normal text-ink-muted">(opsional)</span>
+            </>
+          }
+          subtitle="Hanya status yang dicentang yang dihitung cocok"
+        >
+          <label className="flex min-w-0 flex-col gap-1.5">
+            <span className="caption-strong font-semibold">Kolom status di data pembanding</span>
+            <Select size="md" value={kolomStatusPembanding} onChange={onKolomStatus} options={[TIDAK_DIPAKAI, ...pembanding.columns]} />
+          </label>
+          {kolomStatusPembanding && (
+            <fieldset className="m-0 flex flex-col gap-2.5 border-0 p-0">
+              <legend className="caption-strong mb-2.5 p-0 font-semibold">Status yang dihitung</legend>
+              {daftarStatusUnik.length === 0 ? (
+                <p className="caption m-0 text-ink-muted">Memuat daftar status...</p>
+              ) : (
+                <div className="flex max-h-60 flex-col gap-2.5 overflow-y-auto">
+                  {daftarStatusUnik.map(({ nilai, jumlah }) => (
+                    <label key={nilai} className="flex cursor-pointer items-center justify-between gap-2 text-sm">
+                      <span className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={statusTerpilih.has(nilai)}
+                          onChange={() => onToggleStatus(nilai)}
+                          className="m-0 size-4 accent-lilac-main"
+                        />
+                        {nilai}
+                      </span>
+                      <span className="caption text-ink-muted tabular-nums">{jumlah.toLocaleString("id-ID")} baris</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </fieldset>
+          )}
+        </Card>
+      </div>
+
+      <Card title="Nama kolom program baru" subtitle="Ditambahkan ke file hasil. Isinya 1 untuk cocok dan 2 untuk tidak.">
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <label htmlFor="nama-baru" className="caption-strong font-semibold">
+            Nama kolom
           </label>
           <input
-            type="text"
+            id="nama-baru"
             value={namaKolomBaru}
             onChange={(e) => onNamaKolomBaru(e.target.value)}
-            className="w-full h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-all duration-200"
+            aria-invalid={bentrok}
+            aria-describedby="nama-baru-info"
+            className={`h-10 min-w-0 rounded-md border bg-surface px-3 text-sm text-lilac-text outline-none ${bentrok ? "border-negative" : "border-line"}`}
           />
+          {bentrok ? (
+            <span id="nama-baru-info" className="caption flex items-center gap-1.5 text-negative">
+              <AlertCircle size={14} strokeWidth={2} aria-hidden="true" className="shrink-0" />
+              Nama ini sudah dipakai di data gabungan. Pakai nama lain supaya kolom lama tidak tertimpa.
+            </span>
+          ) : (
+            !kosong && (
+              <span id="nama-baru-info" className="caption flex items-center gap-1.5 text-success">
+                <Check size={14} strokeWidth={2} aria-hidden="true" className="shrink-0" />
+                Nama belum dipakai di sesi ini
+              </span>
+            )
+          )}
+          {programAda.length > 0 && (
+            <span className="caption text-ink-muted">
+              Sudah dipakai: {ringkasDaftar(programAda)}. Nama yang sama akan ditolak supaya kolom lama tidak tertimpa.
+            </span>
+          )}
         </div>
-      </div>
+      </Card>
 
-      {/* Tombol aksi */}
-      <div className="flex gap-2">
-        <button
-          onClick={onBack}
-          className="h-11 px-5 rounded-xl border border-slate-200 text-sm text-slate-700 hover:bg-slate-50 transition-all duration-200 cursor-pointer font-medium"
-        >
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-line bg-surface p-4">
+        <Button variant="secondary" onClick={onBack}>
           Kembali
-        </button>
-        <button
-          onClick={onProses}
-          className="flex-1 h-11 rounded-xl bg-primary-dark text-white text-sm font-semibold hover:shadow-lg hover:shadow-primary-light transition-all duration-300 active:scale-[0.98] cursor-pointer"
-        >
-          Analisis & Cari Anomali
-        </button>
+        </Button>
+        <Button iconRight={ChevronRight} disabled={kosong || bentrok || !kolomNikGabungan || !kolomNikPembanding} onClick={onProses}>
+          Analisis dan cari anomali
+        </Button>
       </div>
-    </div>
+    </>
   );
 }

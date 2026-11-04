@@ -1,194 +1,219 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { ChevronRight, Loader2 } from "lucide-react";
 import { useRiwayat } from "../hooks/useRiwayat.js";
 import { useDashboard } from "../hooks/useDashboard.js";
-import SummaryPanel from "../components/dashboard/SummaryPanel.jsx";
-import DistributionChart from "../components/dashboard/DistributionChart.jsx";
-import ExportPanel from "../components/dashboard/ExportPanel.jsx";
-import CrossProgramMatrix from "../components/dashboard/CrossProgramMatrix.jsx";
-import ProgramComparisonChart from "../components/dashboard/ProgramComparisonChart.jsx";
-import DuplicateRecipients from "../components/dashboard/DuplicateRecipients.jsx";
-import AnomalyReview from "../components/dashboard/AnomalyReview.jsx";
+import { kolomProgramSesi, ringkasDaftar } from "../utils/autoDetectColumns.js";
+import { unduhExcelSesi } from "../utils/unduh.js";
+import Badge from "../components/ui/Badge.jsx";
+import Button from "../components/ui/Button.jsx";
+import Select from "../components/ui/Select.jsx";
+import HasilPemadanan from "../components/dashboard/HasilPemadanan.jsx";
+import TemuanAnomali from "../components/dashboard/TemuanAnomali.jsx";
+import RingkasanProgram from "../components/dashboard/RingkasanProgram.jsx";
 import DataTable from "../components/dashboard/DataTable.jsx";
-import {
-  Loader2,
-  ArrowLeft,
-  Calendar,
-  FileSpreadsheet,
-} from "lucide-react";
+import AnomalyTable from "../components/pencocokan/AnomalyTable.jsx";
+
+/**
+ * Bentuk ulang anomali sesi tersimpan ke format AnomalyTable. Keputusan perbedaan
+ * nama hanya tersimpan di mismatchLog ("Keputusan User"); baris "Perlu Konfirmasi"
+ * adalah nama berbeda yang tidak pernah ditanyakan di langkah 3 (status tidak dihitung,
+ * atau format NIK tidak standar sehingga perbedaan nama tidak dipindai).
+ */
+function anomaliDariSesi(sesi) {
+  const log = sesi.mismatchLog || [];
+  const [kolomGab, kolomPem] = log.length ? Object.keys(log[0]).filter((key) => key.startsWith("Nama (")) : [];
+  const nameRes = {};
+  const nameMismatches = log.map((m, i) => {
+    const id = `nm-${i}`;
+    const k = String(m["Keputusan User"] || "");
+    nameRes[id] = k.startsWith("Divalidkan") ? "valid" : k.startsWith("Abaikan") ? "abaikan" : "lewat";
+    return { id, nik: String(m.NIK ?? ""), nameGabungan: m[kolomGab], namePembanding: m[kolomPem] };
+  });
+  return {
+    anomalies: { nameMismatches, invalidNiks: sesi.invalidNiks || [], duplicateNiks: sesi.duplicateNiks || [] },
+    nameRes,
+    nikRes: sesi.invalidNikResolutions || {},
+  };
+}
 
 export default function DashboardPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { ambilSesi } = useRiwayat();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { sesiList, ambilSesi } = useRiwayat();
   const [sesi, setSesi] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [gagal, setGagal] = useState(false); // penyimpanan browser tidak bisa dibaca
+  const [detailTerbuka, setDetailTerbuka] = useState(false);
+  const detailRef = useRef(null);
 
   useEffect(() => {
-    async function load() {
-      setLoading(true);
-      const data = await ambilSesi(id);
-      setSesi(data);
-      setLoading(false);
-    }
-    if (id) load();
+    let batal = false;
+    setLoading(true);
+    setDetailTerbuka(false);
+    setGagal(false);
+    ambilSesi(id)
+      .then((data) => {
+        if (!batal) setSesi(data);
+      })
+      .catch((err) => {
+        console.error("Gagal membaca sesi:", err);
+        if (!batal) {
+          setSesi(null);
+          setGagal(true);
+        }
+      })
+      .finally(() => {
+        if (!batal) setLoading(false);
+      });
+    return () => {
+      batal = true;
+    };
   }, [id, ambilSesi]);
 
-  const {
-    kolomProgram,
-    hasCrossProgram,
-    crossMatrix,
-    penerimaGanda,
-    ringkasanProgram,
-    chartKeterangan,
-  } = useDashboard({
-    dataHasil: sesi?.dataHasil,
-    namaKolomBaru: sesi?.namaKolomBaru,
-    kolomNik: sesi?.konfigurasi?.kolomNikGabungan,
-    kolomNama: sesi?.konfigurasi?.kolomNamaGabungan,
-    keteranganDistribusi: sesi?.keteranganDistribusi,
-  });
+  useEffect(() => {
+    if (detailTerbuka) detailRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [detailTerbuka]);
 
-  const handleDownloadExcel = () => {
-    if (!sesi?.excelBuffer) return;
-    const blob = new Blob([sesi.excelBuffer], {
-      type: "application/octet-stream",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `hasil_${sesi.namaKolomBaru || "pencocokan"}.xlsx`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  const a = useDashboard(sesi);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 size={24} className="animate-spin text-primary" />
+      <div className="flex min-h-[50vh] items-center justify-center" role="status" aria-label="Memuat sesi">
+        <Loader2 size={24} strokeWidth={1.5} className="animate-spin text-lilac-main" aria-hidden="true" />
       </div>
     );
   }
 
   if (!sesi) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
-        <p className="text-sm text-slate-500">Sesi tidak ditemukan</p>
-        <button
-          onClick={() => navigate("/riwayat")}
-          className="text-sm text-primary-dark font-semibold cursor-pointer"
-        >
-          ← Kembali ke Riwayat
-        </button>
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 text-center" role={gagal ? "alert" : undefined}>
+        <p className="body m-0 text-ink-muted">
+          {gagal
+            ? "Sesi tidak bisa dibuka karena penyimpanan browser tidak bisa dibaca. Coba muat ulang halaman."
+            : "Sesi tidak ditemukan."}
+        </p>
+        <Button as={Link} to="/riwayat" variant="secondary">
+          Buka riwayat
+        </Button>
       </div>
     );
   }
 
-  const tanggalFormatted = new Date(sesi.tanggal).toLocaleDateString("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  // Nomor sesi = urutan menurut tanggal naik (sesiList terbaru di atas).
+  const nomor = (s) => sesiList.length - sesiList.findIndex((x) => x.id === s.id);
+  const terbaru = sesiList[0];
+  const programs = a.programs;
+  const k = programs.length;
+  const fokusParam = searchParams.get("fokus") || "";
+  const fokus = k >= 2 && programs.includes(fokusParam) ? fokusParam : "";
+  const setFokus = (p) => setSearchParams(p ? { fokus: p } : {}, { replace: true });
 
-  const programColumns = [...(kolomProgram || []), sesi.namaKolomBaru].filter(Boolean);
+  let infoSesiLama = null;
+  let terbaruUntukKosong = null;
+  if (terbaru && terbaru.id !== sesi.id) {
+    const programTerbaru = kolomProgramSesi(terbaru);
+    const satuRantai = programs.every((p) => programTerbaru.includes(p));
+    const m = nomor(terbaru);
+    infoSesiLama = satuRantai
+      ? `Filenya baru berisi ${ringkasDaftar(programs)}. Semua ${programTerbaru.length} program ada di Sesi ${m}, sesi terbaru.`
+      : `Sesi terbaru adalah Sesi ${m}.`;
+    if (satuRantai && programTerbaru.length > 1) terbaruUntukKosong = { nomor: m, jumlahProgram: programTerbaru.length };
+  }
+
+  const r = sesi.ringkasan || {};
+  const konf = sesi.konfigurasi || {};
+  const pakaiStatus = Boolean(konf.kolomStatusPembanding) && (konf.statusTerpilih?.length || 0) > 0;
+  const anomali = anomaliDariSesi(sesi);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 animate-fade-in">
-      {/* Back button */}
-      <button
-        onClick={() => navigate("/riwayat")}
-        className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors mb-4 cursor-pointer"
-      >
-        <ArrowLeft size={14} />
-        Riwayat
-      </button>
-
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-1">
-          Dashboard Pencocokan
-        </h1>
-        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-          <span className="inline-flex items-center gap-1">
-            <Calendar size={12} />
-            {tanggalFormatted}
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <FileSpreadsheet size={12} />
-            {sesi.namaGabungan} vs {sesi.namaPembanding}
-          </span>
+    <>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex min-w-0 flex-col gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="title-lg m-0">Dashboard pencocokan</h1>
+            <Badge>Berisi {k} program</Badge>
+          </div>
+          <p className="body m-0 text-ink-muted">
+            {sesi.namaGabungan} dibandingkan dengan {sesi.namaPembanding}
+          </p>
         </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Select
+            label="Ganti sesi"
+            value={sesi.id}
+            onChange={(sid) => navigate(`/dashboard/${sid}${fokusParam ? `?fokus=${encodeURIComponent(fokusParam)}` : ""}`)}
+            options={sesiList.map((s) => ({ value: s.id, label: `Sesi ${nomor(s)}: ${s.namaKolomBaru}` }))}
+          />
+          <Button variant="secondary" size="sm" disabled={!sesi.excelBuffer} onClick={() => unduhExcelSesi(sesi)}>
+            Unduh Excel
+          </Button>
+        </div>
+      </header>
+
+      {infoSesiLama && (
+        <div role="status" className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-md bg-surface-muted px-4 py-3">
+          <p className="body m-0">
+            <span className="body-strong">Ini sesi lama.</span> {infoSesiLama}
+          </p>
+          <Link to={`/dashboard/${terbaru.id}`} className="body-strong inline-flex items-center gap-1 whitespace-nowrap text-lilac-main no-underline hover:text-lilac-text">
+            Buka Sesi {nomor(terbaru)}
+            <ChevronRight size={16} strokeWidth={1.5} aria-hidden="true" />
+          </Link>
+        </div>
+      )}
+
+      <h2 className="title-sm m-0 mt-2">Hasil sesi</h2>
+      <div className="flex flex-wrap items-stretch gap-3">
+        <HasilPemadanan
+          className="flex-[999_1_560px]"
+          total={r.total}
+          cocok={r.cocok}
+          tidak={r.tidak}
+          dikecualikanStatus={r.dikecualikanStatus || 0}
+          pakaiStatus={pakaiStatus}
+          namaKolomBaru={sesi.namaKolomBaru}
+        />
+        <TemuanAnomali
+          className="flex-[1_1_320px]"
+          data={anomali}
+          terbuka={detailTerbuka}
+          onLihat={() => setDetailTerbuka(!detailTerbuka)}
+        />
       </div>
-
-      {/* Bento Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="sm:col-span-2 lg:col-span-3">
-          <SummaryPanel
-            ringkasan={sesi.ringkasan}
-            namaKolomBaru={sesi.namaKolomBaru}
-          />
+      {detailTerbuka && (
+        <div id="detail-anomali" ref={detailRef} className="scroll-mt-4">
+          <AnomalyTable title="Detail anomali" anomalies={anomali.anomalies} nameRes={anomali.nameRes} nikRes={anomali.nikRes} />
         </div>
-        <div className="lg:col-span-1">
-          <ExportPanel
-            onDownloadExcel={handleDownloadExcel}
-            namaKolomBaru={sesi.namaKolomBaru}
-            ringkasan={sesi.ringkasan}
-            excelBuffer={sesi.excelBuffer}
-            dataHasil={sesi.dataHasil}
-          />
+      )}
+
+      {k > 0 && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="title-sm m-0">Ringkasan {k} program</h2>
+          {k >= 2 && (
+            <label className="flex items-center gap-2">
+              <span className="caption-strong text-ink-muted">Fokus program</span>
+              <Select
+                value={fokus}
+                onChange={setFokus}
+                options={[{ value: "", label: "Semua program" }, ...programs.map((p) => ({ value: p, label: p }))]}
+              />
+            </label>
+          )}
         </div>
+      )}
+      <RingkasanProgram a={a} total={r.total || sesi.dataHasil?.length || 0} fokus={fokus} onFokus={setFokus} terbaru={terbaruUntukKosong} />
 
-        {hasCrossProgram && (
-          <div className="sm:col-span-2 lg:col-span-4">
-            <CrossProgramMatrix crossMatrix={crossMatrix} />
-          </div>
-        )}
-
-        {hasCrossProgram && (
-          <div className="sm:col-span-1 lg:col-span-2">
-            <ProgramComparisonChart ringkasanProgram={ringkasanProgram} />
-          </div>
-        )}
-
-        <div
-          className={
-            hasCrossProgram
-              ? "sm:col-span-1 lg:col-span-2"
-              : "sm:col-span-2 lg:col-span-4"
-          }
-        >
-          <DistributionChart chartKeterangan={chartKeterangan} />
-        </div>
-
-        {hasCrossProgram && (
-          <div className="sm:col-span-2 lg:col-span-4">
-            <DuplicateRecipients
-              penerimaGanda={penerimaGanda}
-              programColumns={programColumns}
-            />
-          </div>
-        )}
-
-        <div className="sm:col-span-2 lg:col-span-4">
-          <AnomalyReview
-            mismatchLog={sesi.mismatchLog}
-            invalidNiks={sesi.invalidNiks}
-            invalidNikResolutions={sesi.invalidNikResolutions}
-            duplicateNiks={sesi.duplicateNiks}
-          />
-        </div>
-
-        <div className="sm:col-span-2 lg:col-span-4">
-          <DataTable
-            dataHasil={sesi.dataHasil}
-            namaKolomBaru={sesi.namaKolomBaru}
-            kolomTersedia={sesi.kolomTersedia}
-          />
-        </div>
-      </div>
-    </div>
+      <DataTable
+        key={sesi.id}
+        dataHasil={sesi.dataHasil}
+        namaKolomBaru={sesi.namaKolomBaru}
+        kolomTersedia={sesi.kolomTersedia}
+        kolomNik={konf.kolomNikGabungan}
+        programs={programs}
+        pakaiStatus={pakaiStatus}
+      />
+    </>
   );
 }

@@ -1,30 +1,136 @@
 @import "tailwindcss" source("./");
 
-/* ── Theme ── */
-/* Font sistem bawaan (bukan Google Fonts) — aplikasi ini 100% offline,
-   tanpa request jaringan apa pun, termasuk untuk font. */
+/* ── Font ── */
+/* Di-self-host dari src/assets. Aplikasi 100% offline, tanpa Google Fonts. */
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("./assets/fonts/PlusJakartaSans-Variable.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Theme: Lilac (docs/design/lilac/tokens.css, lihat Design.md) ── */
 @theme {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
-  /* Palet resmi Kota Batu / Diskominfo — lihat
-     docs/superpowers/specs/2026-09-03-brand-color-rebrand-design.md */
-  --color-primary: #0DA44F;
-  --color-primary-dark: #0B7A3B;
-  --color-primary-light: #C0D8CC;
+  --color-lilac-main: #5b2dff;
+  --color-lilac-second: #c8b4ff;
+  --color-lilac-bg: #fcfaf6;
+  --color-lilac-text: #1f1f28;
+  --color-lilac-soft: #efe9ff;
+  --color-on-lilac: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f3f1ec;
+  --color-line: #ebe7e0;
+  --color-ink-muted: #6b6876;
+  --color-success: #16753f;
+  --color-success-soft: #eaf6ee;
+  --color-negative: #b54708;
+  --color-negative-soft: #fdeee2;
+  --color-series-savings: #9474ff;
 
-  --color-secondary: #4454AA;
-  --color-secondary-dark: #3A4164;
-  --color-secondary-light: #DCE1F1;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
 
-  --color-accent-sky: #09ABE7;
-  --color-accent-gold: #DBEC20;
-  --color-accent-red: #D91F2B;
+  --shadow-xs: 0 1px 2px #1f1f280a;
+  --shadow-card: 0 1px 2px #1f1f2808, 0 2px 8px -2px #1f1f280a;
+  --shadow-pop: 0 2px 6px #1f1f2810, 0 12px 24px -6px #1f1f281f;
+  --shadow-focus: 0 0 0 2px #ffffff, 0 0 0 4px #5b2dff;
+}
 
-  --color-neutral-900: #191D1C;
-  --color-neutral-100: #F4F4F4;
-  --color-neutral-white: #FFFFFF;
-  --color-neutral-400: #B0B0B0;
+@layer base {
+  body {
+    background: var(--color-lilac-bg);
+    color: var(--color-lilac-text);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Focus ring di luar @layer supaya tidak tertimpa utility shadow-* (mis.
+   tombol secondary). Input di dalam SearchInput memakai ring di wrapper. */
+:where(button, a, input, select, textarea, summary, [tabindex]):not(
+    [data-ring="wrapper"]
+  ):focus-visible {
+  outline: 2px solid transparent;
+  box-shadow: var(--shadow-focus);
+}
+
+/* ── Tipografi Lilac (ukuran persis dari tokens.css) ── */
+@utility amount-xl {
+  font-size: 40px;
+  line-height: 48px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+@utility amount-lg {
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+@utility amount-md {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+@utility title-lg {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+@utility title-md {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+}
+@utility title-sm {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+@utility body {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+@utility body-strong {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+@utility caption {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+}
+@utility caption-strong {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+}
+@utility micro {
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Pola garis diagonal untuk isian data (bar, segmen, progress). */
+@utility hatch {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.28) 0 2px,
+    rgba(255, 255, 255, 0) 2px 6px
+  );
 }
 
 /* ── Animasi global ── */

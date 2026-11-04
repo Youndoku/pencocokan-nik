@@ -1,5 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import ExcelWorker from "../utils/excelWorker.js?worker";
+import { kolomProgramSesi, tebakKolomKecamatan } from "../utils/autoDetectColumns.js";
+
+/** Nama kolom baru bentrok dengan kolom yang sudah ada (dipangkas, tidak peka huruf besar/kecil). */
+export function namaKolomBentrok(columns = [], nama) {
+  const n = String(nama ?? "").trim().toLowerCase();
+  // "Keterangan" dipakai kolom tampilan dashboard, jadi ikut ditolak.
+  return Boolean(n) && [...columns, "Keterangan"].some((c) => String(c).trim().toLowerCase() === n);
+}
 
 /**
  * Custom hook untuk mengelola flow pencocokan NIK.
@@ -19,13 +27,15 @@ export function usePencocokanNIK() {
   // -- Konfigurasi Kolom --
   const [kolomNikGabungan, setKolomNikGabungan] = useState("");
   const [kolomNamaGabungan, setKolomNamaGabungan] = useState("");
+  const [kolomKecamatan, setKolomKecamatan] = useState(""); // dari data gabungan, opsional
   const [kolomNikPembanding, setKolomNikPembanding] = useState("");
   const [kolomNamaPembanding, setKolomNamaPembanding] = useState("");
   const [kolomStatusPembanding, setKolomStatusPembanding] = useState("");
   const [statusTerpilih, setStatusTerpilih] = useState(new Set());
   const [namaKolomBaru, setNamaKolomBaru] = useState("");
 
-  const [daftarStatusUnik, setDaftarStatusUnik] = useState([]);
+  const [daftarStatusUnik, setDaftarStatusUnik] = useState([]); // [{ nilai, jumlah }]
+  const [validasi, setValidasi] = useState({}); // { gabungan, pembanding }: hasil VALIDATE_DATA
 
   // -- Status Loading & Progress --
   const [loadingGabungan, setLoadingGabungan] = useState(false);
@@ -52,6 +62,7 @@ export function usePencocokanNIK() {
   const [kolomTersedia, setKolomTersedia] = useState([]);
 
   const workerRef = useRef(null);
+  const kecamatanAsalRef = useRef(undefined); // kolomKecamatan sesi asal, kalau data gabungan dari sesi
 
   // Inisialisasi Web Worker
   useEffect(() => {
@@ -62,56 +73,76 @@ export function usePencocokanNIK() {
 
       switch (type) {
         case "PROGRESS": {
-          const { fileType, step: workerStep, percent } = payload;
+          const { step: workerStep, percent } = payload;
           setProgress({ step: workerStep, percent });
           break;
         }
 
         case "PARSE_SUCCESS": {
-          const { fileType, previewRows, totalRows, fileName, guessedHeaderIdx } = payload;
+          const { fileType, previewRows, totalRows, fileName, fileSize, guessedHeaderIdx } = payload;
           setError("");
 
-          const defaultColumns = previewRows[guessedHeaderIdx] || [];
-          const guessedNik = guessColumn(defaultColumns, ["nik"]);
-          const guessedNama = guessColumn(defaultColumns, ["nama"]);
-
+          const file = { fileName, fileSize, totalRows, columns: previewRows[guessedHeaderIdx] || [], previewRows };
           if (fileType === "gabungan") {
             setLoadingGabungan(false);
             setBarisHeaderGabungan(guessedHeaderIdx);
-            setGabungan({ fileName, totalRows, columns: defaultColumns, previewRows });
-            setKolomNikGabungan(guessedNik);
-            setKolomNamaGabungan(guessedNama);
-
-            // Minta worker untuk men-setup baris header default secara asinkron
-            workerRef.current.postMessage({
-              type: "SET_HEADER_ROW",
-              payload: { fileType: "gabungan", headerIdx: guessedHeaderIdx },
-            });
+            setGabungan(file);
           } else {
             setLoadingPembanding(false);
             setBarisHeaderPembanding(guessedHeaderIdx);
-            setPembanding({ fileName, totalRows, columns: defaultColumns, previewRows });
-            setKolomNikPembanding(guessedNik);
-            setKolomNamaPembanding(guessedNama);
-
-            const stem = fileName.replace(/\.(xlsx|xls)$/i, "");
-            setNamaKolomBaru(stem);
-
-            workerRef.current.postMessage({
-              type: "SET_HEADER_ROW",
-              payload: { fileType: "pembanding", headerIdx: guessedHeaderIdx },
-            });
+            setPembanding(file);
+            setNamaKolomBaru(fileName.replace(/\.(xlsx|xls)$/i, ""));
           }
+
+          // Minta worker untuk men-setup baris header default secara asinkron
+          workerRef.current.postMessage({
+            type: "SET_HEADER_ROW",
+            payload: { fileType, headerIdx: guessedHeaderIdx },
+          });
           break;
         }
 
+        // Juga balasan LOAD_ROWS (data gabungan dari sesi sebelumnya).
         case "HEADER_SUCCESS": {
-          const { fileType, columns, totalRows } = payload;
+          const { fileType, columns, totalRows, kolomProgram } = payload;
+          // Tebak ulang tiap baris judul berubah, supaya kolom terpilih selalu ada.
+          const guessedNik = guessColumn(columns, ["nik"]);
+          const guessedNama = guessColumn(columns, ["nama"]);
           if (fileType === "gabungan") {
-            setGabungan((prev) => ({ ...prev, columns, totalRows }));
+            // Dari sesi: kolomProgram sesi asal yang dipakai, bukan tebakan worker.
+            // prev null = sumber sudah diganti sebelum balasan ini datang.
+            setGabungan((prev) =>
+              prev && {
+                ...prev,
+                columns,
+                totalRows,
+                kolomProgram: prev.sesiId ? prev.kolomProgram : kolomProgram,
+              }
+            );
+            setLoadingGabungan(false); // balasan LOAD_ROWS dari pakaiSesi
+            setKolomNikGabungan(guessedNik);
+            setKolomNamaGabungan(guessedNama);
+            const asal = kecamatanAsalRef.current;
+            setKolomKecamatan(
+              asal !== undefined && (asal === "" || columns.includes(asal))
+                ? asal
+                : tebakKolomKecamatan(columns)
+            );
           } else {
-            setPembanding((prev) => ({ ...prev, columns, totalRows }));
+            setPembanding((prev) => prev && { ...prev, columns, totalRows });
+            setKolomNikPembanding(guessedNik);
+            setKolomNamaPembanding(guessedNama);
           }
+          workerRef.current.postMessage({
+            type: "VALIDATE_DATA",
+            payload: { target: fileType, kolomNik: guessedNik },
+          });
+          break;
+        }
+
+        case "VALIDATION_RESULT": {
+          const { target, result } = payload;
+          setValidasi((prev) => ({ ...prev, [target]: result }));
           break;
         }
 
@@ -207,6 +238,8 @@ export function usePencocokanNIK() {
     return () => {
       workerRef.current.terminate();
     };
+    // Worker dibuat sekali; finalizeMatching dipanggil dengan argumen eksplisit, jadi closure lama aman.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Helper untuk menebak kolom
@@ -222,11 +255,41 @@ export function usePencocokanNIK() {
   // Handler Upload
   const handleGabunganFile = useCallback((file) => {
     setError("");
+    kecamatanAsalRef.current = undefined;
     setLoadingGabungan(true);
     workerRef.current.postMessage({
       type: "PARSE_FILE",
       payload: { file, fileType: "gabungan" },
     });
+  }, []);
+
+  // Data gabungan = hasil sesi sebelumnya (tanpa kolom Keterangan, yang cuma untuk tampilan).
+  const pakaiSesi = useCallback((sesi) => {
+    setError("");
+    const rows = (sesi.dataHasil || []).map(({ Keterangan: _k, ...r }) => r);
+    const columns = (sesi.kolomTersedia || []).filter((c) => c !== "Keterangan");
+    const fileName = `hasil_${sesi.namaKolomBaru || "pencocokan"}.xlsx`;
+    setValidasi((prev) => ({ ...prev, gabungan: null }));
+    // Sesi lama belum punya kolomKecamatan (undefined), jadi nanti ditebak dari nama kolom.
+    kecamatanAsalRef.current = sesi.konfigurasi?.kolomKecamatan;
+    // Lanjut nonaktif sampai worker membalas, supaya pilihan kolom di langkah 2 tidak ditimpa tebakan.
+    setLoadingGabungan(true);
+    setGabungan({
+      fileName,
+      totalRows: rows.length,
+      columns,
+      sesiId: sesi.id,
+      kolomProgram: kolomProgramSesi(sesi),
+    });
+    workerRef.current.postMessage({
+      type: "LOAD_ROWS",
+      payload: { fileType: "gabungan", rows, columns, fileName },
+    });
+  }, []);
+
+  const hapusGabungan = useCallback(() => {
+    setGabungan(null);
+    setValidasi((prev) => ({ ...prev, gabungan: null }));
   }, []);
 
   const handlePembandingFile = useCallback((file) => {
@@ -294,10 +357,16 @@ export function usePencocokanNIK() {
       setError("Kolom NIK di kedua file wajib dipilih.");
       return;
     }
-    if (!namaKolomBaru.trim()) {
+    const namaBaru = namaKolomBaru.trim();
+    if (!namaBaru) {
       setError("Nama kolom baru tidak boleh kosong.");
       return;
     }
+    if (namaKolomBentrok(gabungan?.columns, namaBaru)) {
+      setError("Nama ini sudah dipakai di data gabungan. Pakai nama lain supaya kolom lama tidak tertimpa.");
+      return;
+    }
+    setNamaKolomBaru(namaBaru);
 
     setLoadingMatching(true);
     setProgress({ step: "indexing", percent: 0 });
@@ -312,11 +381,12 @@ export function usePencocokanNIK() {
           kolomNamaPembanding,
           kolomStatusPembanding,
           statusTerpilih: Array.from(statusTerpilih),
-          namaKolomBaru,
+          namaKolomBaru: namaBaru,
         },
       },
     });
   }, [
+    gabungan,
     kolomNikGabungan,
     kolomNikPembanding,
     kolomNamaGabungan,
@@ -366,12 +436,14 @@ export function usePencocokanNIK() {
     setError("");
     setKolomNikGabungan("");
     setKolomNamaGabungan("");
+    setKolomKecamatan("");
     setKolomNikPembanding("");
     setKolomNamaPembanding("");
     setKolomStatusPembanding("");
     setStatusTerpilih(new Set());
     setNamaKolomBaru("");
     setDaftarStatusUnik([]);
+    setValidasi({});
     setAnomalies({ nameMismatches: [], invalidNiks: [], duplicateNiks: [] });
     setNameMismatchResolutions({});
     setInvalidNikResolutions({});
@@ -424,12 +496,14 @@ export function usePencocokanNIK() {
     progressText: getProgressMessage(),
     kolomNikGabungan,
     kolomNamaGabungan,
+    kolomKecamatan,
     kolomNikPembanding,
     kolomNamaPembanding,
     kolomStatusPembanding,
     statusTerpilih,
     namaKolomBaru,
     daftarStatusUnik,
+    validasi,
     anomalies,
     nameMismatchResolutions,
     invalidNikResolutions,
@@ -444,6 +518,8 @@ export function usePencocokanNIK() {
     reset,
     handleGabunganFile,
     handlePembandingFile,
+    pakaiSesi,
+    hapusGabungan,
     ubahBarisHeaderGabungan,
     ubahBarisHeaderPembanding,
     goToConfigure,
@@ -451,6 +527,7 @@ export function usePencocokanNIK() {
     toggleStatus,
     setKolomNikGabungan,
     setKolomNamaGabungan,
+    setKolomKecamatan,
     setKolomNikPembanding,
     setKolomNamaPembanding,
     setNamaKolomBaru,

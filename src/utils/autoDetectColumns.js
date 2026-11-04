@@ -39,3 +39,26 @@ export function detectProgramColumns(rows, excludeColumn = "") {
 
   return programColumns;
 }
+
+/**
+ * Kolom program di file hasil satu sesi. Sesi baru menyimpan `kolomProgram`;
+ * sesi lama belum, jadi ditebak dari isi data (perilaku lama).
+ */
+export function kolomProgramSesi(sesi) {
+  if (Array.isArray(sesi?.kolomProgram)) return sesi.kolomProgram;
+  const kolom = detectProgramColumns(sesi?.dataHasil || [], sesi?.namaKolomBaru);
+  return sesi?.namaKolomBaru ? [...kolom, sesi.namaKolomBaru] : kolom;
+}
+
+/** "A, B dan C" untuk ≤3 nama, "A sampai G" kalau lebih. */
+export function ringkasDaftar(nama = []) {
+  if (nama.length <= 1) return nama.join("");
+  if (nama.length > 3) return `${nama[0]} sampai ${nama[nama.length - 1]}`;
+  return `${nama.slice(0, -1).join(", ")} dan ${nama[nama.length - 1]}`;
+}
+
+/** Tebak kolom kecamatan: utamakan yang berisi "kec" dan "nama" (NAMA_KEC daripada KODE_KEC). */
+export function tebakKolomKecamatan(columns = []) {
+  const kec = columns.filter((c) => /kec/i.test(c));
+  return kec.find((c) => /nama/i.test(c)) || kec[0] || "";
+}
